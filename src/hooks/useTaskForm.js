@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
-import { calculateStartByDate, getTodayIso } from '../lib/dateCalc'
+import { calculateStartByDate, getTodayIso, formatFriendlyDate } from '../lib/dateCalc'
 import { useToast } from '../context/ToastContext'
 
 // Note: DatePicker is a UI component — the hook just manages the deadline string value.
@@ -39,9 +39,10 @@ export function useTaskForm(projectId, onSuccess) {
     const trimmedName = taskName.trim()
     if (!trimmedName) { setTaskError("Task name can't be empty."); return }
     if (!deadline) { setTaskError('Pick a deadline.'); return }
-    if (deadline < todayIso) { setTaskError("Deadline can't be in the past."); return }
+    if (deadline < todayIso) { setTaskError("Deadline can't be in the past — pick today or a future date."); return }
     const hoursNum = Number(hours)
-    if (!hoursNum || hoursNum <= 0) { setTaskError('Estimated hours must be greater than 0.'); return }
+    if (!Number.isFinite(hoursNum) || hoursNum <= 0) { setTaskError('Estimated hours must be a positive number (e.g. 1, 2.5, 6).'); return }
+    if (hoursNum > 168) { setTaskError('Estimated hours seems too large for a single task (max 168h). Double-check your input?'); return }
 
     setTaskSubmitting(true)
     const startByDate = calculateStartByDate(deadline, hoursNum, priority)
@@ -64,7 +65,7 @@ export function useTaskForm(projectId, onSuccess) {
       return
     }
 
-    toast.success(`"${trimmedName}" added — start by ${startByDate}.`)
+    toast.success(`"${trimmedName}" added — start by ${formatFriendlyDate(startByDate)}.`)
     resetForm()
     onSuccess?.()
   }

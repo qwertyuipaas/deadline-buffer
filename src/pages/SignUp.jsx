@@ -229,7 +229,7 @@ export default function SignUp() {
               {/* Full Name */}
               <div>
                 <label className="block text-xs font-semibold text-ink uppercase tracking-wider mb-1" htmlFor="fullName">
-                  Your Name
+                  Username
                 </label>
                 <input
                   id="fullName"
@@ -237,9 +237,12 @@ export default function SignUp() {
                   required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  placeholder="e.g. Alex Morgan"
+                  placeholder="e.g. glenp"
                   className="w-full rounded-xl border border-ink/15 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-buffer/50 focus:border-buffer transition-all"
                 />
+                <p className="text-[11px] text-graphite/60 mt-1">
+                  This is what we'll call you around the app — not your email.
+                </p>
               </div>
 
               {/* Email */}

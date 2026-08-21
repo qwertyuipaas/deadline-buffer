@@ -6,6 +6,7 @@
 const DAY_MS = 86400000
 
 function daysBetween(a, b) {
+  if (!a || !b) return 0
   return Math.round((new Date(b + 'T00:00:00') - new Date(a + 'T00:00:00')) / DAY_MS)
 }
 
@@ -18,6 +19,7 @@ function daysBetween(a, b) {
  */
 export default function BufferBar({ todayIso, startByDate, deadline, status = 'not_started', size = 'md' }) {
   const done = status === 'done'
+  const inProgress = status === 'in_progress'
 
   const bufferDaysRaw = daysBetween(todayIso, startByDate)
   const workDaysRaw = Math.max(1, daysBetween(startByDate, deadline))
@@ -29,7 +31,8 @@ export default function BufferBar({ todayIso, startByDate, deadline, status = 'n
   const workPct = 100 - bufferPct
 
   const trackHeight = size === 'lg' ? 'h-3' : size === 'sm' ? 'h-1.5' : 'h-2'
-  const workColor = done ? 'bg-graphite-soft' : overdue ? 'bg-deadline' : 'bg-highlight'
+  const workColor = done || inProgress ? 'bg-graphite-soft' : overdue ? 'bg-deadline' : 'bg-highlight'
+  const bufferColor = done ? 'bg-graphite-soft' : 'bg-buffer'
 
   // Human-readable summary for screen readers
   const srLabel = done
@@ -51,7 +54,7 @@ export default function BufferBar({ todayIso, startByDate, deadline, status = 'n
       >
         {bufferPct > 0 && (
           <div
-            className="bg-buffer transition-[width] duration-300"
+            className={`${bufferColor} transition-[width] duration-300`}
             style={{ width: `${bufferPct}%` }}
           />
         )}

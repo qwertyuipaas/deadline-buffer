@@ -64,8 +64,41 @@ export default function DatePicker({
   })
 
   const containerRef = useRef(null)
+  const [popStyle, setPopStyle] = useState(null)
   const todayIso = getTodayIso()
   const minDate = min ? parseIso(min) : null
+
+  // Position the popover with `position: fixed` so it is never clipped by
+  // scrollable ancestors (e.g. the TaskDrawer's overflow-y-auto panel).
+  useEffect(() => {
+    if (!open) {
+      setPopStyle(null)
+      return
+    }
+    function update() {
+      const el = containerRef.current
+      if (!el) return
+      const r = el.getBoundingClientRect()
+      const POPOVER_W = 288 // w-72
+      const POPOVER_H = 360
+      let left = r.left
+      // Keep the popover inside the viewport horizontally
+      left = Math.max(8, Math.min(left, window.innerWidth - POPOVER_W - 8))
+      // Prefer opening below the trigger; flip above if there's no room
+      let top = r.bottom + 8
+      if (top + POPOVER_H > window.innerHeight - 8 && r.top - POPOVER_H - 8 > 8) {
+        top = r.top - POPOVER_H - 8
+      }
+      setPopStyle({ position: 'fixed', top, left, width: POPOVER_W })
+    }
+    update()
+    window.addEventListener('resize', update)
+    window.addEventListener('scroll', update, true)
+    return () => {
+      window.removeEventListener('resize', update)
+      window.removeEventListener('scroll', update, true)
+    }
+  }, [open])
 
   // Reset viewMode and month when opening
   useEffect(() => {
@@ -213,7 +246,8 @@ export default function DatePicker({
         <div
           role="dialog"
           aria-label="Date picker"
-          className="absolute top-full mt-2 left-0 z-50 bg-white rounded-xl border border-ink/10 shadow-xl p-4 w-72 animate-[modal-in_0.15s_ease-out]"
+          style={popStyle || undefined}
+          className="fixed z-50 bg-white rounded-xl border border-ink/10 shadow-xl p-4 w-72 animate-[modal-in_0.15s_ease-out]"
         >
           {/* ========================================================= */}
           {/* 1. DAYS VIEW                                              */}
