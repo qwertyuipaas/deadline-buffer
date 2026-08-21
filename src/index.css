@@ -188,6 +188,12 @@ body {
 .delay-600 { animation-delay: 600ms; }
 .delay-700 { animation-delay: 700ms; }
 
+/* Skeleton loading shimmer sweep */
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
 /* Shimmer skeleton */
 .skeleton-shimmer {
   background: linear-gradient(

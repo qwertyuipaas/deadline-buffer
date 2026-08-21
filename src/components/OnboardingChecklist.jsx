@@ -134,7 +134,7 @@ export default function OnboardingChecklist({ projectCount = 0, totalTasks = 0, 
               <p className="text-[11px] text-buffer font-medium mt-0.5">Buffer calculated ✓</p>
             ) : (
               <p className="text-[11px] text-graphite mt-0.5">
-                Open a project & press <kbd className="bg-paper border border-ink/20 px-1 py-0.2 rounded font-mono text-[10px]">N</kbd>
+                Open a project & press <kbd className="bg-paper border border-ink/20 px-1 py-0.5 rounded font-mono text-[10px]">N</kbd>
               </p>
             )}
           </div>

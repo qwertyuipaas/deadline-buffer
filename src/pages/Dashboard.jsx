@@ -718,6 +718,7 @@ export default function Dashboard() {
 
       {/* Interactive Step-by-Step Product Tour for New Accounts */}
       <ProductTour
+        tourKey="deadline_buffer_spotlight_tour_v1"
         isOpen={tourOpen}
         onClose={() => setTourOpen(false)}
         onComplete={() => setTourOpen(false)}
