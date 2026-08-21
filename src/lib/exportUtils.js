@@ -11,6 +11,14 @@ export function exportProjectToIcs(project, tasks, members = []) {
 
   const memberMap = new Map(members.map((m) => [m.id, m.display_name]))
 
+  function escapeIcsText(text) {
+    return String(text)
+      .replace(/\\/g, '\\\\')
+      .replace(/;/g, '\\;')
+      .replace(/,/g, '\\,')
+      .replace(/\n/g, '\\n')
+  }
+
   function formatIcsDate(isoDate) {
     if (!isoDate) return ''
     return isoDate.replace(/-/g, '')
@@ -37,8 +45,10 @@ export function exportProjectToIcs(project, tasks, members = []) {
       const icsEnd = dueObj.toISOString().slice(0, 10).replace(/-/g, '')
 
       const priorityLabel = (task.priority || 'medium').toUpperCase()
-      const summary = `[${priorityLabel}] ${task.name} (${project.name})`
-      const description = `Task: ${task.name}\\nProject: ${project.name}\\nPriority: ${priorityLabel}\\nEstimated Hours: ${task.estimated_hours || 0}h\\nAssigned to: ${assigneeName}\\nSuggested Start: ${startIso}\\nDeadline: ${dueIso}`
+      const summary = escapeIcsText(`[${priorityLabel}] ${task.name} (${project.name})`)
+      const description = escapeIcsText(
+        `Task: ${task.name}\nProject: ${project.name}\nPriority: ${priorityLabel}\nEstimated Hours: ${task.estimated_hours || 0}h\nAssigned to: ${assigneeName}\nSuggested Start: ${startIso}\nDeadline: ${dueIso}`
+      )
 
       return [
         'BEGIN:VEVENT',

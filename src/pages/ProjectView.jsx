@@ -213,7 +213,7 @@ export default function ProjectView() {
   const toast = useToast()
   const todayIso = getTodayIso()
 
-  const { project, members, tasks, loading, loadError, reload } = useProjectData(projectId)
+  const { project, members, tasks, setTasks, loading, loadError, reload } = useProjectData(projectId)
 
   // ---- Task drawer ----
   const [drawerMode, setDrawerMode] = useState(null) // null | 'add' | 'edit'
@@ -280,16 +280,17 @@ export default function ProjectView() {
 
   // ---- Status change (optimistic) ----
   async function handleStatusChange(taskId, status) {
-    reload() // will re-fetch; for instant feedback, also optimistic-update locally
-    // Optimistic local update
-    // (handled by reload but we keep the select responsive)
+    // Update local state immediately so the dropdown feels instant --
+    // no full reload, so no flash back to the loading skeleton.
+    setTasks((prev) => prev.map((t) => (t.id === taskId ? { ...t, status } : t)))
+
     const { error } = await supabase.from('tasks').update({ status }).eq('id', taskId)
     if (error) {
       toast.error(error.message)
+      reload() // only re-sync from the server if the update actually failed
     } else if (status === 'done') {
       toast.success('Marked done.')
     }
-    reload()
   }
 
   // ---- Delete task ----

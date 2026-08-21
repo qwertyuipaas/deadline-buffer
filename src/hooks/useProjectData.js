@@ -40,5 +40,5 @@ export function useProjectData(projectId) {
     loadAll()
   }, [loadAll])
 
-  return { project, members, tasks, loading, loadError, reload: loadAll }
+  return { project, members, tasks, setTasks, loading, loadError, reload: loadAll }
 }
