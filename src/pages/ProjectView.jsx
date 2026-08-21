@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
-import { isOverdue, getTodayIso, getDaysUntilDeadline, getUrgencyLevel } from '../lib/dateCalc'
+import { isOverdue, getTodayIso, getDaysUntilDeadline, getUrgencyLevel, formatFriendlyDate, calculateStartByDate } from '../lib/dateCalc'
 import { getMemberStats, getSuggestedMemberOrder } from '../lib/groupUtils'
 import { useToast } from '../context/ToastContext'
 import { useProjectData } from '../hooks/useProjectData'
@@ -58,8 +58,6 @@ const PROJECT_VIEW_STEPS = [
   },
 ]
 
-const DAY_MS = 86400000
-
 const URGENCY_BADGE = {
   done:     'bg-paper-dim text-graphite',
   fine:     'bg-buffer-soft text-buffer',
@@ -70,8 +68,8 @@ const URGENCY_BADGE = {
 
 const URGENCY_LABEL = {
   done:     'Done',
-  fine:     (task) => `Start by ${task.start_by_date}`,
-  soon:     (task) => `Start soon — ${task.start_by_date}`,
+  fine:     (task) => `Start by ${formatFriendlyDate(task.start_by_date)}`,
+  soon:     (task) => `Start soon — ${formatFriendlyDate(task.start_by_date)}`,
   critical: () => 'Start today',
   overdue:  () => "Start now — you're behind",
 }
@@ -86,6 +84,16 @@ const priorityWeight = { high: 0, medium: 1, low: 2 }
 // ---- Task form shared fields (defined outside component to ensure stable DOM focus) ----
 function TaskFormFields({ form, members: memberList, isGroup: groupMode, tasks = [] }) {
   const suggested = getSuggestedMemberOrder(memberList, tasks)
+
+  // Live preview of the calculated Start-By date so first-time users can see
+  // exactly what the app does before they save anything.
+  const hoursNum = Number(form.hours)
+  const previewValid =
+    form.deadline && Number.isFinite(hoursNum) && hoursNum > 0 && form.deadline >= form.todayIso
+  const previewStartBy = previewValid
+    ? calculateStartByDate(form.deadline, hoursNum, form.priority)
+    : null
+
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       <div className="sm:col-span-2">
@@ -188,6 +196,24 @@ function TaskFormFields({ form, members: memberList, isGroup: groupMode, tasks =
           </div>
         </div>
       )}
+      {/* Live Start-By Date preview */}
+      <div className="sm:col-span-2">
+        {previewValid ? (
+          <div className="flex items-center justify-between gap-3 rounded-xl bg-buffer-soft border border-buffer/30 px-4 py-3 animate-fade-in">
+            <span className="text-xs text-graphite leading-snug">
+              Based on your inputs, you should start this task by:
+            </span>
+            <strong className="font-display text-sm text-buffer whitespace-nowrap">
+              {formatFriendlyDate(previewStartBy)}
+            </strong>
+          </div>
+        ) : (
+          <p className="text-[11px] text-graphite/70 leading-relaxed px-1">
+            Pick a deadline and estimated hours — we'll automatically calculate your calm <strong>Start-By date</strong> with a safety buffer.
+          </p>
+        )}
+      </div>
+
       {form.taskError && (
         <div className="sm:col-span-2">
           <p className="text-xs text-deadline bg-deadline-soft border border-deadline/20 rounded-lg px-3 py-2">
@@ -261,7 +287,10 @@ export default function ProjectView() {
         (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable)) ||
         (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'SELECT' || activeEl.isContentEditable))
 
-      if (drawerMode || isInput) return
+      // Don't hijack the N key while any modal, drawer, or tour is open
+      const modalOpen =
+        document.querySelector('[role="dialog"][aria-modal="true"]') !== null
+      if (drawerMode || isInput || modalOpen) return
 
       if (e.key === 'n' || e.key === 'N') {
         e.preventDefault()
@@ -271,12 +300,6 @@ export default function ProjectView() {
     document.addEventListener('keydown', handleKey)
     return () => document.removeEventListener('keydown', handleKey)
   }, [drawerMode])
-
-  // ---- Suggested member order for assign dropdown ----
-  const suggestedMemberOrder = useMemo(
-    () => getSuggestedMemberOrder(members, tasks),
-    [members, tasks]
-  )
 
   // ---- Status change (optimistic) ----
   async function handleStatusChange(taskId, status) {
@@ -406,8 +429,6 @@ export default function ProjectView() {
     return (a.start_by_date || '').localeCompare(b.start_by_date || '')
   })
 
-  const filtersActive = statusFilter !== 'all' || (isGroup && memberFilter !== 'all') || searchQuery.trim().length > 0
-
   return (
     <div className="min-h-screen bg-paper">
       {/* Header */}
@@ -468,7 +489,7 @@ export default function ProjectView() {
                 className="text-xs text-buffer hover:text-buffer/80 bg-buffer-soft px-2.5 py-1 rounded-lg transition active:scale-95 flex items-center gap-1 font-medium shadow-xs"
                 title="How Deadline Buffer works"
               >
-                <span>💡</span> Guide
+                Guide
               </button>
               <button
                 type="button"
@@ -480,7 +501,7 @@ export default function ProjectView() {
                 className="text-xs text-graphite hover:text-ink border border-ink/15 hover:border-ink/30 px-2.5 py-1 rounded-lg bg-white transition flex items-center gap-1.5 shadow-xs active:scale-95"
                 title="Copy markdown summary for group chats"
               >
-                <span>📋</span> Copy Summary
+                Copy Summary
               </button>
               <button
                 type="button"
@@ -491,7 +512,7 @@ export default function ProjectView() {
                 className="text-xs text-buffer hover:text-buffer/80 border border-buffer/20 hover:border-buffer/40 px-2.5 py-1 rounded-lg bg-buffer-soft transition flex items-center gap-1.5 font-medium shadow-xs active:scale-95"
                 title="Download .ics file for Google Calendar / Apple Calendar"
               >
-                <span>📅</span> Add to Calendar
+                Add to Calendar
               </button>
             </div>
           </div>
@@ -513,13 +534,16 @@ export default function ProjectView() {
                 style={{ width: `${percentDone}%` }}
               />
             </div>
-            <div className="flex gap-4 mt-4 text-xs">
+            <div className="flex gap-4 mt-4 text-xs flex-wrap">
               <span className={overdueCount > 0 ? 'text-deadline font-medium' : 'text-graphite'}>
                 {overdueCount} overdue
               </span>
               <span className={dueSoonCount > 0 ? 'text-ink font-medium' : 'text-graphite'}>
                 {dueSoonCount} due within 7 days
               </span>
+              {overdueCount === 0 && dueSoonCount === 0 && (
+                <span className="text-buffer font-medium">✓ All on track</span>
+              )}
             </div>
           </section>
         )}
@@ -536,14 +560,14 @@ export default function ProjectView() {
                   return (
                     <li
                       key={m.id}
-                      className={`flex items-center gap-3 rounded-lg px-3 py-2.5 ${
+                      className={`flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg px-3 py-2.5 ${
                         stats.overloaded ? 'bg-deadline-soft' : 'bg-paper'
                       }`}
                     >
                       <span className={`text-sm font-medium min-w-[100px] ${stats.overloaded ? 'text-deadline' : 'text-ink'}`}>
                         {m.display_name}
                       </span>
-                      <div className="flex-1">
+                      <div className="flex-1 min-w-[140px]">
                         <MemberWorkloadBar activeHours={stats.activeHours} capacity={stats.capacity} size="sm" />
                       </div>
                       <span className="text-xs text-graphite shrink-0">
@@ -552,7 +576,8 @@ export default function ProjectView() {
                       <button
                         onClick={() => requestRemoveMember(m)}
                         title="Remove member"
-                        className="text-graphite/40 hover:text-deadline text-xs transition shrink-0"
+                        aria-label={`Remove ${m.display_name}`}
+                        className="text-graphite/40 hover:text-deadline text-xs transition shrink-0 px-1.5 py-0.5 rounded hover:bg-white/60"
                       >
                         Remove
                       </button>
@@ -609,7 +634,12 @@ export default function ProjectView() {
         {/* Task list header + filters */}
         <section>
           <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
-            <h2 className="text-sm font-semibold text-ink">Tasks</h2>
+            <div>
+              <h2 className="text-sm font-semibold text-ink">Tasks</h2>
+              <p className="text-[11px] text-graphite mt-0.5 max-w-md leading-relaxed">
+                Each task gets a color-coded <strong>Start-By date</strong> — the latest day you can begin and still finish comfortably.
+              </p>
+            </div>
             <div id="tour-project-task-controls" className="flex flex-wrap gap-2 items-center">
               {tasks.length > 0 && (
                 <>
@@ -674,14 +704,14 @@ export default function ProjectView() {
 
           {tasks.length === 0 ? (
             <div className="bg-white rounded-2xl border border-ink/10 p-8 text-center shadow-xs animate-fade-up">
-              <div className="w-12 h-12 rounded-2xl bg-buffer-soft text-buffer flex items-center justify-center mx-auto mb-3 text-xl">
-                ⏱️
+              <div className="w-12 h-12 rounded-2xl bg-buffer-soft text-buffer flex items-center justify-center mx-auto mb-3 font-display text-xl font-bold">
+                +
               </div>
               <h3 className="font-display font-semibold text-base text-ink mb-1">
                 No tasks added yet
               </h3>
-              <p className="text-xs text-graphite mb-4 max-w-sm mx-auto leading-relaxed">
-                Add an assignment deadline and estimated work hours. Deadline Buffer will automatically calculate your calm start-by date.
+              <p className="text-xs text-graphite mb-5 max-w-sm mx-auto leading-relaxed">
+                Add an assignment deadline and estimated work hours. Deadline Buffer will automatically calculate your calm start-by date — you'll never have to guess when to begin again.
               </p>
               <div className="flex flex-wrap justify-center items-center gap-2 mb-5">
                 <button
@@ -694,7 +724,7 @@ export default function ProjectView() {
                   }}
                   className="text-[11px] text-graphite hover:text-ink bg-paper hover:bg-paper-dim border border-ink/10 px-2.5 py-1 rounded-lg transition"
                 >
-                  ✨ e.g. Literature Review (6h)
+                  e.g. Literature Review (6h)
                 </button>
                 <button
                   type="button"
@@ -706,17 +736,22 @@ export default function ProjectView() {
                   }}
                   className="text-[11px] text-graphite hover:text-ink bg-paper hover:bg-paper-dim border border-ink/10 px-2.5 py-1 rounded-lg transition"
                 >
-                  ✨ e.g. Problem Set (4h)
+                  e.g. Problem Set (4h)
                 </button>
               </div>
-              <button
-                type="button"
-                onClick={() => setDrawerMode('add')}
-                className="inline-flex items-center gap-2 bg-ink text-paper rounded-xl px-5 py-2.5 text-xs font-semibold hover:bg-ink-soft active:scale-95 transition shadow-sm"
-              >
-                <span>+</span> Add your first task
-                <span className="opacity-50 font-mono text-[10px] ml-1 bg-white/20 px-1.5 py-0.5 rounded">N</span>
-              </button>
+              <div className="flex flex-wrap justify-center items-center gap-3 mb-5">
+                <button
+                  type="button"
+                  onClick={() => setDrawerMode('add')}
+                  className="inline-flex items-center gap-2 bg-ink text-paper rounded-xl px-5 py-2.5 text-xs font-semibold hover:bg-ink-soft active:scale-95 transition shadow-sm"
+                >
+                  <span>+</span> Add your first task
+                  <span className="opacity-50 font-mono text-[10px] ml-1 bg-white/20 px-1.5 py-0.5 rounded">N</span>
+                </button>
+              </div>
+                <p className="text-[11px] text-graphite/70 flex items-center justify-center gap-1.5">
+                  Tip: Use the keyboard shortcut <kbd className="bg-paper border border-ink/20 px-1 py-0.5 rounded font-mono text-[10px]">N</kbd> anytime to quickly add a task
+                </p>
             </div>
           ) : visibleTasks.length === 0 ? (
             <div className="bg-white rounded-xl border border-ink/10 p-6 text-center">
@@ -855,13 +890,13 @@ export default function ProjectView() {
                           />
                         </div>
 
-                        <span
-                          className={`text-xs font-medium mt-2 inline-block px-2 py-1 rounded-full ${URGENCY_BADGE[urgency]}`}
-                        >
-                          {typeof URGENCY_LABEL[urgency] === 'function'
-                            ? URGENCY_LABEL[urgency](task)
-                            : URGENCY_LABEL[urgency]}
-                        </span>
+                            <span
+                              className={`text-xs font-medium mt-2 inline-block px-2 py-1 rounded-full ${URGENCY_BADGE[urgency]}`}
+                            >
+                              {typeof URGENCY_LABEL[urgency] === 'function'
+                                ? URGENCY_LABEL[urgency](task)
+                                : URGENCY_LABEL[urgency]}
+                            </span>
                       </div>
 
                       <div className="flex flex-col items-end gap-2 shrink-0">

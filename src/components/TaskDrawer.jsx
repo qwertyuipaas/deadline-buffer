@@ -77,6 +77,13 @@ export default function TaskDrawer({ open, onClose, title, children }) {
 
         {/* Scrollable content */}
         <div className="flex-1 overflow-y-auto px-6 py-6">
+          {title === 'Add a task' && (
+            <p className="text-xs text-graphite bg-paper/60 border border-ink/5 rounded-lg px-3 py-2 mb-4 leading-relaxed">
+              Enter the assignment's <strong>deadline</strong> and <strong>estimated hours</strong>.
+              Your <strong>Start-By Date</strong> is calculated automatically with a safety buffer — 
+              no more guessing when to begin!
+            </p>
+          )}
           {open && children}
         </div>
       </div>

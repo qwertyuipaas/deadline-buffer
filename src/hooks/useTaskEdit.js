@@ -40,7 +40,8 @@ export function useTaskEdit(onSuccess) {
     const trimmedName = editFields.name.trim()
     if (!trimmedName) { setEditError("Task name can't be empty."); return }
     const hoursNum = Number(editFields.estimated_hours)
-    if (!hoursNum || hoursNum <= 0) { setEditError('Estimated hours must be greater than 0.'); return }
+    if (!Number.isFinite(hoursNum) || hoursNum <= 0) { setEditError('Estimated hours must be a positive number (e.g. 1, 2.5, 6).'); return }
+    if (hoursNum > 168) { setEditError('Estimated hours seems too large for a single task (max 168h). Double-check your input?'); return }
     if (!editFields.deadline) { setEditError('Pick a deadline.'); return }
 
     setEditSubmitting(true)

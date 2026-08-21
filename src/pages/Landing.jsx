@@ -52,28 +52,28 @@ function useTypewriter(words, typingSpeed = 90, deletingSpeed = 45, pauseTime = 
 const CAROUSEL_SLIDES = [
   {
     id: 'group',
-    tabTitle: '👥 Group Workload',
+    tabTitle: 'Group Workload',
     badge: 'Feature 01 · Team Balancing',
     title: 'Assign work to who actually has room',
     description: 'Split project tasks into hours and assign them to teammates based on real weekly availability.',
   },
   {
     id: 'buffer',
-    tabTitle: '⏱️ Deadline Buffer',
+    tabTitle: 'Deadline Buffer',
     badge: 'Feature 02 · Start-By Date',
     title: 'Turn deadlines into realistic start-by dates',
     description: 'Never start 12 hours before it’s due. The buffer gives you a calm cushion that scales with priority.',
   },
   {
     id: 'urgency',
-    tabTitle: '🚦 Urgency Triage',
+    tabTitle: 'Urgency Triage',
     badge: 'Feature 03 · Smart Alerts',
     title: 'Know what needs your focus today',
     description: 'Color-coded urgency indicators alert you before a task becomes critical or overdue.',
   },
   {
     id: 'setup',
-    tabTitle: '⚡ Rapid Setup',
+    tabTitle: 'Rapid Setup',
     badge: 'Feature 04 · Zero Friction',
     title: 'Set up projects and members in 30 seconds',
     description: 'No complicated enterprise project boards. Just solo task lists or group projects ready to go.',
@@ -82,8 +82,8 @@ const CAROUSEL_SLIDES = [
 
 // Slide 1 Dynamic Group Scenarios
 const GROUP_SCENARIOS = [
-  { taskIdx: 0, memberId: 'm2', note: 'Jamie has 6h free → Auto-suggested ✨' },
-  { taskIdx: 1, memberId: 'm3', note: 'Sam assigned 5h task → Exceeds weekly limit! ⚠️' },
+  { taskIdx: 0, memberId: 'm2', note: 'Jamie has 6h free — auto-suggested' },
+  { taskIdx: 1, memberId: 'm3', note: 'Sam assigned 5h task — exceeds weekly limit' },
   { taskIdx: 1, memberId: 'm1', note: 'Reassigned to Alex → Balanced safely (9/10h) ✓' },
   { taskIdx: 2, memberId: 'm2', note: 'Summary task assigned to Jamie → Safe buffer (4/8h) ✓' },
 ]
@@ -116,16 +116,18 @@ export default function Landing() {
   const [urgencyStep, setUrgencyStep] = useState(0)
   const [setupStep, setSetupStep] = useState(0)
 
-  // Infinite Carousel Loop: auto-advances every 2.0 seconds smoothly
+  // Infinite Carousel Loop: auto-advances every 6 seconds (slow enough to read a slide)
+  const SLIDE_INTERVAL_MS = 6000
+
   useEffect(() => {
     if (isCarouselPaused) return
     const timer = setInterval(() => {
       setActiveSlide((prev) => (prev + 1) % CAROUSEL_SLIDES.length)
-    }, 2000)
+    }, SLIDE_INTERVAL_MS)
     return () => clearInterval(timer)
   }, [isCarouselPaused])
 
-  // Auto-cycle internal slide sub-animations every 2.0 seconds
+  // Auto-cycle internal slide sub-animations in sync with the carousel
   useEffect(() => {
     if (isCarouselPaused) return
     const subTimer = setInterval(() => {
@@ -133,7 +135,7 @@ export default function Landing() {
       setSoloStep((prev) => (prev + 1) % SOLO_SCENARIOS.length)
       setUrgencyStep((prev) => (prev + 1) % 4)
       setSetupStep((prev) => (prev + 1) % 3)
-    }, 2000)
+    }, SLIDE_INTERVAL_MS)
     return () => clearInterval(subTimer)
   }, [isCarouselPaused])
 
@@ -224,7 +226,7 @@ export default function Landing() {
             {/* Main Headline with Animated Typewriter Letters */}
             <h1 className="font-display text-4xl sm:text-5xl lg:text-[54px] font-bold leading-[1.08] tracking-tight text-ink animate-fade-up delay-150">
               Know exactly when to start{' '}
-              <span className="text-buffer block sm:inline-block border-b-2 border-buffer/30 pb-0.5 min-h-[1.15em] transition-all">
+              <span className="text-buffer block border-b-2 border-buffer/30 pb-0.5 min-h-[1.15em] min-w-[14ch] sm:min-w-[17ch] whitespace-nowrap">
                 {typedWord}
                 <span className="animate-pulse text-ink font-light ml-0.5">|</span>
               </span>
@@ -328,7 +330,7 @@ export default function Landing() {
                 <span className="text-graphite">Buffer (safe zone)</span>
               </div>
               <div className="font-medium text-ink bg-highlight-soft px-2.5 py-1 rounded-md">
-                🚀 Start by <strong>{interactiveStartBy}</strong>
+                Start by <strong>{interactiveStartBy}</strong>
               </div>
             </div>
           </div>
@@ -354,8 +356,8 @@ export default function Landing() {
           className="bg-white rounded-3xl border border-ink/10 shadow-xl overflow-hidden relative transition-all duration-300"
         >
           {/* Top Carousel Navigation Tabs with Active Fill Indicator */}
-          <div className="flex items-center justify-between border-b border-ink/10 bg-paper/50 px-4 sm:px-6 py-3 overflow-x-auto gap-2">
-            <div className="flex items-center gap-1 sm:gap-2">
+          <div className="flex items-center justify-center border-b border-ink/10 bg-paper/50 px-4 sm:px-6 py-3 overflow-x-auto gap-2">
+            <div className="flex items-center gap-1 sm:gap-2 mx-auto">
               {CAROUSEL_SLIDES.map((slide, idx) => (
                 <button
                   key={slide.id}
@@ -375,35 +377,6 @@ export default function Landing() {
               ))}
             </div>
 
-            {/* Carousel Arrow Controls */}
-            <div className="flex items-center gap-1.5 shrink-0 ml-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveSlide((prev) => (prev === 0 ? CAROUSEL_SLIDES.length - 1 : prev - 1))
-                  handleInteractiveAction()
-                }}
-                aria-label="Previous slide"
-                className="w-8 h-8 rounded-lg bg-white border border-ink/10 flex items-center justify-center text-graphite hover:text-ink hover:border-ink/30 transition active:scale-95 shadow-xs"
-              >
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                  <path d="M9 11L5 7l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveSlide((prev) => (prev + 1) % CAROUSEL_SLIDES.length)
-                  handleInteractiveAction()
-                }}
-                aria-label="Next slide"
-                className="w-8 h-8 rounded-lg bg-white border border-ink/10 flex items-center justify-center text-graphite hover:text-ink hover:border-ink/30 transition active:scale-95 shadow-xs"
-              >
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                  <path d="M5 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </button>
-            </div>
           </div>
 
           {/* Sliding Track with enhanced 750ms smooth physics glide */}
@@ -429,7 +402,7 @@ export default function Landing() {
                     {CAROUSEL_SLIDES[0].badge}
                   </span>
                   <span className="text-xs text-graphite font-mono">
-                    💡 {currentGroupScenario.note}
+                    {currentGroupScenario.note}
                   </span>
                 </div>
                 <h3 className="font-display text-2xl sm:text-3xl font-bold text-ink">
@@ -469,7 +442,7 @@ export default function Landing() {
                             {isActive && <span className="w-1.5 h-1.5 rounded-full bg-buffer block animate-ping" />}
                           </p>
                           <p className={`text-[10px] mt-0.5 ${isActive ? 'text-paper/70' : 'text-graphite'}`}>
-                            ⏱️ {t.hours} hrs · <span className="capitalize">{t.priority}</span>
+                            {t.hours} hrs · <span className="capitalize">{t.priority}</span>
                           </p>
                         </button>
                       )
@@ -640,9 +613,9 @@ export default function Landing() {
 
               <div className="bg-paper rounded-2xl p-5 border border-ink/10 space-y-2.5">
                 {[
-                  { title: 'Organic Chemistry Problem Set', hrs: '4h', badge: '🔴 Start today — you need 4 hours', badgeStyle: 'bg-deadline-soft text-deadline font-bold' },
-                  { title: 'History Midterm Essay Draft', hrs: '6h', badge: '🟡 Start soon — Due Thursday', badgeStyle: 'bg-highlight-soft text-ink font-semibold' },
-                  { title: 'Computer Science Lab 4', hrs: '3h', badge: '🟢 Safe buffer — Start by next week', badgeStyle: 'bg-buffer-soft text-buffer font-semibold' },
+                  { title: 'Organic Chemistry Problem Set', hrs: '4h', badge: 'Start today — you need 4 hours', badgeStyle: 'bg-deadline text-white font-bold' },
+                  { title: 'History Midterm Essay Draft', hrs: '6h', badge: 'Start soon — Due Thursday', badgeStyle: 'bg-highlight-soft text-ink font-semibold' },
+                  { title: 'Computer Science Lab 4', hrs: '3h', badge: 'Safe buffer — Start by next week', badgeStyle: 'bg-buffer-soft text-buffer font-semibold' },
                   { title: 'Weekly Discussion Board Post', hrs: '1h', badge: '✓ Completed', badgeStyle: 'bg-white text-graphite font-medium' },
                 ].map((item, i) => {
                   const isHighlighted = urgencyStep === i
@@ -698,9 +671,9 @@ export default function Landing() {
 
               <div className="bg-paper rounded-2xl p-6 border border-ink/10 grid sm:grid-cols-3 gap-4">
                 {[
-                  { num: '1️⃣', title: 'Create Project', desc: 'Pick Solo or Group with optional description.' },
-                  { num: '2️⃣', title: 'Add Teammates', desc: 'Enter members and their hours/week directly.' },
-                  { num: '3️⃣', title: 'Buffer Tasks', desc: 'Enter tasks and start dates are calculated automatically.' },
+                  { num: '01', title: 'Create Project', desc: 'Pick Solo or Group with optional description.' },
+                  { num: '02', title: 'Add Teammates', desc: 'Enter members and their hours/week directly.' },
+                  { num: '03', title: 'Buffer Tasks', desc: 'Enter tasks and start dates are calculated automatically.' },
                 ].map((step, idx) => {
                   const isActive = setupStep === idx
                   return (
@@ -717,7 +690,7 @@ export default function Landing() {
                           : 'bg-white/80 border-ink/10 opacity-70 hover:opacity-100'
                       }`}
                     >
-                      <span className="text-3xl block">{step.num}</span>
+                      <span className="font-mono text-sm text-buffer block">{step.num}</span>
                       <h4 className="font-display font-bold text-ink text-base">{step.title}</h4>
                       <p className="text-xs text-graphite">{step.desc}</p>
                     </button>
@@ -747,10 +720,6 @@ export default function Landing() {
                 />
               ))}
             </div>
-
-            <span className="text-xs font-mono text-graphite">
-              Slide {activeSlide + 1} of {CAROUSEL_SLIDES.length}
-            </span>
           </div>
         </div>
       </section>

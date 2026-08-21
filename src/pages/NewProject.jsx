@@ -139,9 +139,11 @@ export default function NewProject() {
           ← Back to dashboard
         </Link>
 
-        <div className="bg-white rounded-2xl border border-ink/10 p-8 shadow-sm animate-fade-up delay-50">
+          <div className="bg-white rounded-2xl border border-ink/10 p-8 shadow-sm animate-fade-up delay-50">
           <h1 className="font-display text-xl font-semibold text-ink mb-1">New project</h1>
-          <p className="text-sm text-graphite mb-6">Fill in the details to get started.</p>
+          <p className="text-sm text-graphite mb-6">
+            Turn a due date into a calm start-by date. Fill in the basics to get started.
+          </p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
 

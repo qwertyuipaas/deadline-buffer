@@ -4,46 +4,46 @@ const DEFAULT_STEPS = [
   {
     targetId: 'tour-metrics-bar',
     icon: '📊',
-    tag: 'Step 1 of 5 · Metrics Hub',
-    title: 'Your Buffer & Productivity Overview',
-    desc: 'Track your active workload, completed assignments, and buffer cushion score in real-time.',
-    tip: 'The buffer health tracks whether your assignments are comfortably spaced out.',
+    tag: 'Step 1 of 5 · At-a-Glance Overview',
+    title: 'See Your Whole Semester Instantly',
+    desc: 'Active tasks, completed assignments, and buffer health score tell you how much cushion you still have before any deadline is at risk.',
+    tip: 'Higher buffer health = more room to breathe. Keep it above 70% for stress-free studying.',
     preferredPlacement: 'bottom',
   },
   {
     targetId: 'tour-new-project-btn',
     icon: '✨',
-    tag: 'Step 2 of 5 · Create Projects',
-    title: 'Solo & Group Project Launcher',
-    desc: 'Set up new courses or assignments. In Group projects, you can set teammate capacities (hrs/wk) to prevent anyone from being overloaded.',
-    tip: 'Click here whenever you have a new course assignment or midterm project.',
+    tag: 'Step 2 of 5 · Create Your First Project',
+    title: 'Start a Solo or Group Project',
+    desc: 'Whether it\'s a thesis, a group presentation, or weekly problem sets, you can set it up in 30 seconds. For group projects, add each member\'s weekly available hours (hrs/wk).',
+    tip: 'Don\'t worry — you can always rename or edit your project later.',
     preferredPlacement: 'bottom',
   },
   {
     targetId: 'tour-templates-section',
     icon: '🚀',
-    tag: 'Step 3 of 5 · Quick Starters',
-    title: 'One-Click Project Templates',
-    desc: 'Need to get started in seconds? Pick a Thesis, Lab Report, or Group Presentation template to pre-fill your project immediately.',
-    tip: 'Templates automatically configure the best buffer cushions for that task type.',
+    tag: 'Step 3 of 5 · Instant Project Templates',
+    title: 'Use a Template to Skip Setup',
+    desc: 'Need to get started in seconds? Pick one of these popular academic structures and it will pre-fill your project with the right pace settings.',
+    tip: 'Templates automatically configure the ideal buffer cushion for that assignment type.',
     preferredPlacement: 'top',
   },
   {
     targetId: 'tour-scratchpad',
     icon: '📝',
-    tag: 'Step 4 of 5 · Fast Scratchpad',
-    title: 'Auto-Saving Study Notes',
-    desc: 'Jot down sudden deadline thoughts, chapter reading pages, or study ideas. It auto-saves locally as you type.',
-    tip: 'Your scratchpad notes stay saved even if you refresh or leave the tab.',
+    tag: 'Step 4 of 5 · Quick Notes That Save Themselves',
+    title: 'Never Lose a Deadline Thought',
+    desc: 'This note box auto-saves as you type — use it for page numbers, quick reminders, or group chat tasks you want to remember later.',
+    tip: 'Your notes stay saved on this device even if you refresh the page.',
     preferredPlacement: 'left',
   },
   {
     targetId: 'tour-guide-btn',
     icon: '💡',
-    tag: 'Step 5 of 5 · Help & Shortcuts',
-    title: 'How It Works & Pro Tips',
-    desc: 'Click this button anytime to review the buffer calculation formula, group assignment rules, or keyboard shortcuts like pressing N to add tasks.',
-    tip: 'You are now 100% ready to master your deadlines!',
+    tag: 'Step 5 of 5 · Help Is Always One Click Away',
+    title: 'Review the Formula & Pro Tips',
+    desc: 'This button reopens the full guide whenever you need a refresher — including how the buffer is calculated and the keyboard shortcut N to add a task.',
+    tip: 'You\'re now ready to turn due dates into calm start-by dates. Welcome aboard! 🎉',
     preferredPlacement: 'bottom',
   },
 ]
@@ -109,7 +109,12 @@ export default function ProductTour({
     if (!isOpen || !step) return
     const el = document.getElementById(step.targetId)
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' })
+      // Calculate position immediately so the tooltip doesn't flash at
+      // center-screen before jumping to the real target.
+      updateTargetRect()
+      // inline:'nearest' avoids horizontal scrolling of wide containers,
+      // which used to leave the page shifted sideways after the tour closed.
+      el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' })
       const t = setTimeout(updateTargetRect, 250)
       return () => clearTimeout(t)
     } else {
@@ -127,6 +132,17 @@ export default function ProductTour({
       window.removeEventListener('scroll', updateTargetRect, true)
     }
   }, [isOpen, updateTargetRect])
+
+  // Prevent the page behind the tour from scrolling/shifting while it's open —
+  // otherwise the background layout can jump around under the fixed overlay.
+  useEffect(() => {
+    if (!isOpen) return
+    const original = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = original
+    }
+  }, [isOpen])
 
   // Reset step on open
   useEffect(() => {
@@ -180,26 +196,27 @@ export default function ProductTour({
   let tooltipStyle = {}
   if (rect) {
     const tooltipWidth = 380
+    const estimatedTooltipHeight = 260
     const margin = 14
 
     if (placement === 'bottom') {
       tooltipStyle = {
-        top: Math.min(window.innerHeight - 300, rect.bottom + margin),
+        top: Math.max(16, Math.min(window.innerHeight - estimatedTooltipHeight - 16, rect.bottom + margin)),
         left: Math.max(16, Math.min(window.innerWidth - tooltipWidth - 16, rect.left + rect.width / 2 - tooltipWidth / 2)),
       }
     } else if (placement === 'top') {
       tooltipStyle = {
-        top: Math.max(16, rect.top - margin - 260),
+        top: Math.max(16, Math.min(window.innerHeight - estimatedTooltipHeight - 16, rect.top - margin - estimatedTooltipHeight)),
         left: Math.max(16, Math.min(window.innerWidth - tooltipWidth - 16, rect.left + rect.width / 2 - tooltipWidth / 2)),
       }
     } else if (placement === 'left') {
       tooltipStyle = {
-        top: Math.max(16, Math.min(window.innerHeight - 280, rect.top)),
+        top: Math.max(16, Math.min(window.innerHeight - estimatedTooltipHeight - 16, rect.top)),
         left: Math.max(16, rect.left - tooltipWidth - margin),
       }
     } else if (placement === 'right') {
       tooltipStyle = {
-        top: Math.max(16, Math.min(window.innerHeight - 280, rect.top)),
+        top: Math.max(16, Math.min(window.innerHeight - estimatedTooltipHeight - 16, rect.top)),
         left: Math.min(window.innerWidth - tooltipWidth - 16, rect.right + margin),
       }
     }
@@ -294,25 +311,22 @@ export default function ProductTour({
             onClick={handleSkip}
             className="text-[11px] text-graphite hover:text-ink font-medium px-2 py-0.5 rounded-md hover:bg-paper transition"
           >
-            Skip ✕
-          </button>
+              Skip
+            </button>
         </div>
 
         {/* Content */}
         <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <span className="text-xl">{step.icon}</span>
-            <h3 className="font-display font-bold text-base text-ink">
-              {step.title}
-            </h3>
-          </div>
+          <h3 className="font-display font-bold text-base text-ink">
+            {step.title}
+          </h3>
 
           <p className="text-xs text-graphite leading-relaxed">
             {step.desc}
           </p>
 
           <div className="p-2.5 rounded-xl bg-paper/80 border border-ink/5 text-[11px] text-graphite leading-snug flex items-start gap-1.5">
-            <span className="text-buffer font-bold shrink-0">💡</span>
+            <span className="text-buffer font-bold shrink-0">Tip:</span>
             <span>{step.tip}</span>
           </div>
         </div>
@@ -349,7 +363,7 @@ export default function ProductTour({
               onClick={handleNext}
               className="bg-ink text-paper text-xs font-semibold rounded-xl px-3.5 py-1.5 hover:bg-ink-soft active:scale-95 transition shadow-sm flex items-center gap-1"
             >
-              <span>{isLast ? '🎉 Done!' : 'Next →'}</span>
+              <span>{isLast ? 'Done' : 'Next →'}</span>
             </button>
           </div>
         </div>

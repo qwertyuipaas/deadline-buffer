@@ -26,7 +26,7 @@ export default function OnboardingChecklist({ projectCount = 0, totalTasks = 0, 
       <div className="flex items-center justify-between gap-4 mb-4 flex-wrap">
         <div className="flex items-center gap-2.5">
           <span className="w-8 h-8 rounded-xl bg-buffer text-white flex items-center justify-center text-sm font-bold shadow-xs">
-            {allDone ? '🎉' : '🚀'}
+            {allDone ? '✓' : '+'}
           </span>
           <div>
             <h2 className="font-display font-bold text-base text-ink">
@@ -47,7 +47,7 @@ export default function OnboardingChecklist({ projectCount = 0, totalTasks = 0, 
               onClick={onStartTour}
               className="text-xs font-semibold text-buffer hover:text-buffer/80 bg-white border border-buffer/20 px-3 py-1.5 rounded-xl transition shadow-2xs flex items-center gap-1.5"
             >
-              <span>🎬</span> Interactive Tour
+              Interactive Tour
             </button>
           )}
           <button
@@ -55,7 +55,7 @@ export default function OnboardingChecklist({ projectCount = 0, totalTasks = 0, 
             onClick={onOpenGuide}
             className="text-xs font-medium text-graphite hover:text-ink bg-white border border-ink/15 px-3 py-1.5 rounded-xl transition shadow-2xs"
           >
-            💡 Guide
+            Guide
           </button>
           {allDone && (
             <button

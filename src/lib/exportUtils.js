@@ -24,6 +24,16 @@ export function exportProjectToIcs(project, tasks, members = []) {
     return isoDate.replace(/-/g, '')
   }
 
+  // Format a Date as a LOCAL YYYYMMDD string. Never use toISOString() here —
+  // it converts to UTC first, which shifts dates backward by one day for
+  // timezones ahead of UTC (e.g. Asia, Europe, Australia).
+  function toLocalIcsDate(date) {
+    const y = date.getFullYear()
+    const m = String(date.getMonth() + 1).padStart(2, '0')
+    const d = String(date.getDate()).padStart(2, '0')
+    return `${y}${m}${d}`
+  }
+
   function formatIcsTimestamp() {
     const now = new Date()
     return now.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z'
@@ -42,7 +52,7 @@ export function exportProjectToIcs(project, tasks, members = []) {
       // For all-day events in ICS, end date is non-inclusive, so add 1 day
       const dueObj = new Date(dueIso + 'T00:00:00')
       dueObj.setDate(dueObj.getDate() + 1)
-      const icsEnd = dueObj.toISOString().slice(0, 10).replace(/-/g, '')
+      const icsEnd = toLocalIcsDate(dueObj)
 
       const priorityLabel = (task.priority || 'medium').toUpperCase()
       const summary = escapeIcsText(`[${priorityLabel}] ${task.name} (${project.name})`)

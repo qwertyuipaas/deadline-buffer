@@ -14,6 +14,15 @@ export default function HowItWorksModal({ open, onClose, onStartTour }) {
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [open, onClose])
 
+  useEffect(() => {
+    if (!open) return
+    const original = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = original
+    }
+  }, [open])
+
   if (!open) return null
 
   return (
@@ -30,7 +39,6 @@ export default function HowItWorksModal({ open, onClose, onStartTour }) {
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-ink/10">
           <div className="flex items-center gap-2">
-            <span className="text-2xl">💡</span>
             <div>
               <h2 className="font-display font-bold text-lg text-ink">How Deadline Buffer Works</h2>
               <p className="text-xs text-graphite">A 60-second guide to stress-free deadlines</p>
@@ -50,42 +58,39 @@ export default function HowItWorksModal({ open, onClose, onStartTour }) {
         <div className="space-y-4 py-5 text-xs sm:text-sm">
           {/* Concept 1 */}
           <div className="flex items-start gap-3.5 p-3.5 rounded-2xl bg-buffer-soft/50 border border-buffer/20">
-            <span className="text-2xl shrink-0">⏱️</span>
-            <div>
+            <div className="min-w-0">
               <h3 className="font-display font-bold text-ink text-sm">1. Turn Due Dates into Start Dates</h3>
               <p className="text-graphite text-xs mt-1 leading-relaxed">
-                Enter how many hours a task will take and its priority. The algorithm gives you a <strong>Start-By Date</strong> with an automatic safety cushion so you never cram at the last minute.
+                Enter how many hours a task will take and its priority. The algorithm gives you a <strong>Start-By Date</strong> with an automatic safety cushion — so you never have to cram the night before.
               </p>
             </div>
           </div>
 
           {/* Concept 2 */}
           <div className="flex items-start gap-3.5 p-3.5 rounded-2xl bg-highlight-soft/50 border border-highlight/20">
-            <span className="text-2xl shrink-0">👥</span>
-            <div>
+            <div className="min-w-0">
               <h3 className="font-display font-bold text-ink text-sm">2. Smart Group Workload Balancing</h3>
               <p className="text-graphite text-xs mt-1 leading-relaxed">
-                Set each teammate’s weekly capacity (e.g. <code>8 hrs/wk</code>). The app suggests who has free capacity and flags <strong>⚠️ Overloaded</strong> when tasks exceed someone's limit.
+                Set each teammate's weekly capacity (e.g. <code>8 hrs/wk</code>). The app suggests who has free capacity and flags <strong>⚠️ Overloaded</strong> if a task would push someone past their limit.
               </p>
             </div>
           </div>
 
           {/* Concept 3 */}
           <div className="flex items-start gap-3.5 p-3.5 rounded-2xl bg-paper border border-ink/10">
-            <span className="text-2xl shrink-0">🚦</span>
-            <div>
-              <h3 className="font-display font-bold text-ink text-sm">3. Color-Coded Urgency Triage</h3>
+            <div className="min-w-0">
+              <h3 className="font-display font-bold text-ink text-sm">3. Color-Coded Urgency At a Glance</h3>
               <p className="text-graphite text-xs mt-1 leading-relaxed">
-                <strong>🟢 Safe buffer</strong> = You have plenty of time.<br />
-                <strong>🟡 Start soon</strong> = Approaching your start window.<br />
-                <strong>🔴 Start today</strong> = You need to begin work today to finish comfortably.
+                <strong>Safe buffer</strong> (green) = You have plenty of time before you need to start.<br />
+                <strong>Start soon</strong> (amber) = Your start window is approaching.<br />
+                <strong>Start today</strong> (red) = Begin now to finish comfortably.
               </p>
             </div>
           </div>
 
           {/* Shortcut hint */}
           <div className="flex items-center justify-between p-3 rounded-xl bg-paper-dim/60 text-xs text-graphite font-mono">
-            <span>⚡ Pro Tip: Press <kbd className="bg-white border border-ink/20 px-1.5 py-0.5 rounded shadow-2xs text-ink font-bold">N</kbd> on any project to add a task quickly.</span>
+            <span>Pro tip: Press <kbd className="bg-white border border-ink/20 px-1.5 py-0.5 rounded shadow-2xs text-ink font-bold">N</kbd> on any project to add a task quickly.</span>
           </div>
         </div>
 
@@ -100,7 +105,7 @@ export default function HowItWorksModal({ open, onClose, onStartTour }) {
               }}
               className="text-xs font-semibold text-buffer hover:text-buffer/80 transition flex items-center gap-1.5 hover:underline"
             >
-              <span>🎬</span> Interactive Tour
+              Interactive Tour
             </button>
           ) : <span />}
           <button

@@ -29,6 +29,13 @@ export function AuthProvider({ children }) {
       supabase.auth.signUp({ email, password, options }),
     signIn: (email, password) => supabase.auth.signInWithPassword({ email, password }),
     signOut: () => supabase.auth.signOut(),
+    updateProfile: async (displayName) => {
+      const { data, error } = await supabase.auth.updateUser({
+        data: { display_name: displayName, full_name: displayName },
+      })
+      if (!error && data?.user) setUser(data.user)
+      return { data, error }
+    },
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

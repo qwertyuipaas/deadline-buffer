@@ -29,7 +29,8 @@ export function useMemberForm(projectId, members, onSuccess) {
     const trimmedName = memberName.trim()
     if (!trimmedName) { setMemberError("Member name can't be empty."); return }
     const hoursNum = Number(memberHours)
-    if (!hoursNum || hoursNum <= 0) { setMemberError('Hours per week must be greater than 0.'); return }
+    if (!Number.isFinite(hoursNum) || hoursNum <= 0) { setMemberError('Hours per week must be a positive number (e.g. 8, 10, 12).'); return }
+    if (hoursNum > 168) { setMemberError('Hours per week seems too large (max 168h — that\'s every hour of the week!).'); return }
     if (members.some((m) => m.display_name.toLowerCase() === trimmedName.toLowerCase())) {
       setMemberError('Someone with that name is already on this project.')
       return
