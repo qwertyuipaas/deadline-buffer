@@ -1,0 +1,210 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+/*
+  Design tokens for "Deadline Buffer".
+  The product's whole thesis is turning a deadline into a start-by date --
+  a buffer of safe time before a work window. The palette and the signature
+  "buffer bar" component (see BufferBar.jsx) both come from that idea:
+  a calm "you have time" teal against an "act now" warm red, split like
+  the two segments of the bar itself.
+*/
+@theme {
+  --color-paper: #f6f6f3;
+  --color-paper-dim: #eceae4;
+  --color-ink: #16192b;
+  --color-ink-soft: #2b2f45;
+  --color-graphite: #5b6072;
+  --color-graphite-soft: #9297a8;
+
+  --color-buffer: #0e8f82;
+  --color-buffer-soft: #daf0ec;
+  --color-deadline: #e1512c;
+  --color-deadline-soft: #fbe3da;
+  --color-highlight: #eab13a;
+  --color-highlight-soft: #fbeecd;
+
+  --font-display: "Space Grotesk", "Arial Black", sans-serif;
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+}
+
+/* Visible keyboard focus everywhere -- quality floor, not decoration */
+:focus-visible {
+  outline: 2px solid var(--color-buffer);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   KEYFRAME ANIMATIONS
+   ============================================================ */
+
+/* Page / section fade-up — used for page entry animations */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Subtle fade-in only (no translate) — used for overlays, backgrounds */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Staggered card pop — used for list items */
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Toast notification slide-up */
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Modal pop */
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Logo mark spin-in on landing */
+@keyframes logo-pop {
+  0%   { opacity: 0; transform: scale(0.7) rotate(-8deg); }
+  70%  { transform: scale(1.08) rotate(2deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+/* Pulse ring — draws attention to the "suggested" badge */
+@keyframes ping-slow {
+  0%   { transform: scale(1); opacity: 0.6; }
+  70%  { transform: scale(1.6); opacity: 0; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+/* Progress bar grow from left */
+@keyframes bar-grow {
+  from { width: 0%; }
+}
+
+/* Badge pop-in animation */
+@keyframes badge-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.6) translateY(4px);
+  }
+  70% {
+    transform: scale(1.1) translateY(-1px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-badge-pop {
+  animation: badge-pop 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Carousel smooth glide track */
+.carousel-track {
+  display: flex;
+  width: 100%;
+  transition: transform 750ms cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform;
+}
+
+/* ============================================================
+   UTILITY CLASSES
+   ============================================================ */
+
+.animate-fade-up {
+  animation: fade-up 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease both;
+}
+
+.animate-card-in {
+  animation: card-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-logo-pop {
+  animation: logo-pop 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-bar-grow {
+  animation: bar-grow 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Delay helpers for staggering list items */
+.delay-0   { animation-delay: 0ms; }
+.delay-50  { animation-delay: 50ms; }
+.delay-100 { animation-delay: 100ms; }
+.delay-150 { animation-delay: 150ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-250 { animation-delay: 250ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-350 { animation-delay: 350ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+.delay-600 { animation-delay: 600ms; }
+.delay-700 { animation-delay: 700ms; }
+
+/* Shimmer skeleton */
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--color-paper-dim) 25%,
+    #e8e6df 50%,
+    var(--color-paper-dim) 75%
+  );
+  background-size: 400px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
