@@ -206,6 +206,20 @@ body {
   animation: shimmer 1.4s ease-in-out infinite;
 }
 
+/* Hide scrollbars for clean horizontal tab rows on mobile */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Touch manipulation prevents double-tap zoom delay on mobile buttons */
+button, a, input, select, textarea {
+  touch-action: manipulation;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -214,3 +228,4 @@ body {
     transition-duration: 0.001ms !important;
   }
 }
+

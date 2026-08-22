@@ -188,20 +188,20 @@ export default function Landing() {
     <div className="min-h-screen bg-paper text-ink overflow-x-hidden">
       {/* ── Decorative background blobs ── */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden="true">
-        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-buffer/8 rounded-full blur-3xl animate-fade-in delay-300" />
-        <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-highlight/8 rounded-full blur-3xl animate-fade-in delay-500" />
+        <div className="absolute -top-40 -right-40 w-[300px] sm:w-[500px] lg:w-[600px] h-[300px] sm:h-[500px] lg:h-[600px] bg-buffer/8 rounded-full blur-3xl animate-fade-in delay-300" />
+        <div className="absolute -bottom-40 -left-40 w-[260px] sm:w-[450px] lg:w-[500px] h-[260px] sm:h-[450px] lg:h-[500px] bg-highlight/8 rounded-full blur-3xl animate-fade-in delay-500" />
       </div>
 
       {/* ── Header ── */}
-      <header className="max-w-5xl mx-auto px-4 sm:px-6 py-6 flex items-center justify-between animate-fade-in">
+      <header className="max-w-5xl mx-auto px-4 sm:px-6 py-5 sm:py-6 flex items-center justify-between animate-fade-in">
         <div className="animate-logo-pop">
           <Logo />
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           {user ? (
             <Link
               to="/dashboard"
-              className="bg-ink text-paper text-xs sm:text-sm font-semibold rounded-xl px-4 py-2 hover:bg-ink-soft active:scale-95 transition-all shadow-sm flex items-center gap-1.5"
+              className="bg-ink text-paper text-xs sm:text-sm font-semibold rounded-xl px-3.5 sm:px-4 py-2 hover:bg-ink-soft active:scale-95 transition-all shadow-sm flex items-center gap-1.5"
             >
               <span>Dashboard</span>
               <span>→</span>
@@ -210,13 +210,13 @@ export default function Landing() {
             <>
               <Link
                 to="/login"
-                className="text-sm font-medium text-ink hover:text-buffer transition-colors px-3 py-1.5"
+                className="text-xs sm:text-sm font-medium text-ink hover:text-buffer transition-colors px-2.5 sm:px-3 py-1.5"
               >
                 Sign in
               </Link>
               <Link
                 to="/signup"
-                className="bg-ink text-paper text-xs sm:text-sm font-medium rounded-lg px-4 py-2 hover:bg-ink-soft active:scale-95 transition-all shadow-sm"
+                className="bg-ink text-paper text-xs sm:text-sm font-medium rounded-lg px-3.5 sm:px-4 py-2 hover:bg-ink-soft active:scale-95 transition-all shadow-sm"
               >
                 Sign up
               </Link>
@@ -226,19 +226,19 @@ export default function Landing() {
       </header>
 
       {/* ── Hero Section with Animated Letters ── */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 pt-10 pb-20">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 pt-6 sm:pt-10 pb-14 sm:pb-20">
+        <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
           <div>
             {/* Pill Tag */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono font-medium bg-buffer/10 text-buffer border border-buffer/20 mb-5 animate-fade-up delay-100">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] sm:text-xs font-mono font-medium bg-buffer/10 text-buffer border border-buffer/20 mb-4 sm:mb-5 animate-fade-up delay-100">
               <span className="w-2 h-2 rounded-full bg-buffer animate-pulse" />
               <span>For students who cut it close</span>
             </div>
 
             {/* Main Headline with Animated Typewriter Letters */}
-            <h1 className="font-display text-4xl sm:text-5xl lg:text-[54px] font-bold leading-[1.08] tracking-tight text-ink animate-fade-up delay-150">
+            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-bold leading-[1.12] tracking-tight text-ink animate-fade-up delay-150">
               Know exactly when to start{' '}
-              <span className="text-buffer block border-b-2 border-buffer/30 pb-0.5 min-h-[1.15em] min-w-[14ch] sm:min-w-[17ch] whitespace-nowrap">
+              <span className="text-buffer inline-block border-b-2 border-buffer/30 pb-0.5 min-h-[1.15em] max-w-full break-words">
                 {typedWord}
                 <span className="animate-pulse text-ink font-light ml-0.5">|</span>
               </span>
@@ -383,7 +383,7 @@ export default function Landing() {
           className="bg-white rounded-3xl border border-ink/10 shadow-xl overflow-hidden relative transition-all duration-300"
         >
           {/* Top Carousel Navigation Tabs with Active Fill Indicator */}
-          <div className="flex items-center justify-center border-b border-ink/10 bg-paper/50 px-4 sm:px-6 py-3 overflow-x-auto gap-2">
+          <div className="flex items-center border-b border-ink/10 bg-paper/50 px-3 sm:px-6 py-2.5 sm:py-3 overflow-x-auto no-scrollbar gap-2">
             <div className="flex items-center gap-1 sm:gap-2 mx-auto">
               {CAROUSEL_SLIDES.map((slide, idx) => (
                 <button
@@ -393,7 +393,7 @@ export default function Landing() {
                     setActiveSlide(idx)
                     handleInteractiveAction()
                   }}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all duration-300 flex items-center gap-1.5 shrink-0 ${
+                  className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-medium transition-all duration-300 flex items-center gap-1.5 shrink-0 ${
                     activeSlide === idx
                       ? 'bg-ink text-paper shadow-md font-semibold scale-[1.03]'
                       : 'text-graphite hover:text-ink hover:bg-white'
@@ -403,7 +403,6 @@ export default function Landing() {
                 </button>
               ))}
             </div>
-
           </div>
 
           {/* Sliding Track with enhanced 750ms smooth physics glide */}
@@ -419,11 +418,11 @@ export default function Landing() {
             {/* SLIDE 1: Group Workload Balancing (Interactive & Auto-Cycling) */}
             {/* ============================================================ */}
             <div
-              className={`w-full shrink-0 p-6 sm:p-10 flex flex-col justify-between transition-all duration-700 ${
+              className={`w-full shrink-0 p-4 sm:p-6 md:p-10 flex flex-col justify-between transition-all duration-700 ${
                 activeSlide === 0 ? 'opacity-100 scale-100' : 'opacity-40 scale-[0.98]'
               }`}
             >
-              <div className="mb-5">
+              <div className="mb-4 sm:mb-5">
                 <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
                   <span className="text-xs font-mono font-medium text-highlight bg-highlight-soft px-3 py-1 rounded-full">
                     {CAROUSEL_SLIDES[0].badge}
@@ -432,10 +431,10 @@ export default function Landing() {
                     {currentGroupScenario.note}
                   </span>
                 </div>
-                <h3 className="font-display text-2xl sm:text-3xl font-bold text-ink">
+                <h3 className="font-display text-xl sm:text-2xl md:text-3xl font-bold text-ink">
                   {CAROUSEL_SLIDES[0].title}
                 </h3>
-                <p className="text-sm text-graphite mt-1 max-w-xl">
+                <p className="text-xs sm:text-sm text-graphite mt-1 max-w-xl">
                   {CAROUSEL_SLIDES[0].description}
                 </p>
               </div>

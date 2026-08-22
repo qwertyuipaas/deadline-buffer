@@ -245,7 +245,7 @@ export default function SignUp() {
       {/* ============================================================ */}
       {/* RIGHT PANEL: Modern Sign Up Form                             */}
       {/* ============================================================ */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-center px-6 sm:px-12 md:px-16 py-12 relative overflow-y-auto">
+      <div className="w-full lg:w-1/2 flex flex-col justify-center px-4 sm:px-12 md:px-16 py-8 sm:py-12 relative overflow-y-auto">
         <div className="max-w-md w-full mx-auto space-y-6 animate-fade-up">
           {/* Mobile Header Logo */}
           <div className="lg:hidden flex items-center justify-between mb-2">

@@ -336,33 +336,37 @@ export default function ProjectView() {
                 {members.map((m) => {
                   const stats = getMemberStats(m, tasks)
                   return (
-                    <li key={m.id} className={`flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg px-3 py-2.5 ${stats.overloaded ? 'bg-deadline-soft' : 'bg-paper'}`}>
-                      <span className={`text-sm font-medium min-w-[100px] ${stats.overloaded ? 'text-deadline' : 'text-ink'}`}>{m.display_name}</span>
-                      <div className="flex-1 min-w-[140px]"><MemberWorkloadBar activeHours={stats.activeHours} capacity={stats.capacity} size="sm" /></div>
-                      <span className="text-xs text-graphite shrink-0">{stats.done}/{stats.assigned} tasks done</span>
-                      <button onClick={() => requestRemoveMember(m)} title="Remove member" aria-label={`Remove ${m.display_name}`} className="text-graphite/40 hover:text-deadline text-xs transition shrink-0 px-1.5 py-0.5 rounded hover:bg-white/60">
-                        Remove
-                      </button>
+                    <li key={m.id} className={`flex flex-wrap items-center justify-between gap-x-3 gap-y-2 rounded-lg px-3 py-2.5 ${stats.overloaded ? 'bg-deadline-soft' : 'bg-paper'}`}>
+                      <span className={`text-sm font-medium min-w-[80px] sm:min-w-[100px] ${stats.overloaded ? 'text-deadline' : 'text-ink'}`}>{m.display_name}</span>
+                      <div className="flex-1 min-w-[120px] max-w-xs"><MemberWorkloadBar activeHours={stats.activeHours} capacity={stats.capacity} size="sm" /></div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="text-xs text-graphite">{stats.done}/{stats.assigned} done</span>
+                        <button onClick={() => requestRemoveMember(m)} title="Remove member" aria-label={`Remove ${m.display_name}`} className="text-graphite/40 hover:text-deadline text-xs transition px-1.5 py-0.5 rounded hover:bg-white/60">
+                          Remove
+                        </button>
+                      </div>
                     </li>
                   )
                 })}
               </ul>
             )}
-            <form onSubmit={memberForm.handleAddMember} className="flex flex-wrap gap-2 items-end">
-              <div>
+            <form onSubmit={memberForm.handleAddMember} className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-end">
+              <div className="sm:col-span-6">
                 <label className="block text-xs text-graphite mb-1">Teammate Name</label>
-                <input required value={memberForm.memberName} onChange={(e) => memberForm.setMemberName(e.target.value)} className="rounded-lg border border-ink/15 px-2 py-1.5 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-buffer/50 focus:border-buffer" placeholder="e.g. Jamie" />
+                <input required value={memberForm.memberName} onChange={(e) => memberForm.setMemberName(e.target.value)} className="w-full rounded-lg border border-ink/15 px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-buffer/50 focus:border-buffer" placeholder="e.g. Jamie" />
               </div>
-              <div>
+              <div className="sm:col-span-3">
                 <label className="block text-xs text-graphite mb-1">Weekly Capacity</label>
                 <div className="relative">
-                  <input type="number" min="1" max="80" required value={memberForm.memberHours} onChange={(e) => memberForm.setMemberHours(e.target.value)} className="rounded-lg border border-ink/15 pl-2.5 pr-12 py-1.5 text-sm w-28 focus:outline-none focus:ring-2 focus:ring-buffer/50 focus:border-buffer" />
+                  <input type="number" min="1" max="80" required value={memberForm.memberHours} onChange={(e) => memberForm.setMemberHours(e.target.value)} className="w-full rounded-lg border border-ink/15 pl-2.5 pr-12 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-buffer/50 focus:border-buffer" />
                   <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-graphite pointer-events-none font-medium">hrs/wk</span>
                 </div>
               </div>
-              <button type="submit" disabled={memberForm.memberSubmitting} className="bg-ink text-paper rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-ink-soft disabled:opacity-50 transition">
-                {memberForm.memberSubmitting ? 'Adding…' : '+ Add member'}
-              </button>
+              <div className="sm:col-span-3">
+                <button type="submit" disabled={memberForm.memberSubmitting} className="w-full bg-ink text-paper rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-ink-soft disabled:opacity-50 transition">
+                  {memberForm.memberSubmitting ? 'Adding…' : '+ Add member'}
+                </button>
+              </div>
             </form>
             {memberForm.memberError && <p className="text-xs text-deadline bg-deadline-soft border border-deadline/20 rounded-lg px-3 py-2 mt-2">{memberForm.memberError}</p>}
           </section>
@@ -375,32 +379,32 @@ export default function ProjectView() {
               <h2 className="text-sm font-semibold text-ink">Tasks</h2>
               <p className="text-[11px] text-graphite mt-0.5 max-w-md leading-relaxed">Each task gets a color-coded <strong>Start-By date</strong> — the latest day you can begin and still finish comfortably.</p>
             </div>
-            <div id="tour-project-task-controls" className="flex flex-wrap gap-2 items-center">
+            <div id="tour-project-task-controls" className="flex flex-wrap gap-2 items-center w-full sm:w-auto">
               {tasks.length > 0 && (
                 <>
-                  <div className="relative min-w-[140px] flex-1 sm:flex-initial">
+                  <div className="relative w-full sm:w-auto sm:min-w-[140px] flex-1">
                     <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search tasks..." className="w-full text-xs rounded-lg border border-ink/15 pl-7 pr-2.5 py-1.5 bg-white text-ink placeholder:text-graphite/60 focus:outline-none focus:ring-2 focus:ring-buffer/50 focus:border-buffer transition" />
                     <svg className="w-3.5 h-3.5 text-graphite absolute left-2 top-1/2 -translate-y-1/2" viewBox="0 0 16 16" fill="none">
                       <circle cx="7" cy="7" r="5" stroke="currentColor" strokeWidth="1.3"/>
                       <path d="M11 11L14.5 14.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
                     </svg>
                   </div>
-                  <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="text-xs rounded-lg border border-ink/15 px-2 py-1.5 bg-white text-graphite">
+                  <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="text-xs rounded-lg border border-ink/15 px-2 py-1.5 bg-white text-graphite flex-1 sm:flex-initial">
                     <option value="all">All statuses</option><option value="not_started">Not started</option><option value="in_progress">In progress</option><option value="done">Done</option>
                   </select>
                   {isGroup && (
-                    <select value={memberFilter} onChange={(e) => setMemberFilter(e.target.value)} className="text-xs rounded-lg border border-ink/15 px-2 py-1.5 bg-white text-graphite">
+                    <select value={memberFilter} onChange={(e) => setMemberFilter(e.target.value)} className="text-xs rounded-lg border border-ink/15 px-2 py-1.5 bg-white text-graphite flex-1 sm:flex-initial">
                       <option value="all">Everyone</option><option value="unassigned">Unassigned</option>
                       {members.map((m) => <option key={m.id} value={m.id}>{m.display_name}</option>)}
                     </select>
                   )}
-                  <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="text-xs rounded-lg border border-ink/15 px-2 py-1.5 bg-white text-graphite">
-                    <option value="start_by">Sort: start-by date</option><option value="deadline">Sort: deadline</option><option value="priority">Sort: priority</option><option value="name">Sort: name</option>
+                  <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="text-xs rounded-lg border border-ink/15 px-2 py-1.5 bg-white text-graphite flex-1 sm:flex-initial">
+                    <option value="start_by">Sort: start-by</option><option value="deadline">Sort: deadline</option><option value="priority">Sort: priority</option><option value="name">Sort: name</option>
                   </select>
                 </>
               )}
-              <button id="tour-project-add-task-btn" onClick={() => setDrawerMode('add')} className="bg-ink text-paper text-xs font-medium rounded-lg px-3 py-1.5 hover:bg-ink-soft transition">
-                + Add task <span className="ml-1.5 opacity-50 font-mono hidden sm:inline">N</span>
+              <button id="tour-project-add-task-btn" onClick={() => setDrawerMode('add')} className="w-full sm:w-auto justify-center bg-ink text-paper text-xs font-medium rounded-lg px-3.5 py-1.5 hover:bg-ink-soft transition flex items-center gap-1">
+                + Add task <span className="ml-1 opacity-50 font-mono hidden sm:inline">N</span>
               </button>
             </div>
           </div>
