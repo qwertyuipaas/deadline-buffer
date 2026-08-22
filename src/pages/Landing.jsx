@@ -236,10 +236,10 @@ export default function Landing() {
             </div>
 
             {/* Main Headline with Zero-Layout-Shift Animated Typewriter */}
-            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-bold leading-[1.15] tracking-tight text-ink animate-fade-up delay-150">
+            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-bold leading-[1.15] tracking-tight text-ink animate-fade-up delay-150 min-h-[110px] sm:min-h-[125px] md:min-h-[140px]">
               <span className="block">Know exactly when to start</span>
-              <span className="block text-buffer h-[1.25em] min-w-0 max-w-full overflow-hidden whitespace-nowrap border-b-2 border-buffer/30 pb-0.5 mt-0.5">
-                {typedWord}
+              <span className="inline-flex items-center text-buffer border-b-2 border-buffer/30 pb-0.5 mt-1 min-h-[1.2em]">
+                <span>{typedWord}</span>
                 <span className="animate-pulse text-ink font-light ml-0.5">|</span>
               </span>
             </h1>
