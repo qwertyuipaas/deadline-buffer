@@ -8,17 +8,3 @@ createRoot(document.getElementById('root')).render(
     <App />
   </StrictMode>,
 )
-
-// Register PWA service worker safely
-if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker
-      .register('/sw.js')
-      .then((reg) => {
-        // Successfully registered SW
-      })
-      .catch((err) => {
-        console.debug('Service Worker registration skipped/failed:', err)
-      })
-  })
-}

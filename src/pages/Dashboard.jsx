@@ -9,10 +9,7 @@ import ConfirmDialog from '../components/ConfirmDialog'
 import HowItWorksModal from '../components/HowItWorksModal'
 import OnboardingChecklist from '../components/OnboardingChecklist'
 import ProductTour from '../components/ProductTour'
-import NotificationBell from '../components/NotificationBell'
-import InstallAppButton from '../components/InstallAppButton'
 import Logo from '../components/Logo'
-import { checkAndNotifyStartByTasks } from '../lib/notificationService'
 
 const URGENCY_STYLES = {
   overdue: 'bg-deadline text-white font-bold',
@@ -173,9 +170,6 @@ export default function Dashboard() {
         setUrgentTasks(activeTaskList.slice(0, 4)); setUpcomingTimeline(allUpcoming.slice(0, 5))
         setTotalActive(activeCount); setTotalCompleted(completedCount)
         setTotalHoursNeeded(hoursNeeded); setBufferHealth(getBufferHealth(taskRows))
-
-        // Check and deliver calm start-by browser notifications (debounced per day)
-        checkAndNotifyStartByTasks(activeTaskList)
       }
     }
     setLoading(false)
@@ -202,13 +196,7 @@ export default function Dashboard() {
       <header className="bg-white border-b border-ink/10 sticky top-0 z-20 shadow-2xs animate-fade-in">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
           <Logo />
-          <div className="flex items-center gap-2 sm:gap-3">
-            {/* Install PWA Button */}
-            <InstallAppButton />
-
-            {/* Start-By Notification Bell */}
-            <NotificationBell urgentTasks={urgentTasks} />
-
+          <div className="flex items-center gap-3 sm:gap-4">
             <button
               id="tour-guide-btn"
               type="button"
