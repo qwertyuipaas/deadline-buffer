@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import Logo from '../components/Logo'
@@ -8,8 +8,10 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
   const { user, signIn } = useAuth()
   const navigate = useNavigate()
+
 
   useEffect(() => {
     if (user) {
