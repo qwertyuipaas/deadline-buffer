@@ -75,7 +75,18 @@ export default function SignUp() {
     setLoading(false)
 
     if (error) {
-      setError(error.message)
+      if (error.message?.toLowerCase().includes('already registered') || error.message?.toLowerCase().includes('already exists')) {
+        setError('An account with this email address already exists. Please sign in instead.')
+      } else {
+        setError(error.message)
+      }
+      return
+    }
+
+    // In Supabase, if email already exists and email confirmations are on,
+    // it returns an empty identities array instead of an explicit error.
+    if (data?.user && (!data.user.identities || data.user.identities.length === 0)) {
+      setError('An account with this email address already exists. Please sign in instead.')
       return
     }
 
@@ -207,7 +218,17 @@ export default function SignUp() {
           {error && (
             <div className="p-3.5 rounded-xl text-sm bg-deadline-soft border border-deadline/30 text-deadline animate-fade-up flex items-start gap-2">
               <span className="font-bold shrink-0">⚠️</span>
-              <span>{error}</span>
+              <div className="flex-1">
+                <span>{error}</span>
+                {error.includes('already exists') && (
+                  <Link
+                    to="/login"
+                    className="block mt-1.5 font-semibold text-xs text-buffer hover:underline"
+                  >
+                    Sign in to your account here →
+                  </Link>
+                )}
+              </div>
             </div>
           )}
           {notice && (
