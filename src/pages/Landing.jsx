@@ -235,12 +235,12 @@ export default function Landing() {
               <span>For students who cut it close</span>
             </div>
 
-            {/* Main Headline with Zero-Layout-Shift Animated Typewriter */}
-            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-bold leading-[1.15] tracking-tight text-ink animate-fade-up delay-150 min-h-[110px] sm:min-h-[125px] md:min-h-[140px]">
+            {/* Main Headline with 100% Rock-Solid Zero-Jitter Typewriter */}
+            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-bold leading-[1.12] tracking-tight text-ink animate-fade-up delay-150">
               <span className="block">Know exactly when to start</span>
-              <span className="inline-flex items-center text-buffer border-b-2 border-buffer/30 pb-0.5 mt-1 min-h-[1.2em]">
-                <span>{typedWord}</span>
-                <span className="animate-pulse text-ink font-light ml-0.5">|</span>
+              <span className="block text-buffer h-[1.3em] overflow-hidden whitespace-nowrap mt-0.5">
+                <span>{typedWord || '\u200B'}</span>
+                <span className="inline-block w-[3px] h-[0.8em] bg-buffer ml-1 align-baseline animate-pulse rounded-full" />
               </span>
             </h1>
 
