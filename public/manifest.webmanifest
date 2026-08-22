@@ -1,0 +1,32 @@
+{
+  "name": "Deadline Buffer — Calm Task Planning",
+  "short_name": "DeadlineBuffer",
+  "description": "Turn stressful deadlines into calm, achievable start-by dates with intelligent buffer calculation.",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#F8FAFC",
+  "theme_color": "#14B8A6",
+  "orientation": "portrait-primary",
+  "categories": ["productivity", "education"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "url": "/dashboard",
+      "description": "View active assignments and buffer health"
+    },
+    {
+      "name": "New Project",
+      "url": "/projects/new",
+      "description": "Create a new solo or group project"
+    }
+  ]
+}

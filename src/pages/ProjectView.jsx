@@ -16,6 +16,8 @@ import TaskDrawer from '../components/TaskDrawer'
 import DatePicker from '../components/DatePicker'
 import HowItWorksModal from '../components/HowItWorksModal'
 import ProductTour from '../components/ProductTour'
+import NotificationBell from '../components/NotificationBell'
+import InstallAppButton from '../components/InstallAppButton'
 import Logo from '../components/Logo'
 import { exportProjectToIcs, formatProjectSummary } from '../lib/exportUtils'
 
@@ -294,6 +296,8 @@ export default function ProjectView() {
             </div>
 
             <div id="tour-project-export-actions" className="flex items-center gap-2 flex-wrap">
+              <InstallAppButton />
+              <NotificationBell urgentTasks={tasks.filter((t) => t.start_by_date && t.start_by_date <= todayIso && t.status !== 'done')} />
               <button type="button" onClick={() => setGuideOpen(true)} className="text-xs text-buffer hover:text-buffer/80 bg-buffer-soft px-2.5 py-1 rounded-lg transition active:scale-95 flex items-center gap-1 font-medium shadow-xs" title="How Deadline Buffer works">
                 Guide
               </button>
