@@ -49,8 +49,8 @@ export default function Login() {
       </Link>
 
       {/* Sign In Card */}
-      <div className="w-full max-w-sm bg-white rounded-2xl shadow-sm border border-ink/10 p-8 animate-fade-up delay-100">
-        <h1 className="font-display text-2xl font-bold text-ink mb-1">
+      <div className="w-full max-w-sm bg-white rounded-2xl shadow-sm border border-ink/10 p-5 sm:p-8 animate-fade-up delay-100">
+        <h1 className="font-display text-xl sm:text-2xl font-bold text-ink mb-1">
           Welcome back
         </h1>
         <p className="text-sm text-graphite mb-6">

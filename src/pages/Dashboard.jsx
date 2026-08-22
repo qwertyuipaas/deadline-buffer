@@ -42,10 +42,10 @@ const PROJECT_TEMPLATES = [
 // Reusable metric card
 function StatCard({ label, value, valueClass = 'text-ink', sub, subClass = 'text-graphite' }) {
   return (
-    <div className="bg-paper/70 rounded-2xl p-4 border border-ink/5">
-      <span className="text-xs font-medium text-graphite block">{label}</span>
-      <span className={`font-display text-2xl font-bold mt-1 block ${valueClass}`}>{value}</span>
-      <span className={`text-[11px] mt-0.5 block ${subClass}`}>{sub}</span>
+    <div className="bg-paper/70 rounded-2xl p-3 sm:p-4 border border-ink/5 flex flex-col justify-between">
+      <span className="text-[11px] sm:text-xs font-medium text-graphite block truncate">{label}</span>
+      <span className={`font-display text-xl sm:text-2xl font-bold mt-1 block truncate ${valueClass}`}>{value}</span>
+      <span className={`text-[10px] sm:text-[11px] mt-0.5 block truncate ${subClass}`}>{sub}</span>
     </div>
   )
 }
@@ -218,18 +218,18 @@ export default function Dashboard() {
     <div className="min-h-screen bg-paper text-ink pb-16">
       {/* Top Navigation Bar */}
       <header className="bg-white border-b border-ink/10 sticky top-0 z-20 shadow-2xs animate-fade-in">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-3.5 flex items-center justify-between">
           <Logo />
-          <div className="flex items-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <button
               id="tour-guide-btn"
               type="button"
               onClick={() => setGuideOpen(true)}
-              className="text-xs font-medium text-buffer hover:text-buffer/80 bg-buffer-soft px-3 py-1.5 rounded-lg transition active:scale-95 flex items-center gap-1.5 shadow-2xs"
+              className="text-xs font-medium text-buffer hover:text-buffer/80 bg-buffer-soft px-2.5 sm:px-3 py-1.5 rounded-lg transition active:scale-95 flex items-center gap-1.5 shadow-2xs"
             >
               <span className="hidden sm:inline">How it works</span><span className="sm:hidden">Guide</span>
             </button>
-            <div className="text-right hidden sm:block">
+            <div className="text-right hidden md:block">
               {editingName ? (
                 <form onSubmit={handleSaveName} className="flex items-center gap-1.5">
                   <input
@@ -242,36 +242,36 @@ export default function Dashboard() {
                 </form>
               ) : (
                 <button onClick={() => { setNameDraft(displayName || ''); setEditingName(true) }} className="text-right group" title="Edit username">
-                  <span className="text-xs font-semibold text-ink block group-hover:text-buffer transition">{displayName || 'Set a username'}</span>
-                  <span className="text-[11px] text-graphite block">{user?.email}</span>
+                  <span className="text-xs font-semibold text-ink block group-hover:text-buffer transition truncate max-w-[140px]">{displayName || 'Set a username'}</span>
+                  <span className="text-[11px] text-graphite block truncate max-w-[140px]">{user?.email}</span>
                 </button>
               )}
             </div>
-            <button onClick={signOut} className="text-xs font-medium text-graphite hover:text-ink border border-ink/15 hover:border-ink/30 px-3 py-1.5 rounded-lg transition active:scale-95 bg-white">
+            <button onClick={signOut} className="text-xs font-medium text-graphite hover:text-ink border border-ink/15 hover:border-ink/30 px-2.5 sm:px-3 py-1.5 rounded-lg transition active:scale-95 bg-white">
               Sign out
             </button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-8 space-y-6 sm:space-y-8">
         {/* Greeting & Motivation Banner */}
-        <section className="bg-white rounded-3xl border border-ink/10 p-6 sm:p-8 shadow-xs relative overflow-hidden animate-fade-up">
+        <section className="bg-white rounded-3xl border border-ink/10 p-5 sm:p-8 shadow-xs relative overflow-hidden animate-fade-up">
           <div className="absolute top-0 right-0 w-80 h-80 bg-buffer/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none z-0" />
           <div className="absolute bottom-0 right-1/4 w-60 h-60 bg-highlight/10 rounded-full blur-2xl -mb-20 pointer-events-none z-0" />
 
           <div className="relative z-10 flex flex-col lg:flex-row lg:items-start justify-between gap-5">
             <div className="min-w-0">
               <div className="flex items-center gap-2 mb-2 flex-wrap">
-                <span className="text-xs font-mono font-medium text-buffer bg-buffer-soft px-2.5 py-0.5 rounded-full whitespace-nowrap">{todayFormatted}</span>
+                <span className="text-[11px] sm:text-xs font-mono font-medium text-buffer bg-buffer-soft px-2.5 py-0.5 rounded-full whitespace-nowrap">{todayFormatted}</span>
                 {totalActive === 0 && totalCompleted > 0 && (
-                  <span className="text-xs font-mono font-medium text-highlight bg-highlight-soft px-2.5 py-0.5 rounded-full whitespace-nowrap">Ahead of schedule</span>
+                  <span className="text-[11px] sm:text-xs font-mono font-medium text-highlight bg-highlight-soft px-2.5 py-0.5 rounded-full whitespace-nowrap">Ahead of schedule</span>
                 )}
               </div>
-              <h1 className="font-display text-2xl sm:text-3xl font-bold text-ink leading-snug">
+              <h1 className="font-display text-xl sm:text-2xl lg:text-3xl font-bold text-ink leading-snug break-words">
                 {timeGreeting}{displayName ? `, ${displayName}` : ''}
               </h1>
-              <p className="text-sm text-graphite mt-1.5 max-w-xl leading-relaxed">
+              <p className="text-xs sm:text-sm text-graphite mt-1.5 max-w-xl leading-relaxed">
                 {totalActive === 0 && totalCompleted > 0
                   ? 'All tasks are complete with safe buffers remaining. Enjoy your free time or start a new project.'
                   : totalActive > 0
@@ -280,7 +280,7 @@ export default function Dashboard() {
               </p>
             </div>
             <div className="flex items-center gap-3 shrink-0 lg:pt-1">
-              <Link id="tour-new-project-btn" to="/projects/new" className="bg-ink text-paper text-sm font-semibold rounded-xl px-5 py-3 hover:bg-ink-soft active:scale-95 transition-all shadow-sm flex items-center gap-2 whitespace-nowrap">
+              <Link id="tour-new-project-btn" to="/projects/new" className="w-full sm:w-auto justify-center bg-ink text-paper text-sm font-semibold rounded-xl px-5 py-2.5 sm:py-3 hover:bg-ink-soft active:scale-95 transition-all shadow-sm flex items-center gap-2 whitespace-nowrap">
                 <span>+</span> New Project
               </Link>
             </div>

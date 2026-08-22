@@ -195,29 +195,45 @@ export default function ProductTour({
   // Calculate Tooltip Position
   let tooltipStyle = {}
   if (rect) {
-    const tooltipWidth = 380
+    const isSmallScreen = window.innerWidth < 480
+    const tooltipWidth = Math.min(380, window.innerWidth - 32)
     const estimatedTooltipHeight = 260
     const margin = 14
 
-    if (placement === 'bottom') {
+    if (isSmallScreen) {
+      const topPos = placement === 'top'
+        ? Math.max(16, rect.top - margin - estimatedTooltipHeight)
+        : Math.min(window.innerHeight - estimatedTooltipHeight - 16, Math.max(16, rect.bottom + margin))
+      tooltipStyle = {
+        top: Math.max(16, Math.min(window.innerHeight - estimatedTooltipHeight - 16, topPos)),
+        left: 16,
+        right: 16,
+        width: 'calc(100vw - 32px)',
+        maxWidth: 380,
+      }
+    } else if (placement === 'bottom') {
       tooltipStyle = {
         top: Math.max(16, Math.min(window.innerHeight - estimatedTooltipHeight - 16, rect.bottom + margin)),
         left: Math.max(16, Math.min(window.innerWidth - tooltipWidth - 16, rect.left + rect.width / 2 - tooltipWidth / 2)),
+        width: tooltipWidth,
       }
     } else if (placement === 'top') {
       tooltipStyle = {
         top: Math.max(16, Math.min(window.innerHeight - estimatedTooltipHeight - 16, rect.top - margin - estimatedTooltipHeight)),
         left: Math.max(16, Math.min(window.innerWidth - tooltipWidth - 16, rect.left + rect.width / 2 - tooltipWidth / 2)),
+        width: tooltipWidth,
       }
     } else if (placement === 'left') {
       tooltipStyle = {
         top: Math.max(16, Math.min(window.innerHeight - estimatedTooltipHeight - 16, rect.top)),
         left: Math.max(16, rect.left - tooltipWidth - margin),
+        width: tooltipWidth,
       }
     } else if (placement === 'right') {
       tooltipStyle = {
         top: Math.max(16, Math.min(window.innerHeight - estimatedTooltipHeight - 16, rect.top)),
         left: Math.min(window.innerWidth - tooltipWidth - 16, rect.right + margin),
+        width: tooltipWidth,
       }
     }
   }
