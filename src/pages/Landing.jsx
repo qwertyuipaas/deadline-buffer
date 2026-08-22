@@ -198,18 +198,30 @@ export default function Landing() {
           <Logo />
         </div>
         <div className="flex items-center gap-3">
-          <Link
-            to="/login"
-            className="text-sm font-medium text-ink hover:text-buffer transition-colors px-3 py-1.5"
-          >
-            Sign in
-          </Link>
-          <Link
-            to="/signup"
-            className="bg-ink text-paper text-xs sm:text-sm font-medium rounded-lg px-4 py-2 hover:bg-ink-soft active:scale-95 transition-all shadow-sm"
-          >
-            Sign up
-          </Link>
+          {user ? (
+            <Link
+              to="/dashboard"
+              className="bg-ink text-paper text-xs sm:text-sm font-semibold rounded-xl px-4 py-2 hover:bg-ink-soft active:scale-95 transition-all shadow-sm flex items-center gap-1.5"
+            >
+              <span>Dashboard</span>
+              <span>→</span>
+            </Link>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="text-sm font-medium text-ink hover:text-buffer transition-colors px-3 py-1.5"
+              >
+                Sign in
+              </Link>
+              <Link
+                to="/signup"
+                className="bg-ink text-paper text-xs sm:text-sm font-medium rounded-lg px-4 py-2 hover:bg-ink-soft active:scale-95 transition-all shadow-sm"
+              >
+                Sign up
+              </Link>
+            </>
+          )}
         </div>
       </header>
 
@@ -238,26 +250,41 @@ export default function Landing() {
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-3 animate-fade-up delay-250">
-              <Link
-                to="/signup"
-                className="bg-ink text-paper text-sm font-semibold rounded-xl px-6 py-3.5
-                  hover:bg-ink-soft active:scale-95 transition-all duration-150 shadow-md
-                  relative overflow-hidden group"
-              >
-                <span
-                  className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-700"
-                  aria-hidden="true"
-                />
-                <span className="relative flex items-center gap-2">
-                  Get started free <span>→</span>
-                </span>
-              </Link>
-              <Link
-                to="/login"
-                className="text-sm font-medium text-graphite hover:text-ink transition-colors px-3 py-2"
-              >
-                I have an account
-              </Link>
+              {user ? (
+                <Link
+                  to="/dashboard"
+                  className="bg-ink text-paper text-sm font-semibold rounded-xl px-6 py-3.5
+                    hover:bg-ink-soft active:scale-95 transition-all duration-150 shadow-md
+                    relative overflow-hidden group"
+                >
+                  <span className="relative flex items-center gap-2">
+                    Go to your Dashboard <span>→</span>
+                  </span>
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    to="/signup"
+                    className="bg-ink text-paper text-sm font-semibold rounded-xl px-6 py-3.5
+                      hover:bg-ink-soft active:scale-95 transition-all duration-150 shadow-md
+                      relative overflow-hidden group"
+                  >
+                    <span
+                      className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-700"
+                      aria-hidden="true"
+                    />
+                    <span className="relative flex items-center gap-2">
+                      Get started free <span>→</span>
+                    </span>
+                  </Link>
+                  <Link
+                    to="/login"
+                    className="text-sm font-medium text-graphite hover:text-ink transition-colors px-3 py-2"
+                  >
+                    I have an account
+                  </Link>
+                </>
+              )}
             </div>
           </div>
 

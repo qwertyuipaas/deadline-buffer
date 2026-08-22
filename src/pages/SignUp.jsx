@@ -41,9 +41,15 @@ export default function SignUp() {
   const [loading, setLoading] = useState(false)
   const [usernameStatus, setUsernameStatus] = useState({ checking: false, available: null, message: '' })
 
-  const { signUp } = useAuth()
+  const { user, signUp } = useAuth()
   const navigate = useNavigate()
   const today = getTodayIso()
+
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard', { replace: true })
+    }
+  }, [user, navigate])
 
   const passwordStrength = evaluatePasswordStrength(password)
   const passwordsMatch = confirmPassword.length > 0 && password === confirmPassword
