@@ -10,6 +10,7 @@ import HowItWorksModal from '../components/HowItWorksModal'
 import OnboardingChecklist from '../components/OnboardingChecklist'
 import ProductTour from '../components/ProductTour'
 import Logo from '../components/Logo'
+import { checkUsernameAvailability, validateUsernameFormat, saveUserProfile } from '../lib/profileService'
 
 const URGENCY_STYLES = {
   overdue: 'bg-deadline text-white font-bold',
@@ -110,10 +111,33 @@ export default function Dashboard() {
     e.preventDefault()
     const trimmed = nameDraft.trim()
     if (!trimmed) return
+
+    const formatCheck = validateUsernameFormat(trimmed)
+    if (!formatCheck.valid) {
+      toast.error(formatCheck.message)
+      return
+    }
+
     setNameSubmitting(true)
+    const availCheck = await checkUsernameAvailability(trimmed, user?.id)
+    if (!availCheck.available) {
+      setNameSubmitting(false)
+      toast.error(availCheck.message || 'Username is already taken.')
+      return
+    }
+
     const { error } = await updateProfile(trimmed)
+    if (!error && user?.id) {
+      await saveUserProfile(user.id, trimmed)
+    }
     setNameSubmitting(false)
-    if (!error) { setEditingName(false); toast?.success?.('Username updated.') }
+
+    if (!error) {
+      setEditingName(false)
+      toast.success('Username updated.')
+    } else {
+      toast.error(error.message)
+    }
   }
 
   async function loadProjects() {
