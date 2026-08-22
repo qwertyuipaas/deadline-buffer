@@ -6,48 +6,6 @@ import BufferBar from '../components/BufferBar'
 import MemberWorkloadBar from '../components/MemberWorkloadBar'
 import Logo from '../components/Logo'
 
-// Words to cycle through in the animated typewriter header
-const ROTATING_WORDS = [
-  'your thesis.',
-  'group projects.',
-  'research papers.',
-  'problem sets.',
-  'capstone reports.',
-  'final presentations.',
-]
-
-function useTypewriter(words, typingSpeed = 90, deletingSpeed = 45, pauseTime = 1600) {
-  const [index, setIndex] = useState(0)
-  const [subIndex, setSubIndex] = useState(0)
-  const [isDeleting, setIsDeleting] = useState(false)
-
-  useEffect(() => {
-    const currentWord = words[index % words.length]
-
-    if (!isDeleting && subIndex === currentWord.length) {
-      const timeout = setTimeout(() => setIsDeleting(true), pauseTime)
-      return () => clearTimeout(timeout)
-    }
-
-    if (isDeleting && subIndex === 0) {
-      setIsDeleting(false)
-      setIndex((prev) => (prev + 1) % words.length)
-      return
-    }
-
-    const timeout = setTimeout(
-      () => {
-        setSubIndex((prev) => prev + (isDeleting ? -1 : 1))
-      },
-      isDeleting ? deletingSpeed : typingSpeed
-    )
-
-    return () => clearTimeout(timeout)
-  }, [subIndex, isDeleting, index, words, typingSpeed, deletingSpeed, pauseTime])
-
-  return words[index % words.length].substring(0, subIndex)
-}
-
 // Carousel Slide Definitions
 const CAROUSEL_SLIDES = [
   {
@@ -98,7 +56,6 @@ const SOLO_SCENARIOS = [
 
 export default function Landing() {
   const { user, loading } = useAuth()
-  const typedWord = useTypewriter(ROTATING_WORDS)
   const today = getTodayIso()
 
   // Interactive playground state on the solo hero card
@@ -235,13 +192,9 @@ export default function Landing() {
               <span>For students who cut it close</span>
             </div>
 
-            {/* Main Headline with Animated Typewriter Letters */}
+            {/* Main Headline */}
             <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-bold leading-[1.12] tracking-tight text-ink animate-fade-up delay-150">
-              Know exactly when to start{' '}
-              <span className="text-buffer inline-block border-b-2 border-buffer/30 pb-0.5 min-h-[1.15em] max-w-full break-words">
-                {typedWord}
-                <span className="animate-pulse text-ink font-light ml-0.5">|</span>
-              </span>
+              Know exactly when to start <span className="text-buffer">your assignments.</span>
             </h1>
 
             <p className="mt-5 text-graphite text-base leading-relaxed max-w-md animate-fade-up delay-200">
