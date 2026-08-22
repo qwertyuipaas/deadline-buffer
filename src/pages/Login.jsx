@@ -8,9 +8,14 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const { signIn } = useAuth()
+  const { user, signIn } = useAuth()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard', { replace: true })
+    }
+  }, [user, navigate])
 
   async function handleSubmit(e) {
     e.preventDefault()
