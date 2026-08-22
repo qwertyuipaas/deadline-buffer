@@ -339,11 +339,6 @@ export default function SignUp() {
                     {usernameStatus.message}
                   </p>
                 )}
-                {usernameStatus.available === null && !usernameStatus.checking && (
-                  <p className="text-[11px] text-graphite/60 mt-1">
-                    This is what we'll call you around the app — not your email.
-                  </p>
-                )}
               </div>
 
               {/* Email */}
