@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import Logo from '../components/Logo'
 import BufferBar from '../components/BufferBar'
 import { getTodayIso } from '../lib/dateCalc'
+import { checkUsernameAvailability, validateUsernameFormat, saveUserProfile } from '../lib/profileService'
 
 // Password strength calculation helper
 function evaluatePasswordStrength(password) {
@@ -38,6 +39,7 @@ export default function SignUp() {
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
   const [loading, setLoading] = useState(false)
+  const [usernameStatus, setUsernameStatus] = useState({ checking: false, available: null, message: '' })
 
   const { signUp } = useAuth()
   const navigate = useNavigate()
@@ -47,10 +49,47 @@ export default function SignUp() {
   const passwordsMatch = confirmPassword.length > 0 && password === confirmPassword
   const passwordsMismatch = confirmPassword.length > 0 && password !== confirmPassword
 
+  // Debounced live username availability check
+  useEffect(() => {
+    const trimmed = fullName.trim()
+    if (!trimmed) {
+      setUsernameStatus({ checking: false, available: null, message: '' })
+      return
+    }
+
+    const formatCheck = validateUsernameFormat(trimmed)
+    if (!formatCheck.valid) {
+      setUsernameStatus({ checking: false, available: false, message: formatCheck.message })
+      return
+    }
+
+    setUsernameStatus({ checking: true, available: null, message: '' })
+    const timer = setTimeout(async () => {
+      const res = await checkUsernameAvailability(trimmed)
+      setUsernameStatus({ checking: false, available: res.available, message: res.message })
+    }, 350)
+
+    return () => clearTimeout(timer)
+  }, [fullName])
+
   async function handleSubmit(e) {
     e.preventDefault()
     setError('')
     setNotice('')
+
+    const trimmedUsername = fullName.trim()
+    const usernameValidation = validateUsernameFormat(trimmedUsername)
+    if (!usernameValidation.valid) {
+      setError(usernameValidation.message)
+      return
+    }
+
+    // Final availability verification
+    const availCheck = await checkUsernameAvailability(trimmedUsername)
+    if (!availCheck.available) {
+      setError(availCheck.message || 'Username is already taken. Please choose another username.')
+      return
+    }
 
     if (password !== confirmPassword) {
       setError('Passwords do not match.')
@@ -66,8 +105,8 @@ export default function SignUp() {
 
     const { data, error } = await signUp(email, password, {
       data: {
-        full_name: fullName.trim() || undefined,
-        display_name: fullName.trim() || undefined,
+        full_name: trimmedUsername,
+        display_name: trimmedUsername,
         study_focus: studyFocus,
       },
     })
@@ -88,6 +127,11 @@ export default function SignUp() {
     if (data?.user && (!data.user.identities || data.user.identities.length === 0)) {
       setError('An account with this email address already exists. Please sign in instead.')
       return
+    }
+
+    // Save profile record
+    if (data?.user?.id) {
+      await saveUserProfile(data.user.id, trimmedUsername)
     }
 
     // If session exists immediately, user is logged in
@@ -247,23 +291,53 @@ export default function SignUp() {
           {/* Sign Up Form */}
           {!notice && (
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Full Name */}
+              {/* Username */}
               <div>
                 <label className="block text-xs font-semibold text-ink uppercase tracking-wider mb-1" htmlFor="fullName">
                   Username
                 </label>
-                <input
-                  id="fullName"
-                  type="text"
-                  required
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="e.g. glenp"
-                  className="w-full rounded-xl border border-ink/15 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-buffer/50 focus:border-buffer transition-all"
-                />
-                <p className="text-[11px] text-graphite/60 mt-1">
-                  This is what we'll call you around the app — not your email.
-                </p>
+                <div className="relative">
+                  <input
+                    id="fullName"
+                    type="text"
+                    required
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="e.g. glenp"
+                    className={`w-full rounded-xl border px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 transition-all ${
+                      usernameStatus.available === false
+                        ? 'border-deadline focus:ring-deadline/30'
+                        : usernameStatus.available === true
+                        ? 'border-buffer focus:ring-buffer/30'
+                        : 'border-ink/15 focus:ring-buffer/50 focus:border-buffer'
+                    }`}
+                  />
+                  {usernameStatus.checking && (
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-graphite flex items-center gap-1">
+                      <svg className="animate-spin w-3.5 h-3.5 text-buffer" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8h4z" />
+                      </svg>
+                    </span>
+                  )}
+                </div>
+
+                {/* Live Username Status Helper */}
+                {usernameStatus.available === true && (
+                  <p className="text-[11px] text-buffer font-medium mt-1">
+                    ✓ Username is available
+                  </p>
+                )}
+                {usernameStatus.available === false && (
+                  <p className="text-[11px] text-deadline font-medium mt-1">
+                    {usernameStatus.message}
+                  </p>
+                )}
+                {usernameStatus.available === null && !usernameStatus.checking && (
+                  <p className="text-[11px] text-graphite/60 mt-1">
+                    This is what we'll call you around the app — not your email.
+                  </p>
+                )}
               </div>
 
               {/* Email */}
