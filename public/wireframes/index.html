@@ -1,0 +1,315 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Deadline Buffer — Wireframes & Component Map</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Segoe UI", sans-serif; background: #f6f6f3; color: #16192b; padding: 2rem; }
+  h1 { font-size: 2rem; margin-bottom: 0.25rem; }
+  .subtitle { color: #666; margin-bottom: 2.5rem; font-size: 0.95rem; }
+  h2 { font-size: 1.3rem; margin: 2.5rem 0 1rem; border-bottom: 2px solid #0e8f82; padding-bottom: 0.4rem; color: #0e8f82; }
+  h3 { font-size: 1rem; margin: 1.2rem 0 0.5rem; color: #333; }
+
+  /* FLOW MAP */
+  .flow { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0 2rem; }
+  .flow-box { background: #fff; border: 2px solid #16192b; border-radius: 8px; padding: 0.5rem 1rem; font-size: 0.85rem; font-weight: 600; text-align: center; min-width: 110px; }
+  .flow-box.auth { border-color: #0e8f82; color: #0e8f82; }
+  .flow-box.main { border-color: #16192b; }
+  .flow-box.page { border-color: #e1512c; color: #e1512c; }
+  .arrow { font-size: 1.4rem; color: #999; }
+  .flow-branch { display: flex; flex-direction: column; gap: 0.4rem; align-items: center; }
+
+  /* WIREFRAME SCREENS */
+  .screens-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; }
+  .screen { background: #fff; border: 2px solid #ddd; border-radius: 12px; overflow: hidden; }
+  .screen-title { background: #16192b; color: #fff; padding: 0.6rem 1rem; font-size: 0.85rem; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+  .screen-title span { opacity: 0.6; font-weight: 400; font-size: 0.75rem; }
+  .screen-body { padding: 0.8rem; display: flex; flex-direction: column; gap: 0.5rem; }
+  .wire-block { border: 1.5px dashed #bbb; border-radius: 6px; padding: 0.5rem 0.7rem; font-size: 0.78rem; color: #555; background: #fafafa; }
+  .wire-block.nav { background: #16192b; color: #fff; border-color: #16192b; font-weight: 700; font-size: 0.8rem; }
+  .wire-block.hero { background: #edf7f6; border-color: #0e8f82; color: #0e8f82; font-weight: 600; }
+  .wire-block.card { background: #fff8f0; border-color: #e1512c; }
+  .wire-block.bar { background: linear-gradient(to right, #0e8f82 60%, #e1512c 60%); color: #fff; font-size: 0.7rem; font-weight: 700; padding: 0.3rem 0.7rem; border: none; }
+  .wire-block.cta { background: #16192b; color: #fff; text-align: center; font-weight: 700; border: none; border-radius: 6px; }
+  .wire-block.form { background: #f0f0f0; border-style: solid; }
+  .wire-block.stat-row { display: flex; gap: 0.4rem; }
+  .wire-stat { flex: 1; background: #f6f6f3; border: 1.5px dashed #bbb; border-radius: 6px; padding: 0.5rem 0.3rem; text-align: center; font-size: 0.7rem; }
+  .wire-row { display: flex; gap: 0.4rem; }
+  .wire-row .wire-block { flex: 1; }
+  .label { font-size: 0.65rem; color: #999; margin-top: 0.2rem; display: block; }
+
+  /* COMPONENTS TABLE */
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 1rem; }
+  th { background: #16192b; color: #fff; padding: 0.6rem 0.8rem; text-align: left; }
+  td { padding: 0.6rem 0.8rem; border-bottom: 1px solid #eee; vertical-align: top; }
+  tr:nth-child(even) td { background: #fafafa; }
+  code { background: #eee; padding: 0.1rem 0.3rem; border-radius: 4px; font-size: 0.8rem; font-family: monospace; }
+
+  .tag { display: inline-block; padding: 0.1rem 0.5rem; border-radius: 12px; font-size: 0.7rem; font-weight: 700; margin-left: 0.3rem; }
+  .tag.shared { background: #edf7f6; color: #0e8f82; }
+  .tag.page { background: #fff0ec; color: #e1512c; }
+</style>
+</head>
+<body>
+
+<h1>📋 Deadline Buffer — Wireframes</h1>
+<p class="subtitle">M6A2 · Final Project Wireframes · Glen P · Sep 2026</p>
+
+<!-- ===== SECTION 1: FLOW MAP ===== -->
+<h2>1. User Flow Map</h2>
+<p style="font-size:0.85rem;color:#666;margin-bottom:1rem;">How a user moves between every screen in the app.</p>
+
+<div class="flow">
+  <div class="flow-box auth">/ Landing</div>
+  <div class="arrow">→</div>
+  <div class="flow-branch">
+    <div class="flow-box auth">/signup</div>
+    <div class="flow-box auth">/login</div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="flow-box main">/dashboard</div>
+  <div class="arrow">→</div>
+  <div class="flow-branch">
+    <div class="flow-box page">/projects/new</div>
+    <div class="flow-box page">/projects/:id</div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="flow-box page">/projects/:id</div>
+</div>
+<ul style="font-size:0.82rem;color:#555;line-height:1.8;margin-left:1.2rem;">
+  <li>Guest lands on <strong>/</strong> and clicks "Get started free" → goes to <strong>/signup</strong></li>
+  <li>Returning user clicks "I have an account" → goes to <strong>/login</strong></li>
+  <li>After auth → lands on <strong>/dashboard</strong></li>
+  <li>From dashboard → clicks "+ New Project" → <strong>/projects/new</strong> → after save → <strong>/projects/:id</strong></li>
+  <li>From dashboard → clicks any existing project card → <strong>/projects/:id</strong></li>
+  <li>From project view → clicks "← Dashboard" → back to <strong>/dashboard</strong></li>
+</ul>
+
+<!-- ===== SECTION 2: SCREEN WIREFRAMES ===== -->
+<h2>2. Screen Wireframes</h2>
+<div class="screens-grid">
+
+  <!-- LANDING -->
+  <div class="screen">
+    <div class="screen-title">Screen 1 — Landing Page <span>Route: /</span></div>
+    <div class="screen-body">
+      <div class="wire-block nav">🔵 Logo: Deadline Buffer &nbsp;&nbsp;&nbsp;&nbsp; [Sign In] [Sign Up]</div>
+      <div class="wire-block hero">
+        "Know exactly when to start"<br/>
+        <span style="font-size:0.7rem;opacity:0.8;">[ your thesis. | ] ← typewriter animation</span>
+      </div>
+      <div class="wire-block">📝 Subtitle: "Turn a due date into a start-by date based on realistic work hours and priority."</div>
+      <div class="wire-block cta">[ Get started free → ]</div>
+      <div class="wire-block" style="text-align:center;font-size:0.75rem;">[ I have an account ]</div>
+      <div class="wire-block card">
+        🎮 Interactive Demo Panel<br/>
+        <span class="label">Hours: [3h] [6h★] [10h] &nbsp; Priority: [Low] [Med] [High★]</span>
+        <div class="wire-block bar">Safe Buffer (5 days) | Work Window (3 days)</div>
+        <span class="label">Start by: Aug 25, 2026</span>
+      </div>
+      <div class="wire-block">
+        📑 Feature Carousel Tabs<br/>
+        <span class="label">[Group Workload★] [Buffer Calc] [Urgency] [Quick Setup]</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIGN UP -->
+  <div class="screen">
+    <div class="screen-title">Screen 2 — Sign Up <span>Route: /signup</span></div>
+    <div class="screen-body">
+      <div class="wire-block nav">🔵 Logo: Deadline Buffer</div>
+      <div class="wire-block hero">Create your account</div>
+      <div class="wire-block form">📝 Name input: [ Your name ]</div>
+      <div class="wire-block form">📧 Email input: [ your@email.com ]</div>
+      <div class="wire-block form">🔒 Password input: [ ••••••••• ]</div>
+      <div class="wire-block cta">[ Create account ]</div>
+      <div class="wire-block" style="text-align:center;font-size:0.75rem;">Already have an account? <u>Sign in</u></div>
+      <div class="wire-block" style="background:#fff3f3;border-color:#e1512c;font-size:0.75rem;">⚠️ Error message area (hidden until error)</div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="screen">
+    <div class="screen-title">Screen 3 — Dashboard <span>Route: /dashboard</span></div>
+    <div class="screen-body">
+      <div class="wire-block nav">🔵 Logo &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Guide] [Glen P ▾] [Sign out]</div>
+      <div class="wire-block hero">
+        Good afternoon, Glen 👋<br/>
+        <span class="label">Saturday, Sep 3 · 4 active tasks · 18h work</span>
+      </div>
+      <div class="wire-block stat-row">
+        <div class="wire-stat">Active<br/><strong>4</strong></div>
+        <div class="wire-stat">Done<br/><strong>8</strong></div>
+        <div class="wire-stat">Projects<br/><strong>3</strong></div>
+        <div class="wire-stat">Health<br/><strong>85%</strong></div>
+      </div>
+      <div class="wire-block card">
+        🔴 Today's Focus<br/>
+        <span class="label">! CS 101 Midterm Essay · Due in 2d · [Start today]</span>
+      </div>
+      <div class="wire-block">
+        📁 Your Projects &nbsp; [+ New Project]<br/>
+        <span class="label">Senior Thesis [Solo] — [========---] 2/5 done · Due in 6d</span><br/>
+        <span class="label">Physics Group Presentation [Group] — [========] 4/4 done ✓</span>
+      </div>
+      <div class="wire-block">
+        📅 Deadline Horizon (sidebar)<br/>
+        <span class="label">Bio Problem Set — 3 days left</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROJECT VIEW -->
+  <div class="screen">
+    <div class="screen-title">Screen 4 — Project View <span>Route: /projects/:id</span></div>
+    <div class="screen-body">
+      <div class="wire-block nav">← Dashboard &nbsp; [Logo] &nbsp; [Guide] [Calendar+]</div>
+      <div class="wire-block hero">Senior Thesis Capstone [Solo] [Rename]</div>
+      <div class="wire-block">
+        📊 Progress: 3 of 5 tasks (60%)<br/>
+        <div class="wire-block bar">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
+      </div>
+      <div class="wire-block card">
+        👥 Team Panel (Group only)<br/>
+        <span class="label">Jamie [===========    ] 4/8h · Alex [===========] 10/10h</span><br/>
+        <span class="label">[ + Add Teammate ] [Name] [Hrs/wk]</span>
+      </div>
+      <div class="wire-block form">
+        🔍 [Search tasks...] &nbsp; [Status: All ▾] &nbsp; [Sort: Start-by ▾] &nbsp; [+ Add Task]
+      </div>
+      <div class="wire-block card">
+        <strong>Draft Literature Review</strong> &nbsp; 🔴 HIGH<br/>
+        <span class="label">6h · Assigned: Jamie</span>
+        <div class="wire-block bar">Safe Buffer (5d) | Work Window (3d)</div>
+        <span class="label">● Start by: Aug 25 &nbsp;&nbsp; Status: [In Progress ▾] [Edit]</span>
+      </div>
+      <div class="wire-block card">
+        <strong>Submit Methodology</strong> &nbsp; 🟡 MED<br/>
+        <span class="label">4h · Assigned: Alex</span>
+        <div class="wire-block bar">Safe Buffer (8d) | Work Window (2d)</div>
+        <span class="label">● Start by: Sep 02 &nbsp;&nbsp; Status: [Not Started ▾] [Edit]</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD TASK DRAWER -->
+  <div class="screen">
+    <div class="screen-title">Screen 5 — Add Task Drawer <span>Overlay on /projects/:id</span></div>
+    <div class="screen-body">
+      <div class="wire-block nav">ADD A TASK &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [✕ Close]</div>
+      <div class="wire-block form">📝 Task Name: [ Draft Literature Review ]</div>
+      <div class="wire-block form">📅 Deadline: [ 2026-08-30 ]</div>
+      <div class="wire-block form">⏱ Estimated Hours: [ 6.0 ]</div>
+      <div class="wire-block form">🎯 Priority: [ High ▾ ]</div>
+      <div class="wire-block form">
+        👤 Assign To:<br/>
+        <span class="label">(○) Unassigned &nbsp; (●) Jamie — 4h free &nbsp; (○) Alex — Full</span>
+      </div>
+      <div class="wire-block hero">
+        💡 Calculated Start By: Aug 25, 2026<br/>
+        <span style="font-size:0.7rem;">Safe buffer: 5 days · Work window: 3 days</span>
+      </div>
+      <div class="wire-block cta">[ Save Task ]</div>
+    </div>
+  </div>
+
+  <!-- NEW PROJECT -->
+  <div class="screen">
+    <div class="screen-title">Screen 6 — New Project <span>Route: /projects/new</span></div>
+    <div class="screen-body">
+      <div class="wire-block nav">🔵 Logo</div>
+      <div class="wire-block hero">Create a new project</div>
+      <div class="wire-block form">📁 Project Name: [ Senior Thesis Capstone ]</div>
+      <div class="wire-block">
+        👤 Type:<br/>
+        <span class="label">(●) Solo — Just me &nbsp;&nbsp; (○) Group — Add teammates</span>
+      </div>
+      <div class="wire-block cta">[ Create project → ]</div>
+    </div>
+  </div>
+
+</div><!-- end screens-grid -->
+
+<!-- ===== SECTION 3: COMPONENT BREAKDOWN ===== -->
+<h2>3. React Component Breakdown</h2>
+<p style="font-size:0.85rem;color:#666;margin-bottom:1rem;">
+  Repeated pieces broken out as components → these become the <code>src/components/</code> folder.
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Component</th>
+      <th>File</th>
+      <th>Used On</th>
+      <th>What it renders / owns</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Navbar</strong> <span class="tag shared">shared</span></td>
+      <td><code>Navbar.jsx</code></td>
+      <td>All pages</td>
+      <td>Logo, nav links, user avatar dropdown, sign-out button. Reads auth session from Supabase context.</td>
+    </tr>
+    <tr>
+      <td><strong>BufferBar</strong> <span class="tag shared">shared</span></td>
+      <td><code>BufferBar.jsx</code></td>
+      <td>Project View, Task Drawer, Landing demo</td>
+      <td>Visual timeline bar split into teal "safe buffer" zone and orange "work window" zone. Props: <code>deadline</code>, <code>hours</code>, <code>priority</code>.</td>
+    </tr>
+    <tr>
+      <td><strong>TaskCard</strong> <span class="tag shared">shared</span></td>
+      <td><code>TaskCard.jsx</code></td>
+      <td>Project View</td>
+      <td>One task row: name, hours, assignee, priority badge, BufferBar, start-by date, status dropdown, edit button. Props: <code>task</code>, <code>onStatusChange</code>, <code>onEdit</code>.</td>
+    </tr>
+    <tr>
+      <td><strong>StatCard</strong> <span class="tag shared">shared</span></td>
+      <td><code>StatCard.jsx</code></td>
+      <td>Dashboard</td>
+      <td>Small metric tile showing a label + number (Active tasks, Done, Projects, Buffer Health). Props: <code>label</code>, <code>value</code>, <code>icon</code>.</td>
+    </tr>
+    <tr>
+      <td><strong>ProjectCard</strong> <span class="tag shared">shared</span></td>
+      <td><code>ProjectCard.jsx</code></td>
+      <td>Dashboard</td>
+      <td>Project summary card: name, type badge, progress bar, next deadline. Clickable → navigates to <code>/projects/:id</code>.</td>
+    </tr>
+    <tr>
+      <td><strong>AddTaskDrawer</strong> <span class="tag page">project</span></td>
+      <td><code>AddTaskDrawer.jsx</code></td>
+      <td>Project View</td>
+      <td>Slide-in panel with task form. Calculates and previews start-by date live as user types. Props: <code>open</code>, <code>onClose</code>, <code>onSave</code>, <code>members</code>.</td>
+    </tr>
+    <tr>
+      <td><strong>TeamPanel</strong> <span class="tag page">project</span></td>
+      <td><code>TeamPanel.jsx</code></td>
+      <td>Project View (group only)</td>
+      <td>Lists teammates with capacity bars and remove buttons. Add-teammate input row. Props: <code>members</code>, <code>onAdd</code>, <code>onRemove</code>.</td>
+    </tr>
+    <tr>
+      <td><strong>ProductTour</strong> <span class="tag shared">shared</span></td>
+      <td><code>ProductTour.jsx</code></td>
+      <td>Dashboard, Project View</td>
+      <td>Step-by-step tooltip overlay teaching new users how to use the app. Triggered by the "Guide" button in the navbar.</td>
+    </tr>
+    <tr>
+      <td><strong>InteractiveDemo</strong> <span class="tag page">landing</span></td>
+      <td><em>inline in Landing.jsx</em></td>
+      <td>Landing</td>
+      <td>The live demo panel where a guest can adjust hours and priority and see the buffer bar recalculate in real time.</td>
+    </tr>
+  </tbody>
+</table>
+
+<br/>
+<p style="font-size:0.8rem;color:#aaa;text-align:center;margin-top:2rem;">
+  Deadline Buffer · M6A2 Wireframes · Glen P · 2026
+</p>
+
+</body>
+</html>
