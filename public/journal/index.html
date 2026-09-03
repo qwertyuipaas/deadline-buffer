@@ -1,0 +1,244 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Midterm Reflection Journal — Glen P</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #f6f6f3;
+  --ink: #16192b;
+  --buffer: #0e8f82;
+  --border: #e2e8f0;
+  --muted: #64748b;
+  --surface: #ffffff;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.7;
+  padding: 0;
+}
+.header {
+  background: var(--ink);
+  color: #fff;
+  padding: 4rem 2rem 3rem;
+}
+.header-inner {
+  max-width: 800px;
+  margin: 0 auto;
+}
+.badge {
+  display: inline-block;
+  background: rgba(14, 143, 130, 0.2);
+  color: #2dd4bf;
+  border: 1px solid rgba(14, 143, 130, 0.4);
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
+}
+h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 2.5rem;
+  line-height: 1.2;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+.meta {
+  color: #94a3b8;
+  font-size: 0.95rem;
+}
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 5rem;
+}
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04);
+}
+h2 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.4rem;
+  color: var(--ink);
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+h2 span.num {
+  background: var(--buffer);
+  color: #fff;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  padding: 0.1rem 0.5rem;
+}
+ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+li {
+  position: relative;
+  padding-left: 1.25rem;
+}
+li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  top: -2px;
+  color: var(--buffer);
+  font-size: 1.5rem;
+}
+strong {
+  color: #0f172a;
+}
+code {
+  background: #f1f5f9;
+  color: #0e8f82;
+  font-family: Consolas, monospace;
+  font-size: 0.9em;
+  padding: 0.15rem 0.35rem;
+  border-radius: 4px;
+}
+blockquote {
+  background: #f8fafc;
+  border-left: 4px solid var(--buffer);
+  padding: 0.75rem 1rem;
+  margin: 0.5rem 0;
+  font-style: italic;
+  color: #475569;
+}
+footer {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+  padding: 2rem 1rem;
+  border-top: 1px solid var(--border);
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <span class="badge">M7A1 · Document 4 of 4</span>
+    <h1>Midterm Reflection Journal</h1>
+    <div class="meta">Glen P &nbsp;•&nbsp; Deadline Buffer Final Project Planning &nbsp;•&nbsp; September 2026</div>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- SECTION A -->
+  <div class="card">
+    <h2><span class="num">A</span> The Front End, in Your Own Words</h2>
+    <ul>
+      <li>
+        <strong>JavaScript fundamentals:</strong> At the start of the term, array methods like <code>.map()</code>, <code>.filter()</code>, and <code>.reduce()</code> felt like syntactic riddles compared to plain <code>for</code> loops. What finally made them click was building interactive lists in React. Once I realized <code>.map()</code> is simply transforming raw database objects into JSX elements without mutating the original array, functional JavaScript clicked.
+      </li>
+      <li>
+        <strong>React:</strong> To someone in the year below: a component is like a custom HTML stamp or a function that accepts an argument (props) and returns a chunk of UI. State is definitely not just a normal variable. If you change a variable <code>let count = 1</code>, JavaScript updates memory, but the browser screen remains completely frozen. State (<code>useState</code>) tells React: <em>"Hey, this data changed — re-render this component and update the DOM so the user actually sees it."</em>
+      </li>
+      <li>
+        <strong>Styling and design:</strong> I used to think styling meant picking colors I liked and sprinkling random <code>margin</code> and <code>padding</code> until things stopped overlapping. What I learned from the design system exercises is that deliberate UI is built on strict constraints: picking one 4px spacing scale, enforcing contrast ratios (at least 4.5:1), and giving every color a semantic job (e.g., teal for calm buffer, red-orange for urgent deadlines).
+      </li>
+    </ul>
+  </div>
+
+  <!-- SECTION B -->
+  <div class="card">
+    <h2><span class="num">B</span> The Backend Half</h2>
+    <ul>
+      <li>
+        <strong>Node and Express:</strong> When a server "listens", it is an active process bound to a network port (like port 3000 or 5432), waiting for incoming TCP/HTTP packets. A route is essentially a traffic router: it pairs an HTTP method and URL path (like <code>GET /api/projects/:id</code>) with a handler function that processes request headers/body and sends back a response.
+      </li>
+      <li>
+        <strong>REST:</strong> An API is RESTful when it organizes access around resources (nouns) and uses standard HTTP verbs to describe the action. <code>GET</code> reads data, <code>POST</code> creates, <code>PUT</code>/<code>PATCH</code> updates, and <code>DELETE</code> removes. An endpoint I wrote was <code>GET /api/projects/:id/tasks</code>, which queried the database for tasks matching that foreign key and returned a JSON array with HTTP status 200.
+      </li>
+      <li>
+        <strong>PostgreSQL:</strong> A JavaScript array lives in ephemeral server memory — if the Node process restarts or crashes, your data is gone forever. PostgreSQL gives you ACID guarantees, persistent relational storage on disk, and constraints like foreign keys and uniqueness. A query that took me an hour was calculating teammate hour allocations using a <code>LEFT JOIN</code> on members and tasks with <code>COALESCE(SUM(tasks.estimated_hours), 0) GROUP BY members.id</code>.
+      </li>
+      <li>
+        <strong>Connecting the two:</strong> What surprised me most was how fragile the bridge between frontend and backend is. A single missing CORS header (<code>Access-Control-Allow-Origin</code>), an unhandled asynchronous <code>fetch()</code> promise rejection, or sending <code>Content-Type: text/plain</code> instead of <code>application/json</code> silently breaks the entire client.
+      </li>
+    </ul>
+  </div>
+
+  <!-- SECTION C -->
+  <div class="card">
+    <h2><span class="num">C</span> What Clicked, and What Is Still Shaky</h2>
+    <ul>
+      <li>
+        <strong>One thing that finally clicked:</strong> Asynchronous JavaScript and <code>async</code>/<code>await</code>. Early on, my UI tried to render tasks before the API response arrived, throwing <code>undefined</code> errors. Learning to manage loading states (<code>const [loading, setLoading] = useState(true)</code>) and conditional rendering solved this permanently.
+      </li>
+      <li>
+        <strong>One thing I still do not really understand:</strong> Row Level Security (RLS) policies and fine-grained authorization. While I understand basic JWT verification, writing PostgreSQL security policies that verify whether <code>auth.uid()</code> has permissions to join nested tables without causing infinite recursion or performance leaks is still challenging for me.
+      </li>
+      <li>
+        <strong>One bug I solved that I am proud of:</strong> In my project's login page, visiting on a mobile device produced a completely blank white screen. Because it worked on desktop, it seemed mysterious. I hooked up browser developer tools and found <code>ReferenceError: useEffect is not defined</code> and an uninitialized <code>loading</code> state variable. Fixing the missing import and setting up explicit loading states brought the page to life immediately.
+      </li>
+      <li>
+        <strong>One error message I now recognize on sight:</strong> <code>Cannot read properties of undefined (reading 'map')</code>. It almost always means my component tried to loop over an array that hasn't returned from the database yet because the initial state was <code>null</code> or <code>undefined</code> instead of an empty array <code>[]</code>.
+      </li>
+    </ul>
+  </div>
+
+  <!-- SECTION D -->
+  <div class="card">
+    <h2><span class="num">D</span> How I Work</h2>
+    <ul>
+      <li>
+        <strong>When I get stuck:</strong> At the start of the term, I would blindly tweak code in the editor and refresh repeatedly hoping it would work. Now, my first move is opening DevTools: Network tab to inspect payload/status codes, and the Console to read the exact stack trace.
+      </li>
+      <li>
+        <strong>AI tools:</strong> I use AI as an active pair programmer and tutor. However, it can occasionally introduce subtle issues. For example, during a component refactor, an AI assistant omitted essential imports like <code>useEffect</code> and attempted to generate overly aggressive CSS rules that caused layout jumping in my headline animation. I learned that I cannot accept AI output blindly; I have to test every line, understand the logic, and verify it in the browser.
+      </li>
+      <li>
+        <strong>Procrastination &amp; cost:</strong> On an earlier backend milestone, I delayed setting up database foreign keys until the night before it was due. Rushing resulted in cascaded delete errors and scrambled seed data. That stress taught me to map out data models before touching UI code.
+      </li>
+      <li>
+        <strong>Habits:</strong> One habit I will keep is writing a clean design token system and wireframes before coding. One habit I will change is pushing smaller, atomic commits instead of waiting until an entire massive feature is finished.
+      </li>
+    </ul>
+  </div>
+
+  <!-- SECTION E -->
+  <div class="card">
+    <h2><span class="num">E</span> Looking Forward to the Final Project</h2>
+    <ul>
+      <li>
+        <strong>Course dependency:</strong> My project, <strong>Deadline Buffer</strong>, leans heaviest on React state management and relational data modeling. The core screen (<code>/projects/:id</code>) ties together nested task arrays, start-by date algorithms, and teammate capacities — directly extending the CRUD and state-lifting patterns from our React module.
+      </li>
+      <li>
+        <strong>The biggest gap:</strong> The calculation for realistic start-by dates requires handling tricky calendar math (weekends, uneven work days, overlapping high-priority deadlines). Translating pure calendar days into realistic working hours without over-complicating the UI is my biggest technical challenge.
+      </li>
+      <li>
+        <strong>Two weeks from now:</strong> I will have a fully functioning Task Drawer and real-time buffer calculation working with database persistence, verified across both desktop and mobile viewports.
+      </li>
+    </ul>
+  </div>
+
+</main>
+
+<footer>
+  Deadline Buffer • M7A1 Midterm Reflection Journal • Glen P • 2026
+</footer>
+
+</body>
+</html>
