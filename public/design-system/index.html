@@ -1,0 +1,541 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Deadline Buffer — Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper:     #f6f6f3;
+  --ink:       #16192b;
+  --buffer:    #0e8f82;
+  --deadline:  #e1512c;
+  --highlight: #eab13a;
+  --muted:     #6b7280;
+  --surface:   #ffffff;
+  --border:    #e5e7eb;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--paper);color:var(--ink);padding:0;}
+
+/* COVER */
+.cover{background:var(--ink);color:#fff;padding:5rem 4rem 4rem;display:flex;flex-direction:column;gap:1rem;}
+.cover-label{font-family:'Inter',sans-serif;font-size:0.8rem;letter-spacing:0.15em;text-transform:uppercase;color:#0e8f82;font-weight:600;}
+.cover-title{font-family:'Space Grotesk',sans-serif;font-size:3.5rem;font-weight:700;line-height:1.1;}
+.cover-title span{color:#0e8f82;}
+.cover-meta{font-size:0.9rem;color:#9ca3af;margin-top:1rem;}
+.cover-divider{width:60px;height:4px;background:#0e8f82;border-radius:2px;margin:1rem 0;}
+
+/* LAYOUT */
+.page{max-width:960px;margin:0 auto;padding:4rem 2rem;}
+section{margin-bottom:4rem;}
+.section-label{font-size:0.72rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:0.5rem;}
+h2{font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700;margin-bottom:1.5rem;padding-bottom:0.75rem;border-bottom:2px solid var(--border);}
+p.desc{font-size:0.9rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.6;}
+
+/* ── 1. COLOUR ── */
+.palette{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;}
+.swatch{border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+.swatch-color{height:100px;}
+.swatch-info{background:#fff;padding:0.75rem 1rem;}
+.swatch-name{font-weight:600;font-size:0.85rem;display:block;}
+.swatch-hex{font-family:monospace;font-size:0.78rem;color:var(--muted);}
+.swatch-role{font-size:0.75rem;color:var(--muted);margin-top:0.3rem;line-height:1.4;}
+
+/* ── 2. TYPOGRAPHY ── */
+.type-scale{display:flex;flex-direction:column;gap:1.5rem;}
+.type-row{display:flex;align-items:baseline;gap:2rem;padding:1rem 0;border-bottom:1px solid var(--border);}
+.type-meta{min-width:180px;flex-shrink:0;}
+.type-label{font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);font-weight:600;}
+.type-specs{font-size:0.75rem;color:var(--muted);margin-top:0.2rem;font-family:monospace;}
+.t-display{font-family:'Space Grotesk',sans-serif;font-size:3rem;font-weight:700;line-height:1.1;color:var(--ink);}
+.t-h1{font-family:'Space Grotesk',sans-serif;font-size:2.25rem;font-weight:700;color:var(--ink);}
+.t-h2{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:600;color:var(--ink);}
+.t-h3{font-family:'Space Grotesk',sans-serif;font-size:1.125rem;font-weight:600;color:var(--ink);}
+.t-body{font-family:'Inter',sans-serif;font-size:1rem;color:var(--ink);}
+.t-small{font-family:'Inter',sans-serif;font-size:0.875rem;color:var(--muted);}
+.t-label{font-family:'Inter',sans-serif;font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);font-weight:600;}
+.t-mono{font-family:monospace;font-size:0.9rem;color:var(--buffer);background:#edf7f6;padding:0.1rem 0.4rem;border-radius:4px;}
+
+/* ── 3. SPACING ── */
+.spacing-scale{display:flex;flex-direction:column;gap:0.75rem;}
+.space-row{display:flex;align-items:center;gap:1.5rem;}
+.space-name{min-width:70px;font-family:monospace;font-size:0.8rem;color:var(--muted);}
+.space-value{min-width:50px;font-size:0.78rem;color:var(--muted);}
+.space-block-wrap{flex:1;}
+.space-block{background:var(--buffer);height:24px;border-radius:4px;opacity:0.85;}
+
+/* ── 4. COMPONENTS ── */
+.components-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;}
+.comp-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:1.5rem;display:flex;flex-direction:column;gap:1rem;}
+.comp-title{font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:0.25rem;}
+
+/* Buttons */
+.btn-primary{display:inline-flex;align-items:center;gap:0.5rem;background:var(--ink);color:#fff;padding:0.6rem 1.4rem;border-radius:8px;font-family:'Inter',sans-serif;font-weight:600;font-size:0.9rem;border:none;cursor:pointer;}
+.btn-secondary{display:inline-flex;align-items:center;gap:0.5rem;background:transparent;color:var(--ink);padding:0.6rem 1.4rem;border-radius:8px;font-family:'Inter',sans-serif;font-weight:600;font-size:0.9rem;border:2px solid var(--ink);cursor:pointer;}
+.btn-danger{display:inline-flex;align-items:center;gap:0.5rem;background:var(--deadline);color:#fff;padding:0.6rem 1.4rem;border-radius:8px;font-family:'Inter',sans-serif;font-weight:600;font-size:0.9rem;border:none;cursor:pointer;}
+
+/* Priority badges */
+.badge{display:inline-block;padding:0.2rem 0.65rem;border-radius:999px;font-size:0.72rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;}
+.badge-high{background:#fef2f2;color:#e1512c;border:1.5px solid #fecaca;}
+.badge-med{background:#fffbeb;color:#d97706;border:1.5px solid #fde68a;}
+.badge-low{background:#f0fdf4;color:#16a34a;border:1.5px solid #bbf7d0;}
+.badge-done{background:#edf7f6;color:#0e8f82;border:1.5px solid #a7f3d0;}
+
+/* Buffer Bar */
+.buffer-bar-wrap{width:100%;}
+.buffer-bar-labels{display:flex;justify-content:space-between;font-size:0.68rem;color:var(--muted);margin-bottom:0.3rem;}
+.buffer-bar{height:20px;border-radius:6px;overflow:hidden;display:flex;width:100%;}
+.buffer-safe{background:var(--buffer);display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.65rem;font-weight:700;}
+.buffer-work{background:var(--deadline);display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.65rem;font-weight:700;}
+
+/* Stat Card */
+.stat-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;flex-direction:column;gap:0.2rem;}
+.stat-val{font-family:'Space Grotesk',sans-serif;font-size:1.8rem;font-weight:700;color:var(--ink);}
+.stat-lbl{font-size:0.78rem;color:var(--muted);font-weight:500;}
+
+/* Input */
+.ds-input{width:100%;padding:0.6rem 0.9rem;border:1.5px solid var(--border);border-radius:8px;font-family:'Inter',sans-serif;font-size:0.9rem;color:var(--ink);background:#fff;outline:none;}
+.ds-input:focus{border-color:var(--buffer);box-shadow:0 0 0 3px rgba(14,143,130,0.12);}
+
+/* Progress bar */
+.progress-wrap{width:100%;}
+.progress-label{display:flex;justify-content:space-between;font-size:0.78rem;color:var(--muted);margin-bottom:0.4rem;}
+.progress-track{height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--buffer);border-radius:999px;}
+
+/* Task Card */
+.task-card-demo{background:#fff;border:1px solid var(--border);border-radius:10px;padding:1rem 1.2rem;display:flex;flex-direction:column;gap:0.6rem;}
+.task-header{display:flex;align-items:center;justify-content:space-between;}
+.task-name{font-weight:600;font-size:0.9rem;}
+.task-meta{font-size:0.75rem;color:var(--muted);}
+.task-startby{font-size:0.8rem;font-weight:600;color:var(--buffer);display:flex;align-items:center;gap:0.3rem;}
+
+/* select mock */
+.ds-select{padding:0.35rem 0.7rem;border:1.5px solid var(--border);border-radius:6px;font-size:0.78rem;color:var(--ink);background:#fff;}
+
+/* FOOTER */
+footer{background:var(--ink);color:#9ca3af;text-align:center;padding:2rem;font-size:0.8rem;}
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-label">M6A3 · Final Project Design System</div>
+  <div class="cover-title">Deadline <span>Buffer</span></div>
+  <div class="cover-divider"></div>
+  <p style="color:#d1d5db;font-size:1rem;max-width:480px;line-height:1.6;">The decisions made once so every screen matches — colour, type, spacing, and components.</p>
+  <div class="cover-meta">Glen P &nbsp;·&nbsp; September 2026 &nbsp;·&nbsp; deadline-buffer.onrender.com</div>
+</div>
+
+<div class="page">
+
+<!-- ═══════════════════════════════════════════════════════
+     1. COLOUR PALETTE
+════════════════════════════════════════════════════════ -->
+<section>
+  <div class="section-label">Section 1</div>
+  <h2>Colour Palette</h2>
+  <p class="desc">Every colour has exactly one semantic role. Using a colour for a different purpose is a deliberate signal, not an accident.</p>
+
+  <div class="palette">
+
+    <div class="swatch">
+      <div class="swatch-color" style="background:#16192b;"></div>
+      <div class="swatch-info">
+        <span class="swatch-name">Ink</span>
+        <span class="swatch-hex">#16192b</span>
+        <div class="swatch-role">Primary text, headings, primary action buttons, and the nav bar background.</div>
+      </div>
+    </div>
+
+    <div class="swatch">
+      <div class="swatch-color" style="background:#f6f6f3;border:1px solid #e5e7eb;"></div>
+      <div class="swatch-info">
+        <span class="swatch-name">Paper</span>
+        <span class="swatch-hex">#f6f6f3</span>
+        <div class="swatch-role">Main page background. Warm off-white keeps the screen from feeling clinical.</div>
+      </div>
+    </div>
+
+    <div class="swatch">
+      <div class="swatch-color" style="background:#0e8f82;"></div>
+      <div class="swatch-info">
+        <span class="swatch-name">Buffer</span>
+        <span class="swatch-hex">#0e8f82</span>
+        <div class="swatch-role">Safe buffer zone, on-track states, focus rings, and all positive / calm signals.</div>
+      </div>
+    </div>
+
+    <div class="swatch">
+      <div class="swatch-color" style="background:#e1512c;"></div>
+      <div class="swatch-info">
+        <span class="swatch-name">Deadline</span>
+        <span class="swatch-hex">#e1512c</span>
+        <div class="swatch-role">Work window in buffer bar, overdue badges, high-priority labels, and urgency alerts.</div>
+      </div>
+    </div>
+
+    <div class="swatch">
+      <div class="swatch-color" style="background:#eab13a;"></div>
+      <div class="swatch-info">
+        <span class="swatch-name">Highlight</span>
+        <span class="swatch-hex">#eab13a</span>
+        <div class="swatch-role">Medium priority, group project badges, and approaching deadline warnings.</div>
+      </div>
+    </div>
+
+    <div class="swatch">
+      <div class="swatch-color" style="background:#6b7280;"></div>
+      <div class="swatch-info">
+        <span class="swatch-name">Muted</span>
+        <span class="swatch-hex">#6b7280</span>
+        <div class="swatch-role">Secondary labels, metadata, placeholder text, and inactive states.</div>
+      </div>
+    </div>
+
+    <div class="swatch">
+      <div class="swatch-color" style="background:#ffffff;border:1px solid #e5e7eb;"></div>
+      <div class="swatch-info">
+        <span class="swatch-name">Surface</span>
+        <span class="swatch-hex">#ffffff</span>
+        <div class="swatch-role">Cards, modals, drawers, and input fields — raised surfaces above the page background.</div>
+      </div>
+    </div>
+
+    <div class="swatch">
+      <div class="swatch-color" style="background:#e5e7eb;"></div>
+      <div class="swatch-info">
+        <span class="swatch-name">Border</span>
+        <span class="swatch-hex">#e5e7eb</span>
+        <div class="swatch-role">Card outlines, dividers, input borders (default, unfocused state).</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     2. TYPE SCALE
+════════════════════════════════════════════════════════ -->
+<section>
+  <div class="section-label">Section 2</div>
+  <h2>Type Scale</h2>
+  <p class="desc"><strong>Space Grotesk</strong> for all display, headlines, and numeric metrics. <strong>Inter</strong> for body copy, labels, and UI controls. Base unit is 16px (1rem).</p>
+
+  <div class="type-scale">
+
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-label">Display</div>
+        <div class="type-specs">Space Grotesk 700 · 3rem / 48px · lh 1.1</div>
+      </div>
+      <div class="t-display">Deadline Buffer</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-label">Heading 1</div>
+        <div class="type-specs">Space Grotesk 700 · 2.25rem / 36px · lh 1.2</div>
+      </div>
+      <div class="t-h1">Good afternoon, Glen</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-label">Heading 2</div>
+        <div class="type-specs">Space Grotesk 600 · 1.5rem / 24px · lh 1.3</div>
+      </div>
+      <div class="t-h2">Senior Thesis Capstone</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-label">Heading 3</div>
+        <div class="type-specs">Space Grotesk 600 · 1.125rem / 18px · lh 1.4</div>
+      </div>
+      <div class="t-h3">Draft Literature Review</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-label">Body</div>
+        <div class="type-specs">Inter 400 · 1rem / 16px · lh 1.6</div>
+      </div>
+      <div class="t-body">Turn a due date into a calm start-by date based on realistic work hours and priority level.</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-label">Small / Meta</div>
+        <div class="type-specs">Inter 400 · 0.875rem / 14px · lh 1.5</div>
+      </div>
+      <div class="t-small">6.0 hours work · Assigned to: Jamie · Due in 6 days</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-label">Label / Tag</div>
+        <div class="type-specs">Inter 600 · 0.75rem / 12px · uppercase · ls 0.08em</div>
+      </div>
+      <div class="t-label">High Priority · In Progress · Solo Project</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-label">Code / Mono</div>
+        <div class="type-specs">monospace · 0.9rem · used for dates &amp; tokens</div>
+      </div>
+      <div><span class="t-mono">Start by: Aug 25, 2026</span></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     3. SPACING SYSTEM
+════════════════════════════════════════════════════════ -->
+<section>
+  <div class="section-label">Section 3</div>
+  <h2>Spacing System</h2>
+  <p class="desc">One base unit: <strong>4px</strong>. All spacing values are multiples of 4. This creates visual rhythm and makes padding, gap, and margin decisions predictable.</p>
+
+  <div class="spacing-scale">
+    <div class="space-row">
+      <span class="space-name">space-1</span>
+      <span class="space-value">4px</span>
+      <div class="space-block-wrap"><div class="space-block" style="width:4px;"></div></div>
+      <span style="font-size:0.75rem;color:#9ca3af;">Icon nudges, tight inline gaps</span>
+    </div>
+    <div class="space-row">
+      <span class="space-name">space-2</span>
+      <span class="space-value">8px</span>
+      <div class="space-block-wrap"><div class="space-block" style="width:8px;"></div></div>
+      <span style="font-size:0.75rem;color:#9ca3af;">Badge padding, label gap</span>
+    </div>
+    <div class="space-row">
+      <span class="space-name">space-3</span>
+      <span class="space-value">12px</span>
+      <div class="space-block-wrap"><div class="space-block" style="width:12px;"></div></div>
+      <span style="font-size:0.75rem;color:#9ca3af;">Button vertical padding</span>
+    </div>
+    <div class="space-row">
+      <span class="space-name">space-4</span>
+      <span class="space-value">16px</span>
+      <div class="space-block-wrap"><div class="space-block" style="width:16px;"></div></div>
+      <span style="font-size:0.75rem;color:#9ca3af;">Card inner padding (mobile), input padding</span>
+    </div>
+    <div class="space-row">
+      <span class="space-name">space-6</span>
+      <span class="space-value">24px</span>
+      <div class="space-block-wrap"><div class="space-block" style="width:24px;"></div></div>
+      <span style="font-size:0.75rem;color:#9ca3af;">Card inner padding (desktop), section gap</span>
+    </div>
+    <div class="space-row">
+      <span class="space-name">space-8</span>
+      <span class="space-value">32px</span>
+      <div class="space-block-wrap"><div class="space-block" style="width:32px;"></div></div>
+      <span style="font-size:0.75rem;color:#9ca3af;">Between major sections on a page</span>
+    </div>
+    <div class="space-row">
+      <span class="space-name">space-10</span>
+      <span class="space-value">40px</span>
+      <div class="space-block-wrap"><div class="space-block" style="width:40px;"></div></div>
+      <span style="font-size:0.75rem;color:#9ca3af;">Page-level vertical rhythm, hero top padding</span>
+    </div>
+    <div class="space-row">
+      <span class="space-name">space-16</span>
+      <span class="space-value">64px</span>
+      <div class="space-block-wrap"><div class="space-block" style="width:64px;"></div></div>
+      <span style="font-size:0.75rem;color:#9ca3af;">Landing section breaks, large structural gaps</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     4. COMPONENT LIBRARY
+════════════════════════════════════════════════════════ -->
+<section>
+  <div class="section-label">Section 4</div>
+  <h2>Component Library</h2>
+  <p class="desc">Every reusable piece rendered at its actual size. These come directly from the wireframes and are what the <code>src/components/</code> folder contains.</p>
+
+  <div class="components-grid">
+
+    <!-- BUTTONS -->
+    <div class="comp-card">
+      <div class="comp-title">Buttons</div>
+      <button class="btn-primary">Get started free →</button>
+      <button class="btn-secondary">I have an account</button>
+      <button class="btn-danger">Delete project</button>
+      <p style="font-size:0.75rem;color:#9ca3af;line-height:1.5;">Primary: ink background, white text. Secondary: transparent with ink border. Danger: deadline red for destructive actions. All use Inter 600, 8px radius.</p>
+    </div>
+
+    <!-- PRIORITY BADGES -->
+    <div class="comp-card">
+      <div class="comp-title">Priority Badges</div>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+        <span class="badge badge-high">High</span>
+        <span class="badge badge-med">Medium</span>
+        <span class="badge badge-low">Low</span>
+        <span class="badge badge-done">Done</span>
+      </div>
+      <p style="font-size:0.75rem;color:#9ca3af;line-height:1.5;">Each badge uses a tinted background from the matching semantic colour with a border. Used on TaskCard and in the Add Task drawer.</p>
+    </div>
+
+    <!-- BUFFER BAR -->
+    <div class="comp-card" style="grid-column:span 2;">
+      <div class="comp-title">BufferBar — Core Component</div>
+      <div class="buffer-bar-wrap">
+        <div class="buffer-bar-labels">
+          <span>Today · Aug 20</span>
+          <span>Start by · Aug 25</span>
+          <span>Due · Aug 30</span>
+        </div>
+        <div class="buffer-bar">
+          <div class="buffer-safe" style="flex:5;">SAFE BUFFER (5d)</div>
+          <div class="buffer-work" style="flex:5;">WORK WINDOW (5d)</div>
+        </div>
+        <div style="font-size:0.72rem;color:#9ca3af;margin-top:0.4rem;">Props: deadline · estimatedHours · priority · today · assignedMemberHoursPerWeek</div>
+      </div>
+      <div class="buffer-bar-wrap">
+        <div class="buffer-bar-labels">
+          <span>Today · Sep 1</span>
+          <span style="color:#e1512c;font-weight:700;">⚠ Start by · Sep 1</span>
+          <span>Due · Sep 3</span>
+        </div>
+        <div class="buffer-bar">
+          <div class="buffer-safe" style="flex:1;">0d</div>
+          <div class="buffer-work" style="flex:9;">WORK WINDOW — CRITICAL</div>
+        </div>
+        <div style="font-size:0.72rem;color:#e1512c;margin-top:0.4rem;">⚠ Buffer exhausted — start immediately state</div>
+      </div>
+      <p style="font-size:0.75rem;color:#9ca3af;line-height:1.5;">The signature component. Appears on Landing (demo), Project View (each task), and the Add Task drawer (live preview). Bar is proportional to calendar days.</p>
+    </div>
+
+    <!-- STAT CARD -->
+    <div class="comp-card">
+      <div class="comp-title">StatCard</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+        <div class="stat-card"><div class="stat-val">4</div><div class="stat-lbl">Active tasks</div></div>
+        <div class="stat-card"><div class="stat-val">85%</div><div class="stat-lbl">Buffer health</div></div>
+        <div class="stat-card"><div class="stat-val">3</div><div class="stat-lbl">Projects</div></div>
+        <div class="stat-card"><div class="stat-val">8</div><div class="stat-lbl">Completed</div></div>
+      </div>
+      <p style="font-size:0.75rem;color:#9ca3af;line-height:1.5;">Used in the Dashboard metrics banner. 2-column grid on mobile, 4-column on desktop. Number uses Space Grotesk 700.</p>
+    </div>
+
+    <!-- FORM INPUTS -->
+    <div class="comp-card">
+      <div class="comp-title">Inputs &amp; Select</div>
+      <input class="ds-input" type="text" placeholder="Task name…" />
+      <input class="ds-input" type="date" value="2026-08-30" />
+      <select class="ds-input">
+        <option>High priority</option>
+        <option>Medium priority</option>
+        <option>Low priority</option>
+      </select>
+      <p style="font-size:0.75rem;color:#9ca3af;line-height:1.5;">1.5px border, 8px radius. Focus ring: buffer teal with 12% opacity spread. All inputs use Inter 400 at 0.9rem. Used across Sign Up, Login, New Project, and the Add Task drawer.</p>
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div class="comp-card">
+      <div class="comp-title">Progress Bar</div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span>Senior Thesis Capstone</span><span>60%</span></div>
+        <div class="progress-track"><div class="progress-fill" style="width:60%;"></div></div>
+        <div style="font-size:0.72rem;color:#9ca3af;margin-top:0.3rem;">3 of 5 tasks completed</div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span>Physics Group Report</span><span>100%</span></div>
+        <div class="progress-track"><div class="progress-fill" style="width:100%;background:#16a34a;"></div></div>
+        <div style="font-size:0.72rem;color:#16a34a;margin-top:0.3rem;">✓ All tasks complete</div>
+      </div>
+      <p style="font-size:0.75rem;color:#9ca3af;line-height:1.5;">Used on ProjectCard (dashboard) and Project View header. Turns green at 100%.</p>
+    </div>
+
+    <!-- TASK CARD -->
+    <div class="comp-card" style="grid-column:span 2;">
+      <div class="comp-title">TaskCard — Full Example</div>
+      <div class="task-card-demo">
+        <div class="task-header">
+          <div class="task-name">Draft Literature Review</div>
+          <span class="badge badge-high">High</span>
+        </div>
+        <div class="task-meta">6.0 hours work · Assigned to: Jamie</div>
+        <div class="buffer-bar">
+          <div class="buffer-safe" style="flex:6;">SAFE BUFFER (6d)</div>
+          <div class="buffer-work" style="flex:4;">WORK (4d)</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div class="task-startby">● Start by: Aug 25, 2026</div>
+          <div style="display:flex;gap:0.5rem;align-items:center;">
+            <select class="ds-select"><option>In Progress</option></select>
+            <button style="font-size:0.78rem;padding:0.35rem 0.7rem;border:1.5px solid #e5e7eb;border-radius:6px;background:#fff;cursor:pointer;color:#6b7280;">Edit</button>
+          </div>
+        </div>
+      </div>
+      <p style="font-size:0.75rem;color:#9ca3af;line-height:1.5;">The main repeating unit in Project View. Props: task object, onStatusChange, onEdit. Contains BufferBar, priority Badge, and inline status select.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- DESIGN DECISIONS SUMMARY -->
+<section>
+  <div class="section-label">Summary</div>
+  <h2>Design Decisions</h2>
+  <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+    <thead>
+      <tr style="background:#16192b;color:#fff;">
+        <th style="padding:0.7rem 1rem;text-align:left;">Decision</th>
+        <th style="padding:0.7rem 1rem;text-align:left;">Choice</th>
+        <th style="padding:0.7rem 1rem;text-align:left;">Why</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom:1px solid #e5e7eb;">
+        <td style="padding:0.7rem 1rem;">Background colour</td>
+        <td style="padding:0.7rem 1rem;font-family:monospace;">#f6f6f3 Paper</td>
+        <td style="padding:0.7rem 1rem;color:#6b7280;">Pure white feels clinical; warm off-white is calmer and matches the app's "less stress" goal.</td>
+      </tr>
+      <tr style="background:#fafafa;border-bottom:1px solid #e5e7eb;">
+        <td style="padding:0.7rem 1rem;">Accent colour</td>
+        <td style="padding:0.7rem 1rem;font-family:monospace;">#0e8f82 Teal</td>
+        <td style="padding:0.7rem 1rem;color:#6b7280;">Teal reads as calm, safe, and in-control — exactly the feeling a student should get when their buffer is healthy.</td>
+      </tr>
+      <tr style="border-bottom:1px solid #e5e7eb;">
+        <td style="padding:0.7rem 1rem;">Alert colour</td>
+        <td style="padding:0.7rem 1rem;font-family:monospace;">#e1512c Red-orange</td>
+        <td style="padding:0.7rem 1rem;color:#6b7280;">Warm red-orange is urgent without being as aggressive as pure red, matching "start now" not "you failed".</td>
+      </tr>
+      <tr style="background:#fafafa;border-bottom:1px solid #e5e7eb;">
+        <td style="padding:0.7rem 1rem;">Display font</td>
+        <td style="padding:0.7rem 1rem;">Space Grotesk</td>
+        <td style="padding:0.7rem 1rem;color:#6b7280;">Geometric, slightly playful, and great for numeric data. Stands out from the neutral Inter body text.</td>
+      </tr>
+      <tr style="border-bottom:1px solid #e5e7eb;">
+        <td style="padding:0.7rem 1rem;">Body font</td>
+        <td style="padding:0.7rem 1rem;">Inter</td>
+        <td style="padding:0.7rem 1rem;color:#6b7280;">The most legible UI typeface at small sizes on screens. Zero distraction.</td>
+      </tr>
+      <tr style="background:#fafafa;">
+        <td style="padding:0.7rem 1rem;">Spacing base unit</td>
+        <td style="padding:0.7rem 1rem;">4px</td>
+        <td style="padding:0.7rem 1rem;color:#6b7280;">4px aligns with how Tailwind CSS generates its spacing scale, keeping design and code in sync.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+</div>
+
+<footer>
+  Deadline Buffer · M6A3 Design System · Glen P · 2026 · deadline-buffer.onrender.com
+</footer>
+
+</body>
+</html>
