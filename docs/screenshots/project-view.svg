@@ -1,0 +1,117 @@
+<svg width="840" height="520" viewBox="0 0 840 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Window Background -->
+  <rect width="840" height="520" rx="16" fill="#F6F6F3" stroke="#16192B" stroke-opacity="0.12" stroke-width="2"/>
+  
+  <!-- Browser Chrome / Top Bar -->
+  <rect width="840" height="42" rx="16" fill="#FFFFFF"/>
+  <rect y="40" width="840" height="2" fill="#16192B" fill-opacity="0.08"/>
+  <circle cx="24" cy="21" r="5.5" fill="#E1512C" fill-opacity="0.8"/>
+  <circle cx="40" cy="21" r="5.5" fill="#EAB13A" fill-opacity="0.8"/>
+  <circle cx="56" cy="21" r="5.5" fill="#0E8F82" fill-opacity="0.8"/>
+  <rect x="220" y="10" width="400" height="22" rx="6" fill="#F6F6F3" stroke="#16192B" stroke-opacity="0.08"/>
+  <text x="420" y="25" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" fill="#5B6072" text-anchor="middle">localhost:5173/projects/cwa-capstone</text>
+
+  <!-- Project Header -->
+  <rect y="42" width="840" height="66" fill="#FFFFFF" stroke="#16192B" stroke-opacity="0.06"/>
+  <text x="32" y="66" font-family="-apple-system, sans-serif" font-size="11" fill="#5B6072">← Dashboard</text>
+  <text x="32" y="92" font-family="'Space Grotesk', sans-serif" font-size="18" font-weight="700" fill="#16192B">CWA Capstone Presentation</text>
+  <rect x="310" y="78" width="52" height="18" rx="9" fill="#FBEECD"/>
+  <text x="336" y="91" font-family="-apple-system, sans-serif" font-size="9" font-weight="600" fill="#8C6314" text-anchor="middle">Group</text>
+
+  <!-- Header Action Hub -->
+  <rect x="520" y="74" width="76" height="26" rx="8" fill="#FFFFFF" stroke="#16192B" stroke-opacity="0.15"/>
+  <text x="558" y="91" font-family="-apple-system, sans-serif" font-size="10" font-weight="500" fill="#16192B" text-anchor="middle">📋 Copy Summary</text>
+  <rect x="604" y="74" width="102" height="26" rx="8" fill="#DAF0EC" stroke="#0E8F82" stroke-opacity="0.3"/>
+  <text x="655" y="91" font-family="-apple-system, sans-serif" font-size="10" font-weight="600" fill="#0E8F82" text-anchor="middle">📅 Add to Calendar</text>
+  <rect x="714" y="74" width="94" height="26" rx="8" fill="#16192B"/>
+  <text x="761" y="91" font-family="-apple-system, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" text-anchor="middle">+ Add Task [N]</text>
+
+  <!-- Members & Workload Capacity Section -->
+  <rect x="32" y="122" width="776" height="106" rx="14" fill="#FFFFFF" stroke="#16192B" stroke-opacity="0.08"/>
+  <text x="48" y="146" font-family="'Space Grotesk', sans-serif" font-size="13" font-weight="700" fill="#16192B">Team Workload Balancing</text>
+  <text x="210" y="146" font-family="-apple-system, sans-serif" font-size="11" fill="#5B6072">Allocated vs weekly capacity (hrs/wk)</text>
+
+  <!-- Member 1: Alex (Balanced) -->
+  <rect x="48" y="158" width="236" height="54" rx="10" fill="#F6F6F3"/>
+  <text x="60" y="178" font-family="-apple-system, sans-serif" font-size="12" font-weight="600" fill="#16192B">Alex</text>
+  <text x="272" y="178" font-family="-apple-system, sans-serif" font-size="10" font-weight="600" fill="#0E8F82" text-anchor="end">4 / 10h</text>
+  <rect x="60" y="188" width="212" height="6" rx="3" fill="#EBEAE5"/>
+  <rect x="60" y="188" width="85" height="6" rx="3" fill="#0E8F82"/>
+  <text x="60" y="204" font-family="-apple-system, sans-serif" font-size="9" fill="#5B6072">Light workload · Best candidate</text>
+
+  <!-- Member 2: Jamie (Full) -->
+  <rect x="300" y="158" width="236" height="54" rx="10" fill="#F6F6F3"/>
+  <text x="312" y="178" font-family="-apple-system, sans-serif" font-size="12" font-weight="600" fill="#16192B">Jamie</text>
+  <text x="524" y="178" font-family="-apple-system, sans-serif" font-size="10" font-weight="600" fill="#8C6314" text-anchor="end">7 / 8h</text>
+  <rect x="312" y="188" width="212" height="6" rx="3" fill="#EBEAE5"/>
+  <rect x="312" y="188" width="185" height="6" rx="3" fill="#EAB13A"/>
+  <text x="312" y="204" font-family="-apple-system, sans-serif" font-size="9" fill="#8C6314">Near capacity (87%)</text>
+
+  <!-- Member 3: Sam (Overloaded) -->
+  <rect x="552" y="158" width="240" height="54" rx="10" fill="#FBE3DA"/>
+  <text x="564" y="178" font-family="-apple-system, sans-serif" font-size="12" font-weight="600" fill="#E1512C">Sam ⚠</text>
+  <text x="780" y="178" font-family="-apple-system, sans-serif" font-size="10" font-weight="700" fill="#E1512C" text-anchor="end">9 / 6h</text>
+  <rect x="564" y="188" width="216" height="6" rx="3" fill="#EBEAE5"/>
+  <rect x="564" y="188" width="216" height="6" rx="3" fill="#E1512C"/>
+  <text x="564" y="204" font-family="-apple-system, sans-serif" font-size="9" font-weight="600" fill="#E1512C">Overloaded by 3 hours</text>
+
+  <!-- Filter & Sort Bar -->
+  <text x="32" y="254" font-family="'Space Grotesk', sans-serif" font-size="14" font-weight="700" fill="#16192B">Assignments (4)</text>
+  <rect x="420" y="240" width="130" height="24" rx="6" fill="#FFFFFF" stroke="#16192B" stroke-opacity="0.15"/>
+  <text x="430" y="256" font-family="-apple-system, sans-serif" font-size="10" fill="#5B6072">🔍 Search tasks...</text>
+  <rect x="560" y="240" width="110" height="24" rx="6" fill="#FFFFFF" stroke="#16192B" stroke-opacity="0.15"/>
+  <text x="570" y="256" font-family="-apple-system, sans-serif" font-size="10" fill="#5B6072">Filter: All members ▾</text>
+  <rect x="680" y="240" width="128" height="24" rx="6" fill="#FFFFFF" stroke="#16192B" stroke-opacity="0.15"/>
+  <text x="690" y="256" font-family="-apple-system, sans-serif" font-size="10" fill="#5B6072">Sort: Start-by date ▾</text>
+
+  <!-- Task Card 1 -->
+  <rect x="32" y="274" width="776" height="70" rx="12" fill="#FFFFFF" stroke="#16192B" stroke-opacity="0.08"/>
+  <text x="48" y="296" font-family="-apple-system, sans-serif" font-size="13" font-weight="600" fill="#16192B">1. Slide Deck Outline &amp; Narrative</text>
+  <rect x="256" y="284" width="58" height="16" rx="4" fill="#FBE3DA"/>
+  <text x="285" y="296" font-family="-apple-system, sans-serif" font-size="9" font-weight="700" fill="#E1512C" text-anchor="middle">HIGH</text>
+  <text x="324" y="296" font-family="-apple-system, sans-serif" font-size="11" fill="#5B6072">4h · Assigned to Alex</text>
+  <!-- Buffer Bar visual -->
+  <rect x="48" y="308" width="380" height="6" rx="3" fill="#EBEAE5"/>
+  <rect x="48" y="308" width="160" height="6" rx="3" fill="#0E8F82"/>
+  <rect x="208" y="308" width="220" height="6" rx="3" fill="#E1512C"/>
+  <text x="48" y="330" font-family="-apple-system, sans-serif" font-size="10" font-weight="700" fill="#E1512C">Start soon — Sep 22</text>
+  <text x="428" y="330" font-family="-apple-system, sans-serif" font-size="10" fill="#5B6072" text-anchor="end">Due Sep 26</text>
+  <!-- Right status select -->
+  <rect x="670" y="294" width="94" height="26" rx="8" fill="#F6F6F3" stroke="#16192B" stroke-opacity="0.1"/>
+  <text x="717" y="311" font-family="-apple-system, sans-serif" font-size="10" fill="#16192B" text-anchor="middle">In progress ▾</text>
+  <text x="780" y="311" font-family="-apple-system, sans-serif" font-size="10" fill="#0E8F82">Edit</text>
+
+  <!-- Task Card 2 -->
+  <rect x="32" y="352" width="776" height="70" rx="12" fill="#FFFFFF" stroke="#16192B" stroke-opacity="0.08"/>
+  <text x="48" y="374" font-family="-apple-system, sans-serif" font-size="13" font-weight="600" fill="#16192B">2. Literature Review Summary</text>
+  <rect x="246" y="362" width="70" height="16" rx="4" fill="#FBEECD"/>
+  <text x="281" y="374" font-family="-apple-system, sans-serif" font-size="9" font-weight="700" fill="#8C6314" text-anchor="middle">MEDIUM</text>
+  <text x="326" y="374" font-family="-apple-system, sans-serif" font-size="11" fill="#5B6072">7h · Assigned to Jamie</text>
+  <!-- Buffer Bar visual -->
+  <rect x="48" y="386" width="380" height="6" rx="3" fill="#EBEAE5"/>
+  <rect x="48" y="386" width="240" height="6" rx="3" fill="#0E8F82"/>
+  <rect x="288" y="386" width="140" height="6" rx="3" fill="#EAB13A"/>
+  <text x="48" y="408" font-family="-apple-system, sans-serif" font-size="10" font-weight="600" fill="#0E8F82">Start by Sep 25</text>
+  <text x="428" y="408" font-family="-apple-system, sans-serif" font-size="10" fill="#5B6072" text-anchor="end">Due Oct 01</text>
+  <!-- Right status select -->
+  <rect x="670" y="372" width="94" height="26" rx="8" fill="#F6F6F3" stroke="#16192B" stroke-opacity="0.1"/>
+  <text x="717" y="389" font-family="-apple-system, sans-serif" font-size="10" fill="#16192B" text-anchor="middle">Not started ▾</text>
+  <text x="780" y="389" font-family="-apple-system, sans-serif" font-size="10" fill="#0E8F82">Edit</text>
+
+  <!-- Task Card 3 -->
+  <rect x="32" y="430" width="776" height="70" rx="12" fill="#FFFFFF" stroke="#16192B" stroke-opacity="0.08"/>
+  <text x="48" y="452" font-family="-apple-system, sans-serif" font-size="13" font-weight="600" fill="#16192B">3. Appendix &amp; Bibliography Formatting</text>
+  <rect x="290" y="440" width="52" height="16" rx="4" fill="#EBEAE5"/>
+  <text x="316" y="452" font-family="-apple-system, sans-serif" font-size="9" font-weight="600" fill="#5B6072" text-anchor="middle">LOW</text>
+  <text x="350" y="452" font-family="-apple-system, sans-serif" font-size="11" fill="#5B6072">2h · Unassigned</text>
+  <!-- Buffer Bar visual -->
+  <rect x="48" y="464" width="380" height="6" rx="3" fill="#EBEAE5"/>
+  <rect x="48" y="464" width="320" height="6" rx="3" fill="#0E8F82"/>
+  <rect x="368" y="464" width="60" height="6" rx="3" fill="#0E8F82"/>
+  <text x="48" y="486" font-family="-apple-system, sans-serif" font-size="10" font-weight="600" fill="#0E8F82">Start by Oct 04 (12d buffer)</text>
+  <text x="428" y="486" font-family="-apple-system, sans-serif" font-size="10" fill="#5B6072" text-anchor="end">Due Oct 08</text>
+  <!-- Right status select -->
+  <rect x="670" y="450" width="94" height="26" rx="8" fill="#DAF0EC"/>
+  <text x="717" y="467" font-family="-apple-system, sans-serif" font-size="10" font-weight="600" fill="#0E8F82" text-anchor="middle">Done ✓</text>
+  <text x="780" y="467" font-family="-apple-system, sans-serif" font-size="10" fill="#5B6072">Delete</text>
+</svg>
