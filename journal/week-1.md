@@ -1,0 +1,28 @@
+# Reflection Journal
+
+## Week of: September 20, 2026
+
+## My goal this week
+
+My main goal this week was to make the task entry flow faster on the project view, build out the workload balancing logic for group projects so members don't get assigned more work than their weekly availability, and add practical export tools (calendar `.ics` and Discord/WhatsApp markdown summaries) so students don't feel locked into keeping our app open constantly. I also wanted to make sure my database stays active and my project documentation is fully updated for Finals Week 1.
+
+## What I did
+
+- **Slide-in Task Drawer & Quick Capture:** Replaced the static inline task form with a dedicated slide-in drawer (`TaskDrawer.jsx`). I hooked up an `N` keyboard shortcut so you can hit <kbd>N</kbd> from anywhere on the project view to immediately pop open the drawer. Inside the drawer, I built a live start-by preview box that recalculates the recommended start date in real time as the user types their deadline, hours, and priority.
+- **Group Workload Balancing Engine:** In `groupUtils.js`, I wrote pure helper functions (`getMemberWorkloadHours`, `getMemberStats`, `getSuggestedMemberOrder`) that sum up each teammate's non-completed task hours and compare them against their weekly capacity (`hours_per_week`). I then created `MemberWorkloadBar.jsx` to render a color-coded meter next to each member (teal when safe, yellow when near capacity, red with a warning icon when overloaded) and updated the task assignment radio list to badge whichever member currently has the most free hours.
+- **Calendar & Chat Export:** Created `exportProjectToIcs` in `exportUtils.js` to generate standard `.ics` files containing calculated start-by dates and work windows, allowing students to import assignments straight into Google Calendar, Apple Calendar, or Outlook. I also wrote `formatProjectSummary` to generate a formatted markdown checklist with status emojis to quickly copy and paste into Discord or WhatsApp study group chats.
+- **Database Keep-Alive Automation:** Configured a GitHub Actions workflow (`.github/workflows/keep-supabase-alive.yml`) with a cron schedule that pings the Supabase REST endpoint three times a week so our free-tier database doesn't auto-pause during grading or inactive weeks.
+- **Finals Documentation Overhaul:** Audited and rewrote `README.md` to cover all 7 required sections from the documentation guide, added `AI-USAGE.md` detailing how I verified and debugged AI-assisted code, created `.env.example`, built vector UI screenshots in `docs/screenshots/`, and wrote `REPORT.md` for this week's increment.
+
+## What blocked me
+
+- **Timezone shifts on dates:** I originally formatted dates using `new Date().toISOString().split('T')[0]`, which converts the timestamp to UTC first. For users in timezones ahead of UTC, this pushed dates back by one calendar day—so tasks with a Monday deadline were showing up as Sunday, and start-by dates calculated as yesterday. I got stuck trying to patch it with millisecond offsets before realizing I needed to write a clean `toLocalIsoDate()` helper that extracts `getFullYear()`, `getMonth() + 1`, and `getDate()` directly from the local machine clock.
+- **Silent mobile crash on login:** The login screen loaded fine on my laptop, but visiting on my phone showed a completely blank white screen. Because there were no visible error messages, it looked like a styling issue. Once I hooked up mobile remote debugging via Chrome DevTools, I immediately saw `ReferenceError: useEffect is not defined`. I had used `useEffect` in `Login.jsx` without importing it at the top, and my desktop browser had cached an older build. Fixing the import and setting up explicit loading states brought the page right up.
+- **Hero headline layout shifts:** The typewriter text animation on the landing page kept causing the entire page below to jump up and down. Every time a long phrase was deleted and replaced by a shorter phrase, the container collapsed. I tried fixing it with CSS margins, but that didn't help on mobile. I finally fixed it by locking the container with a fixed minimum height and prepending a zero-width space (`\u200B`) so the baseline never collapses to zero.
+- **Row Level Security (RLS) for teammates:** Supabase security policies currently restrict task access to the project owner (`projects.owner_id = auth.uid()`). When I tried writing an RLS policy to let teammates view tasks assigned to them, my `EXISTS` subquery caused circular dependency errors between `projects` and `project_members`. Writing non-recursive PostgreSQL RLS policies across related tables is still something I am working to understand.
+
+## What I learned
+
+- **Never use `toISOString()` for day-level calendar math:** `toISOString()` is fine for server timestamps, but for user-facing calendar dates, UTC conversion will reliably produce off-by-one bugs depending on where the user lives. Always extract local calendar values when formatting dates for forms and calculations.
+- **Test on real devices early:** Responsive emulation in desktop DevTools tests screen widths, but it doesn't test real mobile browser rendering engines, touch interactions, or caching behavior. Catching the `useEffect` crash on mobile taught me to test on my phone after every major commit.
+- **Good UI reduces user mental load:** Adding the live start-by date preview inside the task form made a huge difference during testing. When users see the date update instantly as they change the estimated hours from 4 to 8, they immediately understand how the safety buffer works without needing to read a documentation page first.
