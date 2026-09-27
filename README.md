@@ -158,9 +158,11 @@ deadline-buffer/
 │   └── screenshots/            # UI screenshots and visual mockups
 ├── supabase/
 │   └── schema.sql              # PostgreSQL schema, triggers, and RLS policies
+├── journal/                    # Weekly reflection journals (week-1.md, week-2.md)
 ├── .env.example                # Template environment variables
 ├── package.json                # Project dependencies and npm scripts
 ├── REPORT.md                   # Weekly increment progress report
+├── SECURITY-CHECKLIST.md       # Pre-submission security audit checklist
 └── AI-USAGE.md                 # AI usage, attribution log, and badge document
 ```
 
@@ -184,17 +186,22 @@ deadline-buffer/
 
 ## 7. Known issues and next steps
 
-While the core buffer engine and workload balancer are fully functional, the following limitations are known and slated for future increments:
+While the core buffer engine, workload balancer, and collaborative RLS policies are fully functional, the following items are noted for ongoing development:
 
 ### Known Issues
-- **Multi-user authentication for group teammates:** Currently, Supabase Row Level Security (RLS) policies are owner-centric (`projects.owner_id = auth.uid()`). Teammates can be added by name with weekly hour capacities, but they cannot yet log in with separate accounts to view their assigned tasks independently without owner credentials.
-- **`profiles` table migration:** Username checks and preferences in `profileService.js` are currently supported via client-side fallbacks if the `profiles` table is not yet migrated to the remote Supabase database.
-- **Weekend exclusion:** The current buffer calculation assumes a standard continuous day model ($2\text{ focused hours/day}$). It does not yet account for customizable student schedules (e.g. students who only study on weekdays or weekends).
+- **Weekend schedule customization:** The current buffer calculation assumes a standard continuous day model ($2\text{ focused hours/day}$). It does not yet account for custom student availability preferences (e.g. students who only study on weekdays or prefer cramming on weekends).
+- **Automated teammate invitation emails:** Teammates currently join projects when their authenticated `user_id` matches an invited record in `project_members`. Automated email invitation links via Supabase Auth Edge Functions are planned for post-finals deployment.
 
 ### Next Steps
-1. **Collaborative Group RLS:** Write non-recursive PostgreSQL policies enabling invited members with registered Supabase accounts to view and update tasks assigned to them.
-2. **Push / Email Notifications:** Send browser alerts or email reminders when an assignment transitions from "safe buffer" into "start today".
-3. **Interactive Gantt / Calendar View:** Build a visual calendar timeline showing overlapping task buffers across all enrolled courses.
+1. **Push / Browser Notifications:** Send browser alerts or system notifications when an assignment transitions into "Start today" or "Critical".
+2. **Interactive Semester Gantt View:** Build a visual calendar timeline showing overlapping task buffers across all enrolled courses simultaneously.
+3. **Automated Teammate Invites:** Implement one-click email invitations that automatically bind new registrations to existing group projects.
+
+---
+
+## Security checklist (from week 2)
+
+A completed [`SECURITY-CHECKLIST.md`](SECURITY-CHECKLIST.md) is included in the project root. Every security item has been audited and verified with specific evidence before making this repository public, including environment variable safety, Row Level Security policies on all tables, and password protection.
 
 ---
 
