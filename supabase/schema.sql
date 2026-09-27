@@ -61,18 +61,50 @@ create trigger tasks_set_updated_at
   for each row execute procedure public.set_updated_at();
 
 -- ============================================================
--- ROW LEVEL SECURITY
--- Users can only see/edit projects they own or are a member of.
+-- 0. USER PROFILES
+-- Stores usernames and profile metadata
 -- ============================================================
+create table if not exists public.profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  username text unique not null,
+  updated_at timestamptz default now()
+);
+
+-- ============================================================
+-- ROW LEVEL SECURITY
+-- Users can see/edit projects they own or are a member of.
+-- ============================================================
+alter table public.profiles enable row level security;
 alter table public.projects enable row level security;
 alter table public.project_members enable row level security;
 alter table public.tasks enable row level security;
+
+-- Profiles: anyone can view username, user can only modify own profile
+create policy "Public profiles are readable"
+  on public.profiles for select
+  using (true);
+
+create policy "Users can update own profile"
+  on public.profiles for all
+  using (auth.uid() = id)
+  with check (auth.uid() = id);
 
 -- Projects: owner can do everything with their own projects
 create policy "Owners manage their projects"
   on public.projects for all
   using (auth.uid() = owner_id)
   with check (auth.uid() = owner_id);
+
+-- Projects: teammates can view projects they are a member of
+create policy "Members view their projects"
+  on public.projects for select
+  using (
+    exists (
+      select 1 from public.project_members
+      where project_members.project_id = projects.id
+      and project_members.user_id = auth.uid()
+    )
+  );
 
 -- Project members: visible/editable by the project owner
 create policy "Owners manage project members"
@@ -89,6 +121,17 @@ create policy "Owners manage project members"
       select 1 from public.projects
       where projects.id = project_members.project_id
       and projects.owner_id = auth.uid()
+    )
+  );
+
+-- Project members: teammates can view the member roster of their projects
+create policy "Members view project roster"
+  on public.project_members for select
+  using (
+    exists (
+      select 1 from public.project_members as pm
+      where pm.project_id = project_members.project_id
+      and pm.user_id = auth.uid()
     )
   );
 
@@ -110,9 +153,43 @@ create policy "Owners manage tasks"
     )
   );
 
+-- Tasks: teammates can view tasks in projects they belong to
+create policy "Members view project tasks"
+  on public.tasks for select
+  using (
+    exists (
+      select 1 from public.project_members
+      where project_members.project_id = tasks.project_id
+      and project_members.user_id = auth.uid()
+    )
+  );
+
+-- Tasks: teammates can update the status of tasks assigned to them
+create policy "Members update assigned task status"
+  on public.tasks for update
+  using (
+    exists (
+      select 1 from public.project_members
+      where project_members.id = tasks.assigned_member_id
+      and project_members.user_id = auth.uid()
+    )
+  )
+  with check (
+    exists (
+      select 1 from public.project_members
+      where project_members.id = tasks.assigned_member_id
+      and project_members.user_id = auth.uid()
+    )
+  );
+
 -- ============================================================
 -- MIGRATIONS — run these if you already have existing tables
 -- (safe to run multiple times thanks to "if not exists" / "or replace")
 -- ============================================================
 alter table public.projects add column if not exists description text;
 alter table public.tasks add column if not exists updated_at timestamptz default now();
+create table if not exists public.profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  username text unique not null,
+  updated_at timestamptz default now()
+);
