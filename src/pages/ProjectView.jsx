@@ -243,6 +243,7 @@ export default function ProjectView() {
   const totalTasks  = tasks.length
   const doneTasks   = tasks.filter((t) => t.status === 'done').length
   const overdueCount = tasks.filter((t) => isOverdue(t)).length
+  const startTodayCount = tasks.filter((t) => t.status !== 'done' && t.start_by_date === todayIso).length
   const dueSoonCount = tasks.filter((t) => t.status !== 'done' && getDaysUntilDeadline(t.deadline) >= 0 && getDaysUntilDeadline(t.deadline) <= 7).length
   const percentDone = totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : 0
 
@@ -319,10 +320,11 @@ export default function ProjectView() {
             <div className="h-2 w-full bg-paper-dim rounded-full overflow-hidden">
               <div className="h-full bg-buffer animate-bar-grow rounded-full" style={{ width: `${percentDone}%` }} />
             </div>
-            <div className="flex gap-4 mt-4 text-xs flex-wrap">
-              <span className={overdueCount > 0 ? 'text-deadline font-medium' : 'text-graphite'}>{overdueCount} overdue</span>
+            <div className="flex gap-3 mt-4 text-xs flex-wrap items-center">
+              {overdueCount > 0 && <span className="text-deadline font-medium bg-deadline-soft px-2 py-0.5 rounded-full">{overdueCount} overdue start</span>}
+              {startTodayCount > 0 && <span className="text-deadline font-medium bg-deadline-soft/80 px-2 py-0.5 rounded-full">🔥 {startTodayCount} start today</span>}
               <span className={dueSoonCount > 0 ? 'text-ink font-medium' : 'text-graphite'}>{dueSoonCount} due within 7 days</span>
-              {overdueCount === 0 && dueSoonCount === 0 && <span className="text-buffer font-medium">✓ All on track</span>}
+              {overdueCount === 0 && startTodayCount === 0 && dueSoonCount === 0 && <span className="text-buffer font-medium">✓ All on track</span>}
             </div>
           </section>
         )}
