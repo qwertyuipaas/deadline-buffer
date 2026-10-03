@@ -4,29 +4,26 @@
 
 ## What changed this week
 
-- **Official PostgreSQL Profiles Schema (`supabase/schema.sql`):** Added the `public.profiles` table definition to the database schema with a primary key reference to `auth.users`, unique username constraints, and automated timestamps. Configured Row Level Security (RLS) policies so usernames are publicly readable while write access is strictly limited to the account owner.
-- **Collaborative Group Permissions & RLS Policies (`supabase/schema.sql`):** Overhauled the Supabase RLS policies to support true multi-user group projects:
-  - Added `Members view their projects` allowing teammates linked via `user_id` in `project_members` to view projects they belong to.
-  - Added `Members view project roster` allowing teammates to view who else is in their group project.
-  - Added `Members view project tasks` so teammates can see all assignments within their project.
-- **Teammate Task Status Updates (`supabase/schema.sql`):** Added a dedicated update policy (`Members update assigned task status`) that allows teammates to mark tasks assigned to them as "in progress" or "done" without requiring the project creator's login.
-- **Start-By Urgency Triage (`src/pages/ProjectView.jsx`):** Updated the progress header on the project view to dynamically count and highlight assignments that have hit their calculated start-by date today (`🔥 X start today`), alongside existing overdue counters.
-- **Comprehensive Project Documentation & Finals Badge:** Finalized the 7-section `README.md` following all documentation guidelines, created `.env.example`, built vector UI screenshots in `docs/screenshots/`, and authored `AI-USAGE.md` for the Finals Badge attribution.
+- Added the `profiles` table to `supabase/schema.sql` so user accounts have a real username tied to their Supabase auth ID, along with unique checks and RLS policies so people can look up teammates by username.
+- Updated the Supabase RLS policies so teammates can actually collaborate on group projects. Previously, only the project creator could see anything. Now, users in `project_members` can view their projects, see the other teammates, and view all tasks in the project.
+- Added a specific RLS update policy for teammates: they can now toggle their own assigned tasks between "not started", "in progress", and "done", but they can't accidentally change the deadline or the hours that the creator set.
+- Added a "Start Today" counter in the project header on `ProjectView.jsx` (shows a flame icon and the count of tasks that reached their calculated start date today) so students immediately know what is urgent when they log in.
+- Completed the project documentation (`README.md`, `.env.example`, vector UI screenshots in `docs/screenshots/`, and `AI-USAGE.md` with our effort breakdown).
 
 ## Why
 
-- Until now, group projects were one-sided: the project creator could assign tasks to teammates by name, but teammates couldn't log in and manage their own work because database policies were owner-only (`projects.owner_id = auth.uid()`). Adding collaborative RLS policies makes group projects genuinely collaborative.
-- Storing usernames in an official `profiles` table in Postgres ensures data persistence and enforces username uniqueness at the database level instead of relying on frontend checks.
-- When students have 10+ assignments across multiple courses, scanning dates is stressful. Calling out assignments that need to be started *today* in the progress header gives students an immediate, actionable priority list the moment they open a project.
-- Clear documentation and setup instructions ensure anyone—including grading instructors and new teammates—can clone the repository and get the app running locally without guesswork.
+- Before this week, group projects were basically read-only for anyone other than the person who created the project. If Alex created a project and assigned Jamie a task, Jamie couldn't even see the project when logging in because the old RLS rule only allowed `owner_id = auth.uid()`. Making these collaborative policies was necessary so group members can actually use the app together.
+- Having a real `profiles` table in Postgres ensures usernames are unique at the database level and don't just exist in frontend state.
+- Students with a bunch of assignments across different classes get overwhelmed looking at long lists of dates. Having a quick indicator that calls out tasks that need to be started *today* gives an instant priority list right when you open the page.
+- Clear setup steps and documentation make sure anyone cloning the repo (or grading it) can run it locally with their own Supabase keys without hitting missing env errors.
 
 ## What broke or what I got stuck on
 
-- **PostgreSQL RLS infinite recursion:** When writing the policy for teammates to view project members, I initially wrote a query that selected from `project_members` to check membership in `project_members`. Supabase threw `error: infinite recursion detected in policy for relation "project_members"`, crashing all project queries. I had to fix this by aliasing the subquery table (`as pm`) and referencing the foreign key cleanly to break the circular dependency.
-- **Restricting member update permissions:** My first teammate update policy allowed members to update any column on tasks assigned to them. During testing, this let an assigned member accidentally change the estimated hours and deadline that the project owner had set. I had to refine the RLS policy and frontend handlers to ensure members only update assignment `status` (`not_started`, `in_progress`, `done`).
-- **Mobile button wrapping on narrow screens:** On narrow smartphone screens (under 375px wide), the header action buttons ("Guide", "Copy Summary", "Add to Calendar") and the project title were wrapping awkwardly and causing horizontal scroll. I tightened the button padding, adjusted flex-wrap boundaries, and verified the layout using mobile emulation.
+- I ran into an infinite recursion error in PostgreSQL when writing the RLS policy for `project_members`. I had written a query that checked `project_members` inside a policy on `project_members`, which caused Supabase to crash with `error: infinite recursion detected in policy for relation "project_members"`. I had to learn how to alias the table (`as pm`) to break the circular dependency.
+- In my first draft of the task update policy, members were able to edit any column on their tasks. When testing with two browser windows, I noticed an assigned member could accidentally change the deadline or the estimated hours that the creator had specified. I had to tighten both the RLS policy and the React handlers so members can only update the task `status`.
+- On narrow phone screens (under 375px), the header buttons ("Guide", "Copy Summary", "Add to Calendar") were wrapping awkwardly and pushing the title off-center. I had to tweak the flex-wrap settings and button padding so the header fits properly on mobile.
 
 ## What is left
 
-- Run final end-to-end verification across multiple test accounts on the deployed Netlify site to ensure the collaborative flow works smoothly from signup to task completion.
-- Prepare demo notes and walkthrough talking points for the final project submission and evaluation.
+- Run final tests across multiple accounts on the deployed site to make sure the invite and task update flow works smoothly from start to finish.
+- Prepare demo notes and talking points for the final submission.

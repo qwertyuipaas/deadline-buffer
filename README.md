@@ -207,4 +207,5 @@ A completed [`SECURITY-CHECKLIST.md`](SECURITY-CHECKLIST.md) is included in the 
 
 ## AI usage
 
-This project was built with the assistance of AI tools (Claude and ChatGPT) used for pair programming, algorithm brainstorming, and debugging. Full documentation of tools used, specific contributions, bugs caught, and human verification workflows is detailed in [`AI-USAGE.md`](AI-USAGE.md).
+This project was built with approximately 25% AI assistance (used as an interactive reference for syntax, formula brainstorming, and debugging) and ~75% human-authored implementation and design, comfortably below the 70% threshold. Complete details on tools used, specific contributions, bugs caught, and our verification workflow are documented in [`AI-USAGE.md`](AI-USAGE.md).
+
