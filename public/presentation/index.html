@@ -345,27 +345,36 @@ main.deck-stage {
   border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
-/* PRINT STYLES (Generates clean 16:9 slides for PDF export) */
+/* PRINT STYLES (Generates clean multi-page PDF with all 8 slides) */
 @media print {
   body {
-    background: #fff;
-    color: #000;
+    background: #fff !important;
+    color: #16192b !important;
   }
-  header.top-bar, .notes-panel, .nav-controls {
+  header.top-bar, .notes-panel, .nav-controls, .key-hint, .slide-footer {
     display: none !important;
   }
   main.deck-stage {
-    padding: 0;
-    display: block;
+    padding: 0 !important;
+    display: block !important;
   }
   .slide-viewport {
-    page-break-after: always;
-    box-shadow: none;
-    border-radius: 0;
-    width: 100vw;
-    height: 100vh;
-    max-width: none;
-    aspect-ratio: auto;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    aspect-ratio: auto !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+  .slide-content {
+    display: flex !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    min-height: 95vh !important;
+    padding: 2.5rem 3rem !important;
+    border-bottom: 2px dashed #cbd5e1;
+    box-sizing: border-box !important;
   }
 }
 </style>
