@@ -810,7 +810,10 @@ export default function Landing() {
           <p className="text-xs text-graphite">
             Deadline Buffer — built for students who put things off.
           </p>
-          <div className="flex items-center gap-4 text-xs text-graphite">
+          <div className="flex items-center gap-4 text-xs text-graphite flex-wrap justify-center sm:justify-end">
+            <a href="/presentation/" className="hover:text-buffer font-medium transition-colors">Final Presentation</a>
+            <a href="/journal/" className="hover:text-ink transition-colors">Journal</a>
+            <a href="/design-system/" className="hover:text-ink transition-colors">Design System</a>
             <Link to="/signup" className="hover:text-ink transition-colors">Sign Up</Link>
             <Link to="/login" className="hover:text-ink transition-colors">Sign In</Link>
           </div>

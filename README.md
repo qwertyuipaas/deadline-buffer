@@ -115,6 +115,7 @@ Open your browser and navigate to **`http://localhost:5173/`**.
 ```
 deadline-buffer/
 ├── public/                     # Static assets and course milestone documentation
+│   ├── presentation/           # M8A8 final project presentation and social card
 │   ├── design-system/          # M6A3 design tokens and component specification
 │   ├── journal/                # M7A1 reflection journal
 │   ├── wireframes/             # M6A2 early wireframe sketches

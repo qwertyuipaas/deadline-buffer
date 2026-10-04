@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Deadline Buffer — Final Project Presentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #f6f6f3;
+  --paper-dim: #eceae4;
+  --ink: #16192b;
+  --ink-soft: #2b2f45;
+  --graphite: #5b6072;
+  --graphite-soft: #9297a8;
+  --buffer: #0e8f82;
+  --buffer-soft: #daf0ec;
+  --deadline: #e1512c;
+  --deadline-soft: #fbe3da;
+  --highlight: #eab13a;
+  --highlight-soft: #fbeecd;
+  --border: #e2e8f0;
+  --card-bg: #ffffff;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--ink);
+  color: #ffffff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  user-select: none;
+}
+
+/* TOP BAR */
+header.top-bar {
+  background: rgba(22, 25, 43, 0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.brand-logo {
+  width: 28px;
+  height: 28px;
+  background: var(--buffer);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.9rem;
+}
+.brand-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #fff;
+}
+.badge-pill {
+  background: rgba(14, 143, 130, 0.2);
+  color: #2dd4bf;
+  border: 1px solid rgba(14, 143, 130, 0.4);
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-decoration: none;
+}
+.btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+.btn-primary {
+  background: var(--buffer);
+  border-color: var(--buffer);
+  color: #fff;
+  font-weight: 600;
+}
+.btn-primary:hover {
+  background: #0ca394;
+  border-color: #0ca394;
+}
+.slide-counter {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--graphite-soft);
+  padding: 0 0.5rem;
+}
+
+/* PRESENTATION STAGE */
+main.deck-stage {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  position: relative;
+}
+
+.slide-viewport {
+  width: 100%;
+  max-width: 1100px;
+  aspect-ratio: 16 / 9;
+  min-height: 580px;
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 20px;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.slide-content {
+  flex: 1;
+  padding: 3rem 3.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow-y: auto;
+}
+
+/* SLIDE HEADER & TYPOGRAPHY */
+.slide-category {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--buffer);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+.slide-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 2.3rem;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--ink);
+  margin-bottom: 0.75rem;
+}
+.slide-subtitle {
+  font-size: 1.05rem;
+  color: var(--graphite);
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+/* GRIDS & LAYOUT CARDS */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  flex: 1;
+}
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  flex: 1;
+}
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  flex: 1;
+}
+.card {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.25rem 1.4rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+}
+.card-header {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.card-body {
+  font-size: 0.88rem;
+  color: var(--graphite);
+  line-height: 1.55;
+  flex: 1;
+}
+.card-body strong {
+  color: var(--ink);
+}
+.highlight-stat {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--buffer);
+  line-height: 1;
+  margin-bottom: 0.3rem;
+}
+
+/* DEMO & CODE SNIPPETS */
+.code-box {
+  background: #1e2238;
+  color: #e2e8f0;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.8rem;
+  border-radius: 10px;
+  padding: 1rem;
+  overflow-x: auto;
+  line-height: 1.5;
+  margin-top: 0.5rem;
+}
+.code-keyword { color: #38bdf8; }
+.code-fn { color: #facc15; }
+.code-str { color: #34d399; }
+.code-num { color: #f472b6; }
+.code-comment { color: #94a3b8; font-style: italic; }
+
+/* MINI INTERACTIVE BUFFER BAR */
+.demo-bar-track {
+  height: 22px;
+  background: var(--paper-dim);
+  border-radius: 999px;
+  overflow: hidden;
+  display: flex;
+  margin: 1rem 0 0.5rem;
+  border: 1px solid rgba(0,0,0,0.06);
+}
+.demo-bar-buffer {
+  background: var(--buffer);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.demo-bar-work {
+  background: var(--highlight);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* FOOTER BAR */
+.slide-footer {
+  padding: 1rem 3.5rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  font-size: 0.78rem;
+  color: var(--graphite-soft);
+}
+.slide-footer a {
+  color: var(--buffer);
+  text-decoration: none;
+  font-weight: 500;
+}
+.slide-footer a:hover {
+  text-decoration: underline;
+}
+
+/* SPEAKER NOTES DRAWER */
+.notes-panel {
+  display: none;
+  background: #0f121d;
+  border-top: 2px solid var(--buffer);
+  padding: 1rem 2rem;
+  font-size: 0.9rem;
+  color: #cbd5e1;
+  line-height: 1.6;
+}
+.notes-panel.active {
+  display: block;
+}
+.notes-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--buffer);
+  margin-bottom: 0.3rem;
+}
+
+/* KEYBOARD HINTS */
+.key-hint {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+  color: #cbd5e1;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* PRINT STYLES (Generates clean 16:9 slides for PDF export) */
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+  }
+  header.top-bar, .notes-panel, .nav-controls {
+    display: none !important;
+  }
+  main.deck-stage {
+    padding: 0;
+    display: block;
+  }
+  .slide-viewport {
+    page-break-after: always;
+    box-shadow: none;
+    border-radius: 0;
+    width: 100vw;
+    height: 100vh;
+    max-width: none;
+    aspect-ratio: auto;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR CONTROLS -->
+<header class="top-bar">
+  <div class="brand">
+    <div class="brand-logo">DB</div>
+    <div>
+      <span class="brand-title">Deadline Buffer</span>
+      <span class="badge-pill">M8A8 · Final Project Presentation</span>
+    </div>
+  </div>
+
+  <div class="nav-controls">
+    <button class="btn" onclick="prevSlide()" title="Previous slide (Left Arrow)">← Prev</button>
+    <span class="slide-counter" id="counter">1 / 8</span>
+    <button class="btn" onclick="nextSlide()" title="Next slide (Right Arrow / Space)">Next →</button>
+    <button class="btn" onclick="toggleNotes()" title="Toggle Speaker Notes (N key)">🎙️ Notes</button>
+    <button class="btn" onclick="window.print()" title="Print / Export to PDF (P key)">🖨️ PDF</button>
+    <a href="/" target="_blank" class="btn btn-primary" title="Launch the live deployed web application">🚀 Live App</a>
+  </div>
+</header>
+
+<!-- PRESENTATION STAGE -->
+<main class="deck-stage">
+  <div class="slide-viewport" id="viewport">
+    
+    <!-- SLIDE 1: COVER -->
+    <div class="slide-content" id="slide-1">
+      <div>
+        <div class="slide-category">M8A8 · Final Project Presentation · October 2026</div>
+        <h1 class="slide-title" style="font-size: 3rem; margin-top: 0.5rem;">Deadline Buffer<br><span style="color: var(--buffer);">+ Group Work Splitter</span></h1>
+        <p class="slide-subtitle" style="font-size: 1.2rem; max-width: 700px;">
+          Turning stressful assignment deadlines into calm, realistic start-by dates and balancing group workloads by team member availability.
+        </p>
+      </div>
+
+      <div class="grid-3" style="margin: 1rem 0;">
+        <div class="card" style="border-left: 4px solid var(--buffer);">
+          <div class="card-header">👤 Presenter & Stack</div>
+          <div class="card-body">
+            <strong>Glen P</strong><br>
+            React 18 · Tailwind CSS v4<br>
+            Supabase PostgreSQL · Render Hosting
+          </div>
+        </div>
+        <div class="card" style="border-left: 4px solid var(--highlight);">
+          <div class="card-header">🎯 Deliverables</div>
+          <div class="card-body">
+            <strong>M8A8 Presentation (100 pts)</strong><br>
+            3–5 Min Video · Slide Deck · 1080×1080 Image<br>
+            AI Attribution: ~25% AI / ~75% Human
+          </div>
+        </div>
+        <div class="card" style="border-left: 4px solid var(--deadline);">
+          <div class="card-header">🌐 Live Links</div>
+          <div class="card-body">
+            <strong>Live App:</strong> <a href="https://deadline-buffer.onrender.com/" target="_blank" style="color: var(--buffer); font-weight:600;">deadline-buffer.onrender.com</a><br>
+            <strong>Repo:</strong> github.com/qwertyuipaas/deadline-buffer
+          </div>
+        </div>
+      </div>
+
+      <div style="font-size: 0.85rem; color: var(--graphite); display: flex; align-items: center; gap: 1rem;">
+        <span>Press <span class="key-hint">Space</span> or <span class="key-hint">→</span> to advance</span>
+        <span>•</span>
+        <span>Press <span class="key-hint">N</span> for speaker notes</span>
+        <span>•</span>
+        <span>Press <span class="key-hint">P</span> to export slides as PDF</span>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: THE PROBLEM -->
+    <div class="slide-content" id="slide-2" style="display: none;">
+      <div>
+        <div class="slide-category">Topic 1 · The Problem</div>
+        <h2 class="slide-title">The "Due Date Illusion" & Unequal Splits</h2>
+        <p class="slide-subtitle">Why traditional student productivity and calendar apps fail.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-header">📅 The Due Date Illusion</div>
+          <div class="card-body">
+            Calendars only display the <strong>final deadline</strong> (e.g. <em>"Friday at 11:59 PM"</em>). On Monday, that feels safely far away—lulling students into a false sense of security until panic sets in Thursday night.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">⏳ Estimation Blindness</div>
+          <div class="card-body">
+            Students know an assignment requires 10+ hours of focused research, but humans struggle to translate <strong>study hours into calendar start days</strong> without manual mental math.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">👥 The Freeloader & Burnout Trap</div>
+          <div class="card-body">
+            Group projects split tasks blindly without factoring in <strong>each teammate's real weekly capacity</strong>. One member gets overloaded while others take trivial tasks, causing friction and missed deadlines.
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 1rem; background: var(--paper-dim); border: none;">
+        <div class="card-body" style="font-size: 0.95rem; color: var(--ink);">
+          💡 <strong>The Opportunity:</strong> A tool that works <em>backwards from the due date</em>, tells students exactly which day to start, and distributes group tasks according to available weekly hours.
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: THE SOLUTION -->
+    <div class="slide-content" id="slide-3" style="display: none;">
+      <div>
+        <div class="slide-category">Topic 2 · The Solution</div>
+        <h2 class="slide-title">The Start-By Engine & Visual Buffer Bar</h2>
+        <p class="slide-subtitle">A deterministic algorithm that replaces anxiety with calm, actionable start dates.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">🧮 The Start-By Math</div>
+          <div class="card-body">
+            Assuming a baseline of <strong>2 focused study hours/day</strong>, the app applies priority-scaled safety cushions:
+            <ul style="margin: 0.75rem 0 0 1.2rem; font-size: 0.85rem;">
+              <li><strong>Low Priority:</strong> 1.1× multiplier</li>
+              <li><strong>Medium Priority:</strong> 1.3× multiplier</li>
+              <li><strong>High Priority:</strong> 1.6× multiplier (extra cushion for high stakes)</li>
+            </ul>
+            <div class="code-box">
+<span class="code-keyword">const</span> bufferDays = Math.ceil((hours / <span class="code-num">2</span>) * multiplier);<br>
+startDate.setDate(deadlineDate.getDate() - bufferDays);
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">📊 The Signature Buffer Bar</div>
+          <div class="card-body">
+            A to-scale visual indicator splitting assignment time into two distinct zones:
+            <div class="demo-bar-track">
+              <div class="demo-bar-buffer" style="width: 58%;">Safe Buffer (5 days)</div>
+              <div class="demo-bar-work" style="width: 42%;">Work Window (4 days)</div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; font-family: monospace; color: var(--graphite);">
+              <span>Today (Oct 4)</span>
+              <span style="color: var(--buffer); font-weight: bold;">Start: Oct 9</span>
+              <span style="color: var(--deadline); font-weight: bold;">Due: Oct 13</span>
+            </div>
+            <p style="margin-top: 0.8rem; font-size: 0.82rem;">
+              <strong>Teal:</strong> Safe buffer cushion. You have time.<br>
+              <strong>Amber/Coral:</strong> Active work window. Begin now.<br>
+              <strong>Red:</strong> Overdue start date alert (<code>🔥 Start today</code>).
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: PRODUCT DEMO & FEATURES -->
+    <div class="slide-content" id="slide-4" style="display: none;">
+      <div>
+        <div class="slide-category">Topic 2 · Product Demo</div>
+        <h2 class="slide-title">Core Features & Primary User Flow</h2>
+        <p class="slide-subtitle">From quick task capture to multi-user group workload balancing and export.</p>
+      </div>
+
+      <div class="grid-4">
+        <div class="card">
+          <div class="card-header">1. Dashboard</div>
+          <div class="card-body">
+            Real-time <strong>Buffer Health Score (0–100%)</strong>, active semester task count, and <code>🔥 Start Today</code> urgent priority triage.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">2. Quick Capture</div>
+          <div class="card-body">
+            Slide-in Task Drawer (<kbd class="key-hint">N</kbd> keyboard shortcut) with <strong>live Start-By calculation preview</strong> as the student types.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">3. Workload Balancing</div>
+          <div class="card-body">
+            Visual member capacity meters (<code>8/10h</code>). Auto-suggests the teammate with the <strong>lightest current load</strong> to prevent burnout.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">4. Export Hub</div>
+          <div class="card-body">
+            One-click <strong>iCalendar (.ics) download</strong> for Google/Apple Calendar, plus Discord/WhatsApp markdown checklist summaries.
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 1rem; border-left: 4px solid var(--buffer);">
+        <div class="card-body" style="font-size: 0.85rem;">
+          <strong>Live Walkthrough Demo:</strong> Solo projects calculate individualized paces; group projects link invited teammates, sync task statuses in real time, and protect creator deadlines through Row Level Security.
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: TECH STACK & ARCHITECTURE -->
+    <div class="slide-content" id="slide-5" style="display: none;">
+      <div>
+        <div class="slide-category">Topic 3 · The Tech You Used</div>
+        <h2 class="slide-title">Full-Stack Architecture & Modern Tools</h2>
+        <p class="slide-subtitle">Built with standard Node, React 18, Tailwind CSS v4, and PostgreSQL via Supabase.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-header">⚛️ Frontend</div>
+          <div class="card-body">
+            <strong>React 18 SPA + Vite 6</strong><br>
+            • Custom hooks (<code>useProjectData</code>, <code>useTaskForm</code>, <code>useTaskEdit</code>)<br>
+            • Tailwind CSS v4 (<code>@theme</code> design tokens, custom keyframe animations)<br>
+            • Accessible custom <code>DatePicker</code> and <code>BufferBar</code>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">🐘 Backend & Database</div>
+          <div class="card-body">
+            <strong>Supabase (Managed PostgreSQL)</strong><br>
+            • Relational schema: <code>profiles</code>, <code>projects</code>, <code>project_members</code>, <code>tasks</code><br>
+            • GoTrue Auth with bcrypt password hashing<br>
+            • Automated SQL triggers for <code>updated_at</code>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">🚀 CI/CD & Reliability</div>
+          <div class="card-body">
+            <strong>Render Hosting + GitHub Actions</strong><br>
+            • Static SPA hosting with <code>_redirects</code> rewrite rules<br>
+            • GitHub Actions cron (<code>keep-supabase-alive.yml</code>) pinging database 3× weekly to prevent free-tier pause
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 1rem;">
+        <div class="card-header" style="font-size: 0.95rem;">🔒 Collaborative Row Level Security (RLS)</div>
+        <div class="card-body" style="font-size: 0.82rem;">
+          Database policies enforce multi-tenant authorization: Project owners have full CRUD rights; teammates in <code>project_members</code> can view shared projects and update assigned task completion status without altering deadlines or estimated hours.
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: TECHNICAL CHALLENGES -->
+    <div class="slide-content" id="slide-6" style="display: none;">
+      <div>
+        <div class="slide-category">Topic 4 · The Challenges</div>
+        <h2 class="slide-title">Engineering Roadblocks & How I Solved Them</h2>
+        <p class="slide-subtitle">Four real-world bugs caught, debugged, and resolved during development.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">🐛 1. The UTC Timezone Shift Bug</div>
+          <div class="card-body">
+            <strong>The Problem:</strong> Formatting dates via <code>toISOString().split('T')[0]</code> converted to UTC first. For users ahead of UTC (UTC+8), evening dates shifted back a calendar day (Monday showed as Sunday).<br>
+            <strong>The Fix:</strong> Discarded UTC formatting and wrote <code>toLocalIsoDate()</code> explicitly reading local clock <code>getFullYear()</code>, <code>getMonth() + 1</code>, and <code>getDate()</code>.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">🐛 2. Mobile White Screen Crash</div>
+          <div class="card-body">
+            <strong>The Problem:</strong> Desktop Chrome cached older scripts, but visiting on a real phone produced an immediate blank white screen with no error message.<br>
+            <strong>The Fix:</strong> Connected Chrome remote mobile debugging and caught <code>ReferenceError: useEffect is not defined</code> in <code>Login.jsx</code>. Restored React hook imports and declared loading states.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">🐛 3. Typewriter Layout Shift (CLS)</div>
+          <div class="card-body">
+            <strong>The Problem:</strong> As the hero typewriter animated words of varying length, the text container collapsed to zero height, causing the entire page below to jitter violently.<br>
+            <strong>The Fix:</strong> Locked container with <code>min-h-[1.2em]</code>, block layout, and inserted a zero-width space (<code>\u200B</code>) so the baseline never collapses.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">🐛 4. PostgreSQL RLS Infinite Recursion</div>
+          <div class="card-body">
+            <strong>The Problem:</strong> Writing a member read policy with an <code>EXISTS</code> subquery on <code>project_members</code> inside a policy for <code>project_members</code> crashed Supabase with circular recursion.<br>
+            <strong>The Fix:</strong> Broke circular dependency by table aliasing (<code>as pm</code>) and scoping queries directly through project foreign keys.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 7: SECURITY & AI ATTRIBUTION -->
+    <div class="slide-content" id="slide-7" style="display: none;">
+      <div>
+        <div class="slide-category">Requirements Audit · Security & AI Badge</div>
+        <h2 class="slide-title">Security Checklist & Human-Led Development</h2>
+        <p class="slide-subtitle">Full compliance with Finals Badge guidelines and academic integrity rubrics.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">🛡️ Security Checklist (15/15 Passed)</div>
+          <div class="card-body">
+            • <strong>Secrets Protected:</strong> <code>.env</code> in <code>.gitignore</code>, only placeholders in <code>.env.example</code>.<br>
+            • <strong>Client Safety:</strong> Admin service-role key never exposed to client; anon key used only.<br>
+            • <strong>Password Protection:</strong> Passwords hashed with bcrypt via Supabase Auth.<br>
+            • <strong>Injection Defense:</strong> Parameterized Supabase client queries (zero SQL string concatenation).<br>
+            • <strong>XSS Escaping:</strong> React JSX automatic character escaping.<br>
+            • <strong>RLS Active:</strong> Row Level Security enabled on all 4 database tables.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">🤖 AI Usage Breakdown (~25% AI / ~75% Human)</div>
+          <div class="card-body">
+            Course requirement: <em>at least 20% human-authored (max 80% AI)</em>. Our project achieved <strong>~75% human-authored code</strong>:
+            <ul style="margin: 0.6rem 0 0 1.2rem; font-size: 0.85rem;">
+              <li><strong>Architecture & App Flow:</strong> 85% Human / 15% AI</li>
+              <li><strong>Frontend Components & UI:</strong> 75% Human / 25% AI</li>
+              <li><strong>Buffer Algorithm & Date Math:</strong> 70% Human / 30% AI</li>
+              <li><strong>PostgreSQL & Security Policies:</strong> 70% Human / 30% AI</li>
+              <li><strong>Documentation & Journals:</strong> 85% Human / 15% AI</li>
+            </ul>
+            <p style="margin-top: 0.6rem; font-size: 0.8rem; color: var(--graphite);">
+              Documented in <code>AI-USAGE.md</code> with human review protocol and bugs caught.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 8: WHAT'S NEXT & CONCLUSION -->
+    <div class="slide-content" id="slide-8" style="display: none;">
+      <div>
+        <div class="slide-category">Topic 5 · What I Would Do Next</div>
+        <h2 class="slide-title">Future Roadmap & Final Takeaways</h2>
+        <p class="slide-subtitle">Where Deadline Buffer goes from here.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-header">🔔 1. Push Notifications</div>
+          <div class="card-body">
+            Implement Web Push and browser notifications that alert students at 8:00 AM on the day a task transitions into <code>🔥 Start today</code> or becomes critical.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">📅 2. Semester Gantt View</div>
+          <div class="card-body">
+            Build an interactive visual Gantt timeline showing overlapping task buffers across all enrolled courses simultaneously, highlighting study pinch-points.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">✉️ 3. One-Click Invites</div>
+          <div class="card-body">
+            Automate teammate onboarding via email invitation links using Supabase Edge Functions that bind new registrations directly to the project roster.
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 1rem; background: var(--paper-dim); border: none; padding: 1.5rem; text-align: center;">
+        <h3 style="font-family: 'Space Grotesk', sans-serif; font-size: 1.4rem; color: var(--ink); margin-bottom: 0.4rem;">
+          Thank You! Ready for Questions.
+        </h3>
+        <p style="font-size: 0.9rem; color: var(--graphite); margin-bottom: 0.8rem;">
+          Live App: <a href="https://deadline-buffer.onrender.com/" target="_blank" style="color: var(--buffer); font-weight: 600;">deadline-buffer.onrender.com</a> · Repo: <a href="https://github.com/qwertyuipaas/deadline-buffer" target="_blank" style="color: var(--buffer); font-weight: 600;">github.com/qwertyuipaas/deadline-buffer</a>
+        </p>
+        <a href="https://deadline-buffer.onrender.com/" target="_blank" class="btn btn-primary" style="display: inline-flex; padding: 0.6rem 1.4rem; font-size: 0.9rem;">
+          🚀 Open Live Application
+        </a>
+      </div>
+    </div>
+
+    <!-- SLIDE FOOTER -->
+    <div class="slide-footer">
+      <span>Deadline Buffer · M8A8 Final Project Presentation</span>
+      <span>Glen P · October 2026</span>
+      <a href="https://deadline-buffer.onrender.com/" target="_blank">Launch App ↗</a>
+    </div>
+  </div>
+</main>
+
+<!-- SPEAKER NOTES DRAWER -->
+<div class="notes-panel" id="notesPanel">
+  <div class="notes-label">🎙️ Speaker Talking Points (Press N to close)</div>
+  <div id="notesText">
+    "Hello everyone. Today I'm presenting Deadline Buffer, a web application built for students who put things off. Instead of just tracking when an assignment is due, it calculates when you actually need to start, and helps group projects split work fairly based on each member's weekly availability."
+  </div>
+</div>
+
+<script>
+const TOTAL_SLIDES = 8;
+let currentSlide = 1;
+
+const NOTES = {
+  1: "Hello everyone. Today I'm presenting Deadline Buffer, a web application built for students who put things off. Instead of just tracking when an assignment is due, it calculates when you actually need to start, and helps group projects split work fairly based on each member's weekly availability.",
+  2: "Most productivity tools fail students because they focus on when work is due rather than when work must begin. In group projects, this is magnified: tasks get dumped on whoever is in the room without checking if anyone actually has 10 hours of free time this week.",
+  3: "Deadline Buffer solves this with the Start-By calculation. If a high-priority project takes 10 hours, it pads that work with a 1.6 safety multiplier. The visual buffer bar lets students see at a glance whether today is safe, or whether today is the day they must start.",
+  4: "Here is our primary user flow: from the dashboard overview showing your overall buffer health score, to quick task entry with the N shortcut, to group workload balancing that tracks teammate weekly hours and suggests who has room to take on new tasks.",
+  5: "The application runs on a React 18 single-page architecture styled with Tailwind v4. The backend is powered by Supabase PostgreSQL. To keep the free database from auto-pausing during grading, I automated a GitHub Actions workflow that pings the database three times a week.",
+  6: "Developing this app exposed real-world bugs. My favorite fix was tracking down an off-by-one date error: using toISOString() caused students in my timezone to see start dates from yesterday. Replacing it with a local date extraction helper fixed the issue across all timezones.",
+  7: "Security is enforced at the database level with PostgreSQL Row Level Security. Teammates can view their projects and mark tasks as done, but cannot accidentally modify deadlines or hour estimates set by the creator. Our AI usage was kept to ~25%, comfortably below course limits.",
+  8: "In the future, I plan to add browser push notifications for Start Today tasks and a multi-course Gantt view. Deadline Buffer turns assignment anxiety into proactive study habits. Thank you, and I'd be glad to take any questions."
+};
+
+function showSlide(index) {
+  if (index < 1 || index > TOTAL_SLIDES) return;
+  for (let i = 1; i <= TOTAL_SLIDES; i++) {
+    const el = document.getElementById(`slide-${i}`);
+    if (el) el.style.display = (i === index) ? 'flex' : 'none';
+  }
+  currentSlide = index;
+  document.getElementById('counter').innerText = `${currentSlide} / ${TOTAL_SLIDES}`;
+  document.getElementById('notesText').innerText = NOTES[currentSlide] || '';
+}
+
+function nextSlide() {
+  if (currentSlide < TOTAL_SLIDES) showSlide(currentSlide + 1);
+}
+
+function prevSlide() {
+  if (currentSlide > 1) showSlide(currentSlide - 1);
+}
+
+function toggleNotes() {
+  const panel = document.getElementById('notesPanel');
+  panel.classList.toggle('active');
+}
+
+// Keyboard controls
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+    e.preventDefault();
+    nextSlide();
+  } else if (e.key === 'ArrowLeft' || e.key === 'Backspace' || e.key === 'PageUp') {
+    e.preventDefault();
+    prevSlide();
+  } else if (e.key === 'n' || e.key === 'N') {
+    e.preventDefault();
+    toggleNotes();
+  } else if (e.key === 'p' || e.key === 'P') {
+    e.preventDefault();
+    window.print();
+  } else if (e.key === 'Home') {
+    showSlide(1);
+  } else if (e.key === 'End') {
+    showSlide(TOTAL_SLIDES);
+  }
+});
+
+// Touch swipe support
+let touchStartX = 0;
+document.addEventListener('touchstart', (e) => {
+  touchStartX = e.changedTouches[0].screenX;
+}, false);
+document.addEventListener('touchend', (e) => {
+  const touchEndX = e.changedTouches[0].screenX;
+  if (touchEndX < touchStartX - 50) nextSlide();
+  if (touchEndX > touchStartX + 50) prevSlide();
+}, false);
+
+showSlide(1);
+</script>
+</body>
+</html>
