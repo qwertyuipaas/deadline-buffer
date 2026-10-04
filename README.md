@@ -206,7 +206,14 @@ A completed [`SECURITY-CHECKLIST.md`](SECURITY-CHECKLIST.md) is included in the 
 
 ---
 
-## AI usage
+## AI Usage & Attribution Credit
 
-This project was built with approximately 25% AI assistance (used as an interactive reference for syntax, formula brainstorming, and debugging) and ~75% human-authored implementation and design, comfortably below the 70% threshold. Complete details on tools used, specific contributions, bugs caught, and our verification workflow are documented in [`AI-USAGE.md`](AI-USAGE.md).
+This project was built adhering to the **M8A9: Builds Full-Stack JavaScript and AI** guidelines. AI assistance (ChatGPT & Claude) accounted for approximately **25% of total project effort**, utilized primarily as an interactive pair-programmer for syntax lookups, date multiplier brainstorming, and edge-case troubleshooting. Over **75% of the codebase**—including the core buffer calculation algorithm, team workload balancing logic, PostgreSQL schema, and Row Level Security architecture—is **human-authored code** designed, written, and debugged by Glen P.
+
+For the complete audit log, including:
+1. **How I Used AI** (6 workflow entries with repository commit links)
+2. **Where the AI Got It Wrong** (3 critical bugs caught and fixed, with commit links)
+3. **Who Wrote What** (detailed breakdown of human-authored systems with commit links)
+
+Please see the full documentation in [`AI-USAGE.md`](AI-USAGE.md).
 

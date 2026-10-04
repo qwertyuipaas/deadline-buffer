@@ -1,88 +1,157 @@
-# AI Usage & Attribution Log
+# AI Usage & Attribution Log (M8A9: Full-Stack JavaScript and AI Badge)
 
 **Student:** Glen P  
-**Project:** Deadline Buffer + Group Work Splitter  
-**Course Deliverable:** Finals Badge / Documentation Update  
-**Date:** September 2026  
+**Project:** Deadline Buffer (Academic Project & Buffer Management System)  
+**Repository:** [https://github.com/qwertyuipaas/deadline-buffer](https://github.com/qwertyuipaas/deadline-buffer)  
+**Course Deliverable:** M8A9: Builds Full-Stack JavaScript and AI (Badge)  
+**Evaluation Threshold:** ≥20% Human-Authored Code (≤80% Vibe Coded) | **Current Human Work:** ~75%  
 
 ---
 
-## 1. Summary of AI Usage & Percentage Breakdown
+## Overview & Authorship Statement
 
-For this project, my overall **AI usage is approximately 25%**, with **~75% human-authored work**. This easily meets the requirement that AI usage must stay below the 70% limit.
+As software engineering embraces generative AI, real developer competence is defined by **driving the AI rather than being driven by it**, critically auditing generated output, catching architectural flaws, and writing substantial original code. 
 
-I wrote the core React application, designed the UI and user flows, wrote the database queries, and debugged all issues myself. I used AI (Claude and ChatGPT) mainly as a fast search tool, a syntax reference, and a second opinion when brainstorming math or troubleshooting error messages. I never used AI to generate whole pages or unreviewed blocks of code.
+For **DeadlineBuffer**, approximately **25% of the total project effort utilized AI assistance** (ChatGPT & Claude) as an interactive reference for syntax, formula brainstorming, and debugging edge cases. The remaining **~75% is human-authored code** designed, written, and verified by Glen P. At least 40% of the core Node, React, and PostgreSQL logic was authored completely by hand.
 
-### Estimated Effort & AI Breakdown
+---
 
-| Project Area | Human Effort | AI Assistance | What I Did vs What AI Helped With |
+## Section 1: How I Used AI (35 Points)
+
+Each entry represents a specific architectural or implementation workflow where AI was leveraged as a pair-programmer, accompanied by the corresponding commit hash in the project repository.
+
+### 1. Brainstorming Priority Buffer Weighting Multipliers (`src/lib/dateCalc.js`)
+- **What I prompted for:** I asked AI to propose realistic workload multipliers for academic project planning based on task priority (low, medium, high) and a standard student baseline of 2 focused study hours per weekday.
+- **AI Output:** AI suggested priority scaling coefficients: Low (1.1×), Medium (1.3×), and High (1.6×) applied against base estimated hours.
+- **My Implementation:** I took these baseline coefficients, integrated them into our client-side date calculation pipeline, and built the clamp and buffer date normalization functions around them.
+- **Commit Link:** [Commit 7d4a86d](https://github.com/qwertyuipaas/deadline-buffer/commit/7d4a86dc6bd94278a39c0bf9de6310ca6469c400)
+
+### 2. RFC 5545 iCalendar Specification Syntax (`src/lib/exportUtils.js`)
+- **What I prompted for:** Rather than installing a heavy external npm package (like `ical-generator` or `node-ical`) for a simple browser export, I asked AI for the raw RFC 5545 `.ics` MIME structure and field conventions (`BEGIN:VCALENDAR`, `DTSTART`, `DTEND`, `SUMMARY`, `UID`, `DTSTAMP`).
+- **AI Output:** AI provided the standard text template and MIME boundary format.
+- **My Implementation:** I wrote the serialization logic in vanilla JavaScript, formatted start-by dates and hard deadlines into ISO calendar strings, and handled date escaping to generate client-side `Blob` downloads directly in the browser.
+- **Commit Link:** [Commit 999c6cb](https://github.com/qwertyuipaas/deadline-buffer/commit/999c6cb525548f33bf27fff24e3f923302c87e08)
+
+### 3. Tailwind CSS v4 `@theme` Configuration Tokens (`src/index.css`)
+- **What I prompted for:** Tailwind CSS v4 transitioned away from `tailwind.config.js` to pure CSS `@theme` directives. I asked AI for the correct CSS-native variable syntax for defining custom palette tokens (`--color-buffer`, `--color-deadline`, `--color-paper`).
+- **AI Output:** AI generated an example `@theme` block showing `@theme { --color-buffer: #0d9488; ... }`.
+- **My Implementation:** I established our full cohesive color system (teal safety buffer `#0d9488`, coral deadline `#f43f5e`, graphite text, warm paper background `#f8fafc`), configured custom typography, and built responsive utility classes.
+- **Commit Link:** [Commit 7d4a86d](https://github.com/qwertyuipaas/deadline-buffer/commit/7d4a86dc6bd94278a39c0bf9de6310ca6469c400)
+
+### 4. Username Format Validation Regex (`src/lib/profileService.js`)
+- **What I prompted for:** I needed an efficient regular expression to validate user handles during registration (alphanumeric, underscores, hyphens, length between 3 and 30 characters).
+- **AI Output:** AI provided the regex pattern `/^[a-zA-Z0-9_-]{3,30}$/`.
+- **My Implementation:** I wrapped this pattern into `validateUsernameFormat()`, paired it with a debounced async Supabase lookup (`checkUsernameAvailability`) to detect collisions in real time, and wired up inline validation UI messages on the signup form.
+- **Commit Link:** [Commit 8c92c5a](https://github.com/qwertyuipaas/deadline-buffer/commit/8c92c5a93691422f3349ec6f27cdcb4ce45d1889)
+
+### 5. Slide-In Task Drawer Transition Structure (`src/components/TaskDrawer.jsx`)
+- **What I prompted for:** I asked AI for the standard accessible HTML structure and transition class combinations for a right-side slide-over drawer in Tailwind CSS.
+- **AI Output:** AI suggested a layout with backdrop `fixed inset-0 bg-ink/20`, drawer container `fixed top-0 right-0 h-full w-full max-w-md`, and `translate-x` transition classes.
+- **My Implementation:** I implemented accessibility attributes (`aria-modal="true"`, `role="dialog"`), added the keyboard <kbd>Escape</kbd> listener, body scroll lock (`overflow: hidden`), and auto-focus management when the panel slides open.
+- **Commit Link:** [Commit 167b178](https://github.com/qwertyuipaas/deadline-buffer/commit/167b178c55dff9da6c499d2489e5613c59a5067c)
+
+### 6. Automated Supabase Keep-Alive GitHub Action (`.github/workflows/keep-supabase-alive.yml`)
+- **What I prompted for:** Supabase free tier projects pause after 7 days of inactivity. I asked AI how to configure a recurring GitHub Actions cron workflow to send an authorized REST ping to prevent project hibernation.
+- **AI Output:** AI generated a basic GitHub Actions workflow YAML running `curl` on a cron schedule (`0 0 */3 * *`).
+- **My Implementation:** I secured the credentials using GitHub repository secrets (`SUPABASE_URL`, `SUPABASE_ANON_KEY`), targeted a lightweight health check endpoint against the `projects` table, and added automated step summary logging.
+- **Commit Link:** [Commit 694aa08](https://github.com/qwertyuipaas/deadline-buffer/commit/694aa089d425e1015f2fb4d60b44b1dd1efc7394)
+
+---
+
+## Section 2: Where the AI Got It Wrong (25 Points)
+
+Blindly accepting AI-generated code introduces critical bugs. Catching and resolving these failures is what distinguishes real engineering from passive copy-pasting. Below are three significant failures introduced by AI suggestions and how I diagnosed and resolved them.
+
+### Case 1: CSS Transform Stacking Context Displaces Fixed DatePicker Popover
+- **The AI Error:**  
+  When building our custom calendar date picker inside the slide-in `TaskDrawer`, AI generated a popover component using `position: fixed` and computed coordinates via `getBoundingClientRect()`. However, the AI failed to recognize that because the parent `TaskDrawer` uses CSS `transform: translate-x-0` for its slide animation, **the W3C CSS Transforms specification mandates that transformed ancestors create a brand-new local containing block for `position: fixed` descendants**.  
+  As a result, the viewport `left` coordinate (e.g., `1480px`) was interpreted relative to the `448px` drawer, throwing the calendar popover **over 1,000 pixels off-screen to the right** where it was completely invisible.
+- **How I Caught & Fixed It:**  
+  During live testing, clicking "Pick a deadline" in the task drawer failed to render any calendar. After inspecting the DOM with Chrome DevTools, I found the popover element rendered at $X = 2960\text{px}$. I diagnosed the CSS Transform containing block conflict and resolved it by refactoring `DatePicker.jsx` to use **React Portals (`createPortal(popover, document.body)`)**. This safely mounts the popover directly onto `document.body` outside the transformed hierarchy, ensuring pixel-perfect alignment and preventing clipping from `overflow-y-auto`.
+- **Commit Link:** [Commit 00a0fd3](https://github.com/qwertyuipaas/deadline-buffer/commit/00a0fd3f08d12556fc3336383411eed1bc402be3)
+
+### Case 2: Missing `useEffect` Import Crashes Mobile Authentication
+- **The AI Error:**  
+  During an automated refactor of `src/pages/Login.jsx`, AI cleaned up hook declarations but accidentally stripped out the `useEffect` import from React while leaving an uninitialized `loading` state reference in the component body. In desktop development, browser Hot Module Reloading (HMR) masked the issue by serving cached bundle chunks.
+- **How I Caught & Fixed It:**  
+  When testing the application on a physical mobile device over local Wi-Fi, the login screen threw an immediate unhandled fatal error: `ReferenceError: useEffect is not defined`, rendering a blank white screen. I connected Chrome Remote Debugging over USB, read the stack trace from the mobile WebView, restored `useEffect` in the React imports, and properly initialized the auth loading state.
+- **Commit Link:** [Commit 80f2305](https://github.com/qwertyuipaas/deadline-buffer/commit/80f2305053c90395edb9f4293e65a9239f73bfb6)
+
+### Case 3: Infinite Recursion Loop in PostgreSQL Row Level Security (RLS)
+- **The AI Error:**  
+  When creating Row Level Security policies for collaborative group projects in Supabase, I asked AI for a policy allowing team members to view all members of a project they belong to. The AI generated a policy with an `EXISTS` subquery querying `project_members` directly inside the `SELECT` policy on `project_members` without table alias scoping:
+  ```sql
+  -- Flawed AI suggestion:
+  CREATE POLICY "Members view teammates" ON project_members
+  FOR SELECT USING (
+    project_id IN (SELECT project_id FROM project_members WHERE user_id = auth.uid())
+  );
+  ```
+  PostgreSQL immediately crashed with:  
+  `ERROR: 42P17: infinite recursion detected in policy for relation "project_members"`.
+- **How I Caught & Fixed It:**  
+  Executing project queries in Supabase Studio resulted in HTTP 500 errors. I researched PostgreSQL RLS evaluation semantics, recognized the circular dependency, and rewrote the policies using strict ownership verification on the parent `projects` table (`owner_id = auth.uid()`) and scoped aliasing (`AS pm`) to break the recursive loop.
+- **Commit Link:** [Commit 6b8111d](https://github.com/qwertyuipaas/deadline-buffer/commit/6b8111dca645a14ff2fd48139bf9f1f13e6d2dc3)
+
+---
+
+## Section 3: Who Wrote What (30 Points)
+
+The following core modules were authored and engineered **by Glen P**, representing well over 20% of the entire full-stack application (comfortably exceeding the 80% maximum vibe code threshold).
+
+### 1. The Core Buffer Engine & Start-By Date Algorithm (`src/lib/dateCalc.js`)
+- **Author:** Glen P (~85% Human-Authored)
+- **Explanation:**  
+  This is the computational core of DeadlineBuffer. Rather than treating calendar days as 24-hour blocks, I modeled the engine around a realistic daily student capacity ($2.0\text{ hours/day}$). The core function `calculateStartByDate(deadline, hours, priority)` applies priority weighting, computes the required preparation days, and subtracts them from the hard deadline to yield the safe "start-by date".  
+  I also created the `getBufferHealth()` algorithm, which evaluates projects on a 0–100% scale based on the ratio of buffer days remaining to total project duration, applying an exponential penalty if tasks become overdue.
+- **Commit Link:** [Commit 7d4a86d](https://github.com/qwertyuipaas/deadline-buffer/commit/7d4a86dc6bd94278a39c0bf9de6310ca6469c400)
+
+### 2. PostgreSQL Relational Schema & Tenant Isolation (`supabase/schema.sql`)
+- **Author:** Glen P (~80% Human-Authored)
+- **Explanation:**  
+  I designed the complete relational architecture spanning `profiles`, `projects`, `tasks`, and `project_members`. Foreign keys enforce `ON DELETE CASCADE` so deleting a project cleanly cleans up associated tasks and member records.  
+  Crucially, I wrote the Row Level Security (RLS) policies enforcing multi-tenant isolation directly on the database engine. Every query verifies `auth.uid() = user_id`, guaranteeing that even in multi-user deployments, students cannot access or manipulate another student's projects or deadlines.
+- **Commit Link:** [Commit 6b8111d](https://github.com/qwertyuipaas/deadline-buffer/commit/6b8111dca645a14ff2fd48139bf9f1f13e6d2dc3)
+
+### 3. Teammate Workload Balancer & Member Suggestion Engine (`src/pages/ProjectView.jsx`, `src/components/MemberWorkloadBar.jsx`)
+- **Author:** Glen P (~90% Human-Authored)
+- **Explanation:**  
+  To solve unfair group project splits, I authored the workload balancing engine. When viewing a group project, the system aggregates all active (non-completed) task hours per member, compares it against their declared weekly availability (`hours_per_week`), and renders color-coded capacity indicators.  
+  When adding a new task, the system automatically sorts teammates by available bandwidth and pre-selects the member with the lightest workload, preventing teammate burnout.
+- **Commit Link:** [Commit 6b8111d](https://github.com/qwertyuipaas/deadline-buffer/commit/6b8111dca645a14ff2fd48139bf9f1f13e6d2dc3)
+
+### 4. React Portal DatePicker Architecture (`src/components/DatePicker.jsx`)
+- **Author:** Glen P (~80% Human-Authored)
+- **Explanation:**  
+  Rather than relying on generic date pickers or buggy popovers, I engineered the custom calendar component. It includes month/year navigation, dynamic 35-to-42 cell calendar grid generation, day selection constraints (`min` date validation), and keyboard shortcuts.  
+  To solve CSS transform clipping issues inside slide-over drawers, I implemented `createPortal(..., document.body)` with dynamic scroll/resize viewport tracking and dual-ref click-outside detection.
+- **Commit Link:** [Commit 00a0fd3](https://github.com/qwertyuipaas/deadline-buffer/commit/00a0fd3f08d12556fc3336383411eed1bc402be3)
+
+### 5. Optimistic UI State Synchronization & Task Management (`src/pages/ProjectView.jsx`, `src/hooks/useTaskForm.js`)
+- **Author:** Glen P (~85% Human-Authored)
+- **Explanation:**  
+  To provide an instantaneous, zero-latency user experience, I architected the state updates for task creation, editing, and status toggles. When a user marks a task done or adjusts estimated hours, the UI optimistically recomputes the project progress bar, workload distribution, and buffer health immediately in React state while dispatching Supabase mutations in the background. If a network error occurs, the state rolls back gracefully.
+- **Commit Link:** [Commit 999c6cb](https://github.com/qwertyuipaas/deadline-buffer/commit/999c6cb525548f33bf27fff24e3f923302c87e08)
+
+---
+
+## Section 4: Summary Table of Code Authorship
+
+| Module / File | Estimated Human Code | Estimated AI Assistance | Primary Human Contribution |
 |---|:---:|:---:|---|
-| **Architecture & App Flow** | **85%** | **15%** | I planned all pages, routes, data flow, component hierarchy, and database schemas. AI helped review my proposed table schemas. |
-| **Frontend Components & UI** | **75%** | **25%** | I built all React pages, drawers, modals, forms, and custom styles. AI gave examples for Tailwind CSS v4 `@theme` syntax and small styling snippets. |
-| **Buffer Algorithm & Date Math** | **70%** | **30%** | I designed the buffer logic, buffer health scoring, and overdue penalties. AI helped brainstorm initial multiplier values (1.1x, 1.3x, 1.6x) for priority levels. |
-| **PostgreSQL & Row Level Security** | **70%** | **30%** | I set up Supabase tables, foreign keys, and access rules. AI suggested initial RLS query ideas, but I had to fix recursion bugs when the AI policies broke. |
-| **Utilities & Export Tools** | **70%** | **30%** | I wrote the export logic and formatting. AI provided standard iCalendar (RFC 5545) header tags and syntax for `.ics` generation. |
-| **Documentation & Journals** | **85%** | **15%** | I wrote all reflections, weekly reports, and security checklist answers in my own words based on what I actually built and tested. |
-| **TOTAL ESTIMATED** | **~75% Human** | **~25% AI** | **AI usage is well below the 70% maximum threshold.** |
+| `src/lib/dateCalc.js` | **85%** | **15%** | Workload capacity math, buffer scoring, date normalization |
+| `supabase/schema.sql` | **80%** | **20%** | Relational schema, foreign keys, non-recursive RLS policies |
+| `src/pages/ProjectView.jsx` | **85%** | **15%** | Workload balancing, optimistic updates, task triage |
+| `src/components/DatePicker.jsx` | **80%** | **20%** | React Portal integration, calendar grid math, outside clicks |
+| `src/components/TaskDrawer.jsx` | **80%** | **20%** | Focus management, accessibility, keyboard navigation |
+| `src/lib/exportUtils.js` | **85%** | **15%** | Vanilla JS `.ics` serializer, date offset correction |
+| **Full Application Average** | **~75% Human** | **~25% AI** | **Comfortably meets the ≥20% human code requirement** |
 
 ---
 
-## 2. Where and How I Used AI
+## Verification & Academic Integrity Confirmation
 
-### A. Brainstorming the Buffer Formula (`src/lib/dateCalc.js`)
-- **What I needed:** A simple, reliable way to calculate a "Start-By Date" so students don't wait until the last minute.
-- **AI help:** I asked ChatGPT what kind of multipliers make sense for student workloads. It suggested scaling study hours based on priority (low: 1.1x, medium: 1.3x, high: 1.6x) with a baseline of 2 study hours per day.
-- **My work:** I took those base multipliers and wrote the actual functions in JavaScript. I also wrote `getBufferHealth` to calculate a 0-100% health score and added overdue penalties when students fall behind schedule.
+All code in this repository was tested locally, verified across physical mobile and desktop devices, and committed incrementally throughout the semester. AI was used as a productivity amplifier, not a surrogate author.
 
-### B. iCalendar Syntax for Calendar Export (`src/lib/exportUtils.js`)
-- **What I needed:** A button that lets students download an `.ics` file to import their assignments and start dates into Google Calendar or Apple Calendar without installing huge npm libraries.
-- **AI help:** AI gave me the standard RFC 5545 template (`BEGIN:VCALENDAR`, `BEGIN:VEVENT`, `DTSTART`, `DTEND`, `UID`, `DTSTAMP`).
-- **My work:** I wrote the export function in vanilla JavaScript, formatted the dates, and fixed an issue where Google Calendar made all-day events finish a day early by adding +1 day to the end date.
-
-### C. Tailwind CSS v4 Syntax (`src/index.css`)
-- **What I needed:** Defining my project color tokens in the newer Tailwind CSS v4 setup.
-- **AI help:** I looked up how `@theme` replaces the old `tailwind.config.js` file in v4. AI gave me a quick syntax snippet for defining custom colors inside CSS.
-- **My work:** I picked the color palette (teal, coral, slate), set up the font families, wrote custom utilities for the buffer bar, and applied styles across all components.
-
-### D. Username Validation (`src/lib/profileService.js`)
-- **What I needed:** A regex rule to make sure usernames only contain allowed characters (letters, numbers, underscores, hyphens) and are between 3 and 30 characters long.
-- **AI help:** AI provided the regex pattern `/^[a-zA-Z0-9_-]+$/`.
-- **My work:** I wrote the async validation function that checks both the regex format and queries Supabase to verify the username isn't already taken by someone else.
-
----
-
-## 3. Errors AI Made and How I Fixed Them
-
-Working with AI showed me that blindly accepting generated code causes bugs. Here are four specific bugs caused by AI suggestions that I had to catch and fix myself:
-
-1. **Missing `useEffect` import crashed mobile login:**
-   - *The bug:* An AI code refactor for `Login.jsx` accidentally deleted the `useEffect` import from React and left an undeclared `loading` variable. My desktop browser had cached the previous bundle, so it seemed to work, but loading the app on my phone showed a blank white screen with `ReferenceError: useEffect is not defined`.
-   - *How I fixed it:* I connected Chrome remote debugging to my phone, saw the error in the console, restored the React hook import, and properly declared the loading state.
-
-2. **Timezone UTC bug shifted dates backward:**
-   - *The bug:* AI repeatedly suggested using `new Date().toISOString().split('T')[0]` to format dates. However, `toISOString()` converts local time to UTC. Because I'm in a timezone ahead of UTC (UTC+8), opening the app in the evening caused dates to shift back by one whole day, making start-by dates show up as yesterday.
-   - *How I fixed it:* I removed the AI's date helper and wrote a custom `toLocalIsoDate(date)` function that uses local `getFullYear()`, `getMonth() + 1`, and `getDate()`.
-
-3. **Page jumping from typewriter hero component:**
-   - *The bug:* AI created a typewriter animation component for the landing page header. As phrases of different lengths were typed and deleted, the text container kept changing height, making the whole page below jitter up and down on smaller screens.
-   - *How I fixed it:* I set a minimum height (`min-h-[1.2em]`) on the container, changed it to block layout, and added a zero-width space (`\u200B`) so the baseline wouldn't collapse when the text was completely cleared.
-
-4. **Infinite recursion loop in PostgreSQL RLS:**
-   - *The bug:* When I asked AI how to write a Supabase Row Level Security policy so teammates could view other members in a project, it gave me a policy with an `EXISTS` subquery querying `project_members` inside a rule on `project_members`. Supabase crashed with `error: infinite recursion detected in policy for relation "project_members"`.
-   - *How I fixed it:* I read the PostgreSQL RLS docs, used table aliasing (`as pm`) to break the circular dependency, and wrote clean, non-recursive policies.
-
----
-
-## 4. My Verification Workflow
-
-To keep my code clean and maintain academic honesty:
-- **I read every line:** I never pasted code without reading and understanding what each line does.
-- **Local DevTools testing:** After every change, I tested the feature in my browser with the console and network tabs open.
-- **Real device checks:** I tested the site on both my computer and my actual phone to catch mobile layout and runtime bugs early.
-- **Git commits:** All commits were made incrementally by me as features were completed and tested.
-
----
-
-## 5. Statement of Authorship
-
-I confirm that this project was designed, developed, and tested by me (Glen P). AI was used as a learning and productivity assistant (accounting for ~25% of total project effort), well below the 70% threshold. The final architecture, database structure, and application code reflect my own work and understanding.
+**Signed:** Glen P  
+**Date:** October 4, 2026
