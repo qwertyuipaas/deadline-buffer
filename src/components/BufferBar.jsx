@@ -1,8 +1,4 @@
-// The signature visual of the app: a literal picture of the product's thesis.
-// A task's timeline has two segments -- the buffer (time you have before you
-// need to start) and the work window (start-by date through the deadline).
-// This renders both to scale, so a glance tells you how much room is left.
-
+// Visual timeline bar showing the safe buffer window (teal) vs active work window (coral/amber)
 const DAY_MS = 86400000
 
 function daysBetween(a, b) {
@@ -10,13 +6,6 @@ function daysBetween(a, b) {
   return Math.round((new Date(b + 'T00:00:00') - new Date(a + 'T00:00:00')) / DAY_MS)
 }
 
-/**
- * @param {string} todayIso - YYYY-MM-DD
- * @param {string} startByDate - YYYY-MM-DD
- * @param {string} deadline - YYYY-MM-DD
- * @param {'not_started'|'in_progress'|'done'} status
- * @param {'sm'|'md'|'lg'} size
- */
 export default function BufferBar({ todayIso, startByDate, deadline, status = 'not_started', size = 'md' }) {
   const done = status === 'done'
   const inProgress = status === 'in_progress'

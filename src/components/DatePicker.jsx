@@ -34,16 +34,7 @@ function formatDisplay(iso) {
     : ''
 }
 
-/**
- * A styled date picker that replaces <input type="date">.
- * Features quick Year & Month jump view so users don't have to paginate one-by-one.
- *
- * @param {string}   value       - ISO date string (YYYY-MM-DD) or ''
- * @param {Function} onChange    - called with new ISO string
- * @param {string}   min         - ISO date string for earliest allowed date (optional)
- * @param {string}   placeholder - text when no date selected
- * @param {boolean}  required    - marks field as required (for form validation)
- */
+// Custom calendar picker with month and year navigation
 export default function DatePicker({
   value,
   onChange,

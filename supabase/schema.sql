@@ -1,37 +1,27 @@
 -- Deadline Buffer + Group Work Splitter
--- Run this in your Supabase project's SQL Editor (Supabase Dashboard > SQL Editor > New query)
+-- Supabase PostgreSQL Schema & Security Policies
 
--- ============================================================
--- 1. PROJECTS
--- A project can be "solo" (just the owner) or "group" (has members)
--- ============================================================
+-- Projects table (solo or group)
 create table if not exists public.projects (
   id uuid primary key default gen_random_uuid(),
   owner_id uuid references auth.users(id) on delete cascade not null,
   name text not null,
-  description text, -- optional short description of the project
+  description text,
   type text not null check (type in ('solo', 'group')),
   created_at timestamptz default now()
 );
 
--- ============================================================
--- 2. PROJECT MEMBERS
--- People who belong to a group project (owner is auto-added as a member too)
--- ============================================================
+-- Project members (teammates and weekly available hours)
 create table if not exists public.project_members (
   id uuid primary key default gen_random_uuid(),
   project_id uuid references public.projects(id) on delete cascade not null,
   user_id uuid references auth.users(id) on delete cascade,
-  display_name text not null, -- lets you add teammates before they sign up, if needed
-  hours_per_week numeric not null default 10, -- how many hours/week this member can give
+  display_name text not null,
+  hours_per_week numeric not null default 10,
   created_at timestamptz default now()
 );
 
--- ============================================================
--- 3. TASKS
--- Belongs to a project. May be assigned to a member (group) or left unassigned (solo).
--- start_by_date is calculated app-side and stored so it's easy to query/sort.
--- ============================================================
+-- Tasks table (assignments with deadline, hours, priority, and calculated start-by date)
 create table if not exists public.tasks (
   id uuid primary key default gen_random_uuid(),
   project_id uuid references public.projects(id) on delete cascade not null,
@@ -40,10 +30,10 @@ create table if not exists public.tasks (
   deadline date not null,
   estimated_hours numeric not null,
   priority text not null check (priority in ('low', 'medium', 'high')),
-  start_by_date date, -- computed: deadline minus buffer based on hours + priority
+  start_by_date date,
   status text not null default 'not_started' check (status in ('not_started', 'in_progress', 'done')),
   created_at timestamptz default now(),
-  updated_at timestamptz default now() -- set by trigger below so sorts by "last changed" work
+  updated_at timestamptz default now()
 );
 
 -- Auto-update updated_at on tasks whenever a row is updated
@@ -60,26 +50,20 @@ create trigger tasks_set_updated_at
   before update on public.tasks
   for each row execute procedure public.set_updated_at();
 
--- ============================================================
--- 0. USER PROFILES
--- Stores usernames and profile metadata
--- ============================================================
+-- User profiles table (links auth accounts to unique usernames)
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   username text unique not null,
   updated_at timestamptz default now()
 );
 
--- ============================================================
--- ROW LEVEL SECURITY
--- Users can see/edit projects they own or are a member of.
--- ============================================================
+-- Row Level Security policies
 alter table public.profiles enable row level security;
 alter table public.projects enable row level security;
 alter table public.project_members enable row level security;
 alter table public.tasks enable row level security;
 
--- Profiles: anyone can view username, user can only modify own profile
+-- Profiles: anyone can read usernames, users can only update their own profile
 create policy "Public profiles are readable"
   on public.profiles for select
   using (true);
@@ -89,13 +73,13 @@ create policy "Users can update own profile"
   using (auth.uid() = id)
   with check (auth.uid() = id);
 
--- Projects: owner can do everything with their own projects
+-- Projects: creator has full access
 create policy "Owners manage their projects"
   on public.projects for all
   using (auth.uid() = owner_id)
   with check (auth.uid() = owner_id);
 
--- Projects: teammates can view projects they are a member of
+-- Projects: teammates can view projects they belong to
 create policy "Members view their projects"
   on public.projects for select
   using (
@@ -106,7 +90,7 @@ create policy "Members view their projects"
     )
   );
 
--- Project members: visible/editable by the project owner
+-- Project members: owner can view and manage roster
 create policy "Owners manage project members"
   on public.project_members for all
   using (
@@ -124,7 +108,7 @@ create policy "Owners manage project members"
     )
   );
 
--- Project members: teammates can view the member roster of their projects
+-- Project members: teammates can view the roster of their projects (aliased to prevent recursion)
 create policy "Members view project roster"
   on public.project_members for select
   using (
@@ -135,7 +119,7 @@ create policy "Members view project roster"
     )
   );
 
--- Tasks: visible/editable by the project owner
+-- Tasks: owner can view and manage all tasks
 create policy "Owners manage tasks"
   on public.tasks for all
   using (
@@ -182,10 +166,7 @@ create policy "Members update assigned task status"
     )
   );
 
--- ============================================================
--- MIGRATIONS — run these if you already have existing tables
--- (safe to run multiple times thanks to "if not exists" / "or replace")
--- ============================================================
+-- Safe migrations for existing databases
 alter table public.projects add column if not exists description text;
 alter table public.tasks add column if not exists updated_at timestamptz default now();
 create table if not exists public.profiles (

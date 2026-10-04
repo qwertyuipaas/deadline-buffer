@@ -308,7 +308,7 @@ export default function NewProject() {
         </div>
       </div>
 
-      {/* Canva-Style Spotlight Tour for New Project Page */}
+      {/* Spotlight walkthrough for new project page */}
       <ProductTour
         steps={NEW_PROJECT_STEPS}
         tourKey="deadline_buffer_spotlight_newproject_v1"

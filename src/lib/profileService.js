@@ -1,9 +1,6 @@
 import { supabase } from './supabaseClient'
 
-/**
- * Validates format of username: letters, numbers, underscores, and hyphens.
- * Minimum 3 characters, max 30 characters.
- */
+// Validates username format: 3-30 chars, alphanumeric with hyphens/underscores
 export function validateUsernameFormat(username) {
   const trimmed = (username || '').trim()
   if (!trimmed) return { valid: false, message: 'Username is required.' }
@@ -15,10 +12,7 @@ export function validateUsernameFormat(username) {
   return { valid: true, message: '' }
 }
 
-/**
- * Checks if a username is already taken in the profiles table.
- * Returns { available: boolean, message: string }
- */
+// Queries Supabase profiles table to check if a username is already taken
 export async function checkUsernameAvailability(username, excludeUserId = null) {
   const formatCheck = validateUsernameFormat(username)
   if (!formatCheck.valid) {
@@ -59,9 +53,7 @@ export async function checkUsernameAvailability(username, excludeUserId = null) 
   }
 }
 
-/**
- * Saves or updates a user profile username in the profiles table.
- */
+// Upserts user profile record with chosen username
 export async function saveUserProfile(userId, username) {
   if (!userId || !username) return { error: null }
   const trimmed = username.trim()

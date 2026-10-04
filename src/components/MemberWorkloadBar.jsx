@@ -1,13 +1,4 @@
-// MemberWorkloadBar — a mini visual bar showing a member's current workload
-// vs their weekly capacity. Used in both the Members section chip and the
-// custom assign dropdown in ProjectView.
-
-/**
- * @param {number} activeHours   - hours of non-done tasks currently assigned
- * @param {number} capacity      - member's hours_per_week
- * @param {'xs'|'sm'|'md'} size
- * @param {boolean} showLabel    - whether to render the numeric label beside the bar
- */
+// Mini visual bar showing a member's current task hours vs weekly capacity
 export default function MemberWorkloadBar({ activeHours, capacity, size = 'sm', showLabel = true }) {
   const pct = capacity > 0 ? Math.min(100, Math.round((activeHours / capacity) * 100)) : 0
   const overloaded = activeHours > capacity

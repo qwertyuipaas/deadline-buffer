@@ -1,14 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-/**
- * A slide-in side panel for adding or editing a task.
- * Closes on Escape, traps focus inside, and prevents body scroll while open.
- *
- * @param {boolean} open
- * @param {Function} onClose
- * @param {string} title - "Add a task" | "Edit task"
- * @param {React.ReactNode} children - the form contents
- */
+// Slide-in drawer panel for adding or editing a task
 export default function TaskDrawer({ open, onClose, title, children }) {
   const panelRef = useRef(null)
 

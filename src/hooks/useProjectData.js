@@ -1,10 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 
-/**
- * Loads and refreshes all data for a single project.
- * Returns { project, members, tasks, loading, loadError, reload }
- */
+// Loads project details, members, and tasks from Supabase
 export function useProjectData(projectId) {
   const [project, setProject] = useState(null)
   const [members, setMembers] = useState([])

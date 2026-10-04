@@ -1,11 +1,4 @@
-/**
- * Generates and triggers download of an iCalendar (.ics) file for a project's tasks.
- * Compatible with Google Calendar, Apple Calendar, Outlook, and other calendar apps.
- *
- * @param {Object} project - { name, description }
- * @param {Array}  tasks   - array of tasks
- * @param {Array}  members - array of project members
- */
+// Generates and downloads an iCalendar (.ics) file with start-by dates and deadlines
 export function exportProjectToIcs(project, tasks, members = []) {
   if (!tasks || tasks.length === 0) return
 
@@ -96,9 +89,7 @@ export function exportProjectToIcs(project, tasks, members = []) {
   URL.revokeObjectURL(url)
 }
 
-/**
- * Formats a clean text summary of a project and its tasks to copy to clipboard for Discord / Slack / WhatsApp.
- */
+// Creates a formatted text summary for copying into Discord, Slack, or WhatsApp
 export function formatProjectSummary(project, tasks, members = []) {
   const memberMap = new Map(members.map((m) => [m.id, m.display_name]))
   const lines = [

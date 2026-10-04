@@ -2,12 +2,7 @@ import { useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import { useToast } from '../context/ToastContext'
 
-/**
- * Manages "add a member" form state and submission for group projects.
- * @param {string} projectId
- * @param {Array} members - current member list (for duplicate-name check)
- * @param {Function} onSuccess - called after a member is successfully added
- */
+// Handles member form state, validation, and Supabase insert
 export function useMemberForm(projectId, members, onSuccess) {
   const toast = useToast()
 

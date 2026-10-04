@@ -48,10 +48,7 @@ const DEFAULT_STEPS = [
   },
 ]
 
-/**
- * Canva-Style Interactive Element Spotlight Tour Component
- * Accepts custom steps & tourKey for any page or section.
- */
+// Interactive element spotlight walkthrough component
 export default function ProductTour({
   steps = DEFAULT_STEPS,
   tourKey = 'deadline_buffer_spotlight_dashboard_v1',
@@ -240,10 +237,10 @@ export default function ProductTour({
 
   return (
     <div className="fixed inset-0 z-50 pointer-events-auto overflow-hidden">
-      {/* ── Canva-Style Real-Time SVG Spotlight Cutout Mask ── */}
+      {/* SVG spotlight cutout mask */}
       <svg className="fixed inset-0 w-full h-full pointer-events-none transition-all duration-300">
         <defs>
-          <mask id="canva-spotlight-mask">
+          <mask id="tour-spotlight-mask">
             {/* White covers entire screen */}
             <rect x="0" y="0" width="100%" height="100%" fill="white" />
             {/* Black cut-out for the target element */}
@@ -266,7 +263,7 @@ export default function ProductTour({
           width="100%"
           height="100%"
           fill="rgba(15, 23, 42, 0.65)"
-          mask="url(#canva-spotlight-mask)"
+          mask="url(#tour-spotlight-mask)"
         />
       </svg>
 
@@ -277,7 +274,7 @@ export default function ProductTour({
         aria-hidden="true"
       />
 
-      {/* ── Glowing Pulsing Spotlight Ring Around Element ── */}
+      {/* Element highlight ring */}
       {rect && (
         <div
           className="fixed z-40 pointer-events-none border-2 border-buffer rounded-2xl ring-4 ring-buffer/40 shadow-[0_0_30px_rgba(20,184,166,0.6)] transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]"
@@ -294,7 +291,7 @@ export default function ProductTour({
         </div>
       )}
 
-      {/* ── Floating Canva-Style Arrow-Pointed Tooltip Card ── */}
+      {/* Floating tooltip card */}
       <div
         ref={tooltipRef}
         role="dialog"

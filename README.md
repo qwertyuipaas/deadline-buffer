@@ -83,7 +83,7 @@ Your terminal will display the local development URL:
 
 Open your browser and navigate to **`http://localhost:5173/`**. 
 
-**What you should see:** The public landing page showcasing the interactive Deadline Buffer product thesis, live buffer bar demonstrations, a rotating headline of course project types, feature breakdowns, and buttons to **Sign Up** or **Sign In**.
+**What you should see:** The public landing page showcasing the interactive Deadline Buffer core concept, live buffer bar demonstrations, a rotating headline of course project types, feature breakdowns, and buttons to **Sign Up** or **Sign In**.
 
 ---
 

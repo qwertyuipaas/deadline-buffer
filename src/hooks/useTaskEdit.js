@@ -3,10 +3,7 @@ import { supabase } from '../lib/supabaseClient'
 import { calculateStartByDate } from '../lib/dateCalc'
 import { useToast } from '../context/ToastContext'
 
-/**
- * Manages inline task editing state and submission.
- * @param {Function} onSuccess - called after a task is successfully saved
- */
+// Handles inline task editing state and update submission
 export function useTaskEdit(onSuccess) {
   const toast = useToast()
 

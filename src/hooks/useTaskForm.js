@@ -6,11 +6,7 @@ import { useToast } from '../context/ToastContext'
 // Note: DatePicker is a UI component — the hook just manages the deadline string value.
 // The consuming component (ProjectView / TaskDrawer) renders DatePicker and calls setDeadline.
 
-/**
- * Manages the "add a task" form state and submission.
- * @param {string} projectId
- * @param {Function} onSuccess - called after a task is successfully added
- */
+// Handles add task form state, validation, and insert submission
 export function useTaskForm(projectId, onSuccess) {
   const toast = useToast()
   const todayIso = getTodayIso()

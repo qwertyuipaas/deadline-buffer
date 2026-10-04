@@ -1,9 +1,6 @@
 import { useEffect } from 'react'
 
-/**
- * An interactive modal explaining how Deadline Buffer works,
- * how buffers are calculated, and group balancing rules.
- */
+// Modal explaining the buffer calculation formula and group workload rules
 export default function HowItWorksModal({ open, onClose, onStartTour }) {
   useEffect(() => {
     if (!open) return

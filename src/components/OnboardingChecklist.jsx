@@ -1,9 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
-/**
- * 3-Step Interactive Onboarding Checklist for new users on the Dashboard.
- */
+// 3-step checklist shown on dashboard for new accounts
 export default function OnboardingChecklist({ projectCount = 0, totalTasks = 0, onOpenGuide, onStartTour }) {
   const [dismissed, setDismissed] = useState(() => {
     return localStorage.getItem('deadline_buffer_onboarding_dismissed') === 'true'
