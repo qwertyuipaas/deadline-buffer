@@ -396,7 +396,7 @@ main.deck-stage {
     <span class="slide-counter" id="counter">1 / 8</span>
     <button class="btn" onclick="nextSlide()" title="Next slide (Right Arrow / Space)">Next →</button>
     <button class="btn" onclick="toggleNotes()" title="Toggle Speaker Notes (N key)">🎙️ Notes</button>
-    <button class="btn" onclick="window.print()" title="Print / Export to PDF (P key)">🖨️ PDF</button>
+    <button class="btn" onclick="printAllSlides()" title="Print / Export to PDF (P key)">🖨️ PDF</button>
     <a href="/" target="_blank" class="btn btn-primary" title="Launch the live deployed web application">🚀 Live App</a>
   </div>
 </header>
@@ -811,6 +811,18 @@ function toggleNotes() {
   panel.classList.toggle('active');
 }
 
+function printAllSlides() {
+  for (let i = 1; i <= TOTAL_SLIDES; i++) {
+    const el = document.getElementById(`slide-${i}`);
+    if (el) el.style.display = 'flex';
+  }
+  window.print();
+}
+
+window.addEventListener('afterprint', () => {
+  showSlide(currentSlide);
+});
+
 // Keyboard controls
 document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
@@ -824,7 +836,7 @@ document.addEventListener('keydown', (e) => {
     toggleNotes();
   } else if (e.key === 'p' || e.key === 'P') {
     e.preventDefault();
-    window.print();
+    printAllSlides();
   } else if (e.key === 'Home') {
     showSlide(1);
   } else if (e.key === 'End') {
