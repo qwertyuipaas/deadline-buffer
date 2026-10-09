@@ -37,8 +37,8 @@ export default function HowItWorksModal({ open, onClose, onStartTour }) {
         <div className="flex items-center justify-between pb-4 border-b border-ink/10">
           <div className="flex items-center gap-2">
             <div>
-              <h2 className="font-display font-bold text-lg text-ink">How Deadline Buffer Works</h2>
-              <p className="text-xs text-graphite">A 60-second guide to stress-free deadlines</p>
+              <h2 className="font-display font-bold text-lg text-ink">How This App Works</h2>
+              <p className="text-xs text-graphite">A quick guide. No tech skills needed.</p>
             </div>
           </div>
           <button
@@ -56,9 +56,12 @@ export default function HowItWorksModal({ open, onClose, onStartTour }) {
           {/* Concept 1 */}
           <div className="flex items-start gap-3.5 p-3.5 rounded-2xl bg-buffer-soft/50 border border-buffer/20">
             <div className="min-w-0">
-              <h3 className="font-display font-bold text-ink text-sm">1. Turn Due Dates into Start Dates</h3>
+              <h3 className="font-display font-bold text-ink text-sm">1. We tell you which day to start</h3>
               <p className="text-graphite text-xs mt-1 leading-relaxed">
-                Enter how many hours a task will take and its priority. The algorithm gives you a <strong>Start-By Date</strong> with an automatic safety cushion — so you never have to cram the night before.
+                Add a task, its due date, and about how many hours it takes. We assume you can work on it about <strong>2 hours a day</strong>, add a little extra time in case it runs long, and show you <strong>the day to start</strong>.
+              </p>
+              <p className="text-graphite text-xs mt-2 leading-relaxed bg-white/70 rounded-lg px-2.5 py-2">
+                <strong>Example:</strong> A 4-hour essay due Friday → about 2 days of work + extra time → <strong>start on Tuesday</strong>.
               </p>
             </div>
           </div>
@@ -66,9 +69,9 @@ export default function HowItWorksModal({ open, onClose, onStartTour }) {
           {/* Concept 2 */}
           <div className="flex items-start gap-3.5 p-3.5 rounded-2xl bg-highlight-soft/50 border border-highlight/20">
             <div className="min-w-0">
-              <h3 className="font-display font-bold text-ink text-sm">2. Smart Group Workload Balancing</h3>
+              <h3 className="font-display font-bold text-ink text-sm">2. Group work is shared fairly</h3>
               <p className="text-graphite text-xs mt-1 leading-relaxed">
-                Set each teammate's weekly capacity (e.g. <code>8 hrs/wk</code>). The app suggests who has free capacity and flags <strong>⚠️ Overloaded</strong> if a task would push someone past their limit.
+                For group projects, enter how many free hours each teammate has per week. When you add a task, we point out <strong>who has the most free time</strong> and warn you if someone has <strong>too much</strong> work.
               </p>
             </div>
           </div>
@@ -76,18 +79,18 @@ export default function HowItWorksModal({ open, onClose, onStartTour }) {
           {/* Concept 3 */}
           <div className="flex items-start gap-3.5 p-3.5 rounded-2xl bg-paper border border-ink/10">
             <div className="min-w-0">
-              <h3 className="font-display font-bold text-ink text-sm">3. Color-Coded Urgency At a Glance</h3>
-              <p className="text-graphite text-xs mt-1 leading-relaxed">
-                <strong>Safe buffer</strong> (green) = You have plenty of time before you need to start.<br />
-                <strong>Start soon</strong> (amber) = Your start window is approaching.<br />
-                <strong>Start today</strong> (red) = Begin now to finish comfortably.
-              </p>
+              <h3 className="font-display font-bold text-ink text-sm">3. Colors show what to do</h3>
+              <ul className="text-graphite text-xs mt-1.5 leading-relaxed space-y-1">
+                <li><span className="inline-block w-2.5 h-2.5 rounded-full bg-buffer mr-1.5 align-middle" /><strong>Green:</strong> You have time. Relax or work on other things.</li>
+                <li><span className="inline-block w-2.5 h-2.5 rounded-full bg-highlight mr-1.5 align-middle" /><strong>Yellow:</strong> Your start day is coming up soon.</li>
+                <li><span className="inline-block w-2.5 h-2.5 rounded-full bg-deadline mr-1.5 align-middle" /><strong>Red:</strong> Start today, or it's already late.</li>
+              </ul>
             </div>
           </div>
 
           {/* Shortcut hint */}
-          <div className="flex items-center justify-between p-3 rounded-xl bg-paper-dim/60 text-xs text-graphite font-mono">
-            <span>Pro tip: Press <kbd className="bg-white border border-ink/20 px-1.5 py-0.5 rounded shadow-2xs text-ink font-bold">N</kbd> on any project to add a task quickly.</span>
+          <div className="p-3 rounded-xl bg-paper-dim/60 text-xs text-graphite">
+            <strong className="text-ink">Tip:</strong> Not sure how many hours something takes? Just pick <strong>Quick</strong>, <strong>Medium</strong>, or <strong>Big</strong> when adding a task. You can change it later.
           </div>
         </div>
 
@@ -102,7 +105,7 @@ export default function HowItWorksModal({ open, onClose, onStartTour }) {
               }}
               className="text-xs font-semibold text-buffer hover:text-buffer/80 transition flex items-center gap-1.5 hover:underline"
             >
-              Interactive Tour
+              Show me around the page
             </button>
           ) : <span />}
           <button

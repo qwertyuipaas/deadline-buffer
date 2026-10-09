@@ -78,14 +78,14 @@ export function exportProjectToIcs(project, tasks, members = []) {
 export function formatProjectSummary(project, tasks, members = []) {
   const memberMap = new Map(members.map((m) => [m.id, m.display_name]))
   const lines = [
-    `📋 ${project.name} (Deadline Buffer Summary)`,
+    `📋 ${project.name}`,
     project.description ? `📝 ${project.description}` : '',
     '',
     '--- TASKS & SCHEDULE ---',
   ].filter(Boolean)
 
   tasks.forEach((t) => {
-    const statusMark = t.status === 'done' ? '✅ [DONE]' : t.status === 'in_progress' ? '⏳ [IN PROGRESS]' : '📌 [TODO]'
+    const statusMark = t.status === 'done' ? '✅ [Done]' : t.status === 'in_progress' ? '⏳ [In Progress]' : '📌 [To Do]'
     const assignee = t.assigned_member_id ? ` · 👤 ${memberMap.get(t.assigned_member_id) || 'Member'}` : ''
     const hours = t.estimated_hours ? ` (${t.estimated_hours}h)` : ''
     const start = t.start_by_date ? ` · 🚀 Start by: ${t.start_by_date}` : ''
@@ -95,7 +95,7 @@ export function formatProjectSummary(project, tasks, members = []) {
   })
 
   lines.push('')
-  lines.push('Generated via Deadline Buffer')
+  lines.push('Shared from Deadline Buffer')
 
   return lines.join('\n')
 }

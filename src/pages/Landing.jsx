@@ -68,10 +68,10 @@ const CAROUSEL_SLIDES = [
   },
   {
     id: 'urgency',
-    tabTitle: 'Urgency Triage',
+    tabTitle: 'What to Work on Next',
     badge: 'Feature 03 · Smart Alerts',
     title: 'Know what needs your focus today',
-    description: 'Color-coded urgency indicators alert you before a task becomes critical or overdue.',
+    description: 'Color-coded alerts tell you when to get started before you fall behind.',
   },
   {
     id: 'setup',
@@ -604,10 +604,10 @@ export default function Landing() {
                   />
                   <div className="flex items-center justify-between text-xs text-graphite mt-3 pt-2 border-t border-ink/5">
                     <span className="flex items-center gap-1.5 text-buffer font-medium">
-                      <span className="w-2.5 h-2.5 rounded-full bg-buffer block" /> Safe buffer zone
+                      <span className="w-2.5 h-2.5 rounded-full bg-buffer block" /> Free time before you start
                     </span>
                     <span className="flex items-center gap-1.5 text-highlight font-medium">
-                      <span className="w-2.5 h-2.5 rounded-full bg-highlight block" /> Work window
+                      <span className="w-2.5 h-2.5 rounded-full bg-highlight block" /> Time to work
                     </span>
                   </div>
                 </div>
@@ -615,7 +615,7 @@ export default function Landing() {
             </div>
 
             {/* ============================================================ */}
-            {/* SLIDE 3: Urgency Triage (Interactive & Auto-Cycling Cards)   */}
+            {/* SLIDE 3: What to Work on Next (Interactive & Auto-Cycling Cards) */}
             {/* ============================================================ */}
             <div
               className={`w-full shrink-0 p-6 sm:p-10 flex flex-col justify-between transition-all duration-700 ${
@@ -638,7 +638,7 @@ export default function Landing() {
                 {[
                   { title: 'Organic Chemistry Problem Set', hrs: '4h', badge: 'Start today — you need 4 hours', badgeStyle: 'bg-deadline text-white font-bold' },
                   { title: 'History Midterm Essay Draft', hrs: '6h', badge: 'Start soon — Due Thursday', badgeStyle: 'bg-highlight-soft text-ink font-semibold' },
-                  { title: 'Computer Science Lab 4', hrs: '3h', badge: 'Safe buffer — Start by next week', badgeStyle: 'bg-buffer-soft text-buffer font-semibold' },
+                  { title: 'Computer Science Lab 4', hrs: '3h', badge: 'Breathing room — Start next week', badgeStyle: 'bg-buffer-soft text-buffer font-semibold' },
                   { title: 'Weekly Discussion Board Post', hrs: '1h', badge: '✓ Completed', badgeStyle: 'bg-white text-graphite font-medium' },
                 ].map((item, i) => {
                   const isHighlighted = urgencyStep === i

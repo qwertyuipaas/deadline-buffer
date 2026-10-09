@@ -9,8 +9,8 @@ export default function MemberWorkloadBar({ activeHours, capacity, size = 'sm', 
   return (
     <span className="flex items-center gap-1.5 min-w-0">
       {showLabel && (
-        <span className={`text-[10px] font-mono shrink-0 ${overloaded ? 'text-deadline' : 'text-graphite'}`}>
-          {activeHours}/{capacity}h
+        <span className={`text-[10px] shrink-0 ${overloaded ? 'text-deadline font-medium' : 'text-graphite'}`}>
+          {activeHours} of {capacity} hrs
         </span>
       )}
       <span
@@ -19,7 +19,7 @@ export default function MemberWorkloadBar({ activeHours, capacity, size = 'sm', 
         aria-valuenow={activeHours}
         aria-valuemin={0}
         aria-valuemax={capacity}
-        aria-label={`${activeHours} of ${capacity} hours per week used`}
+        aria-label={`${activeHours} of ${capacity} free hours a week already used`}
       >
         <span
           className={`block h-full ${fillColor} rounded-full transition-all duration-500 ease-out`}
@@ -27,7 +27,7 @@ export default function MemberWorkloadBar({ activeHours, capacity, size = 'sm', 
         />
       </span>
       {overloaded && (
-        <span className="text-[10px] text-deadline shrink-0" aria-label="overloaded">⚠</span>
+        <span className="text-[10px] text-deadline shrink-0" title="This person has more work than free time">⚠ too much</span>
       )}
     </span>
   )

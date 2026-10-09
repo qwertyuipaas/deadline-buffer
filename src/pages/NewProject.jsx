@@ -10,26 +10,26 @@ const NEW_PROJECT_STEPS = [
     icon: '📝',
     tag: 'Step 1 of 3 · Project Name',
     title: 'Give Your Project a Name',
-    desc: 'Name your course or goal (e.g. "Senior Thesis", "CS 101 Midterm", or "Weekly Problem Sets").',
-    tip: 'Keep it clear so you recognize it on your Dashboard timeline.',
+    desc: 'Name your course or assignment (e.g. "Biology 101", "Research Paper", or "Final Presentation").',
+    tip: 'Keep it clear so you recognize it on your dashboard.',
     preferredPlacement: 'bottom',
   },
   {
     targetId: 'tour-project-type-toggle',
     icon: '👥',
-    tag: 'Step 2 of 3 · Project Type',
-    title: 'Solo vs. Group Assignment',
-    desc: 'Choose Solo for individual work, or Group to invite teammates and balance workloads automatically by availability.',
-    tip: 'Group projects track weekly member capacity to prevent burnout.',
+    tag: 'Step 2 of 3 · Working Alone or in a Group?',
+    title: 'Just You or a Team?',
+    desc: 'Pick "Just me" for individual homework, or "Group project" to split tasks fairly with your classmates.',
+    tip: 'For groups, you can track how many hours each person has free so nobody gets overloaded.',
     preferredPlacement: 'bottom',
   },
   {
     targetId: 'tour-create-project-btn',
     icon: '🚀',
-    tag: 'Step 3 of 3 · Get Started',
+    tag: 'Step 3 of 3 · Ready to Start',
     title: 'Create Your Workspace',
-    desc: 'Once created, you can start adding assignments and deadlines. Deadline Buffer will immediately calculate calm start-by dates for you!',
-    tip: 'You can always rename or edit your project later.',
+    desc: 'Once created, add your deadlines. We will tell you the best day to start working so you never have to cram!',
+    tip: 'You can always rename or edit your project details later.',
     preferredPlacement: 'top',
   },
 ]
@@ -185,8 +185,8 @@ export default function NewProject() {
               <label className="block text-sm font-medium text-ink mb-2">Project type</label>
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { value: 'solo', label: 'Solo', sub: 'Just for you', active: 'border-buffer bg-buffer-soft text-buffer' },
-                  { value: 'group', label: 'Group', sub: 'Assign tasks to members', active: 'border-highlight bg-highlight-soft text-ink' },
+                  { value: 'solo', label: 'Just me', sub: 'Individual homework & studying', active: 'border-buffer bg-buffer-soft text-buffer' },
+                  { value: 'group', label: 'Group project', sub: 'Split tasks with classmates', active: 'border-highlight bg-highlight-soft text-ink' },
                 ].map((opt) => (
                   <button
                     key={opt.value}
@@ -210,17 +210,17 @@ export default function NewProject() {
               <div className="animate-fade-up bg-paper/60 rounded-2xl p-4 border border-ink/10 space-y-3">
                 <div>
                   <label className="block text-sm font-semibold text-ink">
-                    Teammates & Weekly Availability{' '}
+                    Teammates & Weekly Free Time{' '}
                     <span className="text-graphite font-normal text-xs">(optional)</span>
                   </label>
                   <p className="text-xs text-graphite mt-0.5 leading-relaxed">
-                    Enter weekly available hours so Deadline Buffer can auto-suggest the best teammate and prevent burnout.
+                    How many hours can each person give to this project each week? We'll suggest who should do what so nobody gets overwhelmed.
                   </p>
                 </div>
 
                 <div className="grid grid-cols-12 gap-2 text-[11px] font-semibold text-graphite uppercase tracking-wider px-1">
-                  <span className="col-span-7 sm:col-span-8">Teammate Name</span>
-                  <span className="col-span-5 sm:col-span-4">Weekly Capacity</span>
+                  <span className="col-span-7 sm:col-span-8">Teammate's Name</span>
+                  <span className="col-span-5 sm:col-span-4">Free hours / week</span>
                 </div>
 
                 <div className="space-y-2">
@@ -248,7 +248,7 @@ export default function NewProject() {
                               focus:outline-none focus:ring-2 focus:ring-buffer/50 focus:border-buffer transition-shadow"
                           />
                           <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-graphite pointer-events-none font-medium">
-                            hrs/wk
+                            hours
                           </span>
                         </div>
                         {memberRows.length > 1 && (
@@ -270,7 +270,7 @@ export default function NewProject() {
                     onClick={addMemberRow}
                     className="inline-flex items-center gap-1 text-xs text-buffer font-medium hover:underline pt-1 transition-colors"
                   >
-                    <span>+</span> Add another member
+                    <span>+</span> Add another teammate
                   </button>
                 </div>
               </div>

@@ -20,23 +20,23 @@ const URGENCY_STYLES = {
   done: 'bg-paper-dim text-graphite',
 }
 const URGENCY_LABELS = {
-  overdue: 'Overdue · Deadline passed',
+  overdue: 'Late · Deadline passed',
   critical: 'Start today',
   soon: 'Start soon',
-  fine: 'Safe buffer',
-  done: 'Done',
+  fine: 'You have time',
+  done: 'Done ✓',
 }
 const BUFFER_TIPS = [
   'Starting a 6-hour assignment 3 days early reduces cramming stress by 70%.',
-  'Break large milestones into 2–3 hour chunks to maintain focus and momentum.',
-  'Group projects succeed when workload is assigned by real availability, not equal splits.',
-  'High-priority tasks get larger automatic buffer zones so unexpected delays don\'t derail you.',
+  'Break large assignments into 2–3 hour chunks so you don\'t get exhausted.',
+  'Group projects work best when tasks are given to whoever has free time, not equal splits.',
+  'Marking hard assignments as High Importance gives you extra days of cushion in case you get stuck.',
 ]
 const PROJECT_TEMPLATES = [
-  { icon: '🎓', name: 'Senior Thesis / Capstone',        type: 'solo',  desc: 'Multi-chapter research project with high-priority buffer pacing.',    badge: '14-day buffer' },
-  { icon: '👥', name: 'Group Presentation & Report',      type: 'group', desc: 'Team slide deck and research split across member capacities.',         badge: 'Team split'    },
-  { icon: '🔬', name: 'Weekly Lab Report & Problem Set',  type: 'solo',  desc: 'Fast-paced weekly assignments with 3-day start-by cushion.',           badge: 'Weekly pace'   },
-  { icon: '📚', name: 'Final Exam Preparation',           type: 'solo',  desc: 'Multi-week study schedule spaced out to avoid all-nighters.',          badge: 'Exam cushion'  },
+  { icon: '🎓', name: 'Senior Thesis / Capstone',        type: 'solo',  desc: 'Big research project with extra cushion for editing and revisions.',     badge: '14-day cushion' },
+  { icon: '👥', name: 'Group Presentation & Report',      type: 'group', desc: 'Team slide deck and research split fairly by who is free.',              badge: 'Shared fairly'   },
+  { icon: '🔬', name: 'Weekly Lab Report & Problem Set',  type: 'solo',  desc: 'Weekly assignments with 3 days of cushion before the deadline.',         badge: 'Weekly cushion'  },
+  { icon: '📚', name: 'Final Exam Preparation',           type: 'solo',  desc: 'Spaced-out study schedule so you never have to pull an all-nighter.',       badge: 'Study cushion'   },
 ]
 
 // Reusable metric card
@@ -282,10 +282,10 @@ export default function Dashboard() {
               </h1>
               <p className="text-xs sm:text-sm text-graphite mt-1.5 max-w-xl leading-relaxed">
                 {totalActive === 0 && totalCompleted > 0
-                  ? 'All tasks are complete with safe buffers remaining. Enjoy your free time or start a new project.'
+                  ? 'All tasks are complete! Enjoy your free time or start a new project.'
                   : totalActive > 0
-                  ? `You have ${totalActive} active task${totalActive !== 1 ? 's' : ''} (${totalHoursNeeded}h estimated work). Keep ahead of your start-by dates.`
-                  : 'Welcome to Deadline Buffer. Create your first project to turn due dates into stress-free start dates.'}
+                  ? `You have ${totalActive} unfinished task${totalActive !== 1 ? 's' : ''} (about ${totalHoursNeeded} hours of work). Start on the recommended dates so you don't have to rush.`
+                  : 'Welcome! Create your first project to turn stressful due dates into calm start dates.'}
               </p>
             </div>
             <div className="flex items-center gap-3 shrink-0 lg:pt-1">
@@ -297,14 +297,14 @@ export default function Dashboard() {
 
           {/* Metric Highlights Bar */}
           <div id="tour-metrics-bar" className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mt-8 pt-6 border-t border-ink/10">
-            <StatCard label="Active Tasks"  value={totalActive}     sub={`${totalHoursNeeded}h total work`} />
-            <StatCard label="Completed"     value={totalCompleted}  valueClass="text-buffer" sub="✓ Tasks on-track" subClass="text-buffer font-medium" />
+            <StatCard label="Tasks to Do"  value={totalActive}     sub={`~${totalHoursNeeded}h of work`} />
+            <StatCard label="Finished"     value={totalCompleted}  valueClass="text-buffer" sub="✓ Done so far" subClass="text-buffer font-medium" />
             <StatCard label="Projects"      value={projects.length} sub={`${projects.filter((p) => p.type === 'group').length} Group · ${projects.filter((p) => p.type === 'solo').length} Solo`} />
             <StatCard
-              label="Buffer Health"
+              label="Breathing Room"
               value={`${bufferHealth}%`}
               valueClass={bufferHealth >= 70 ? 'text-buffer' : bufferHealth >= 40 ? 'text-highlight' : 'text-deadline'}
-              sub={bufferHealth >= 70 ? 'Safe cushion rate' : bufferHealth >= 40 ? 'Some tasks at risk' : 'Many tasks overdue'}
+              sub={bufferHealth >= 70 ? 'Plenty of time' : bufferHealth >= 40 ? 'Time is getting tight' : 'Running behind'}
             />
           </div>
         </section>
@@ -325,8 +325,8 @@ export default function Dashboard() {
             {!loading && totalActive > 0 && urgentTasks.length > 0 && (
               <section className="bg-white rounded-2xl border border-ink/10 p-5 shadow-xs animate-fade-up">
                 <div className="flex items-center justify-between mb-3">
-                  <h2 className="font-display font-semibold text-base text-ink">Today's Focus & Start Dates</h2>
-                  <span className="text-xs font-mono text-graphite">{urgentTasks.length} task{urgentTasks.length !== 1 ? 's' : ''} to prioritize</span>
+                  <h2 className="font-display font-semibold text-base text-ink">What to Work on Next</h2>
+                  <span className="text-xs font-mono text-graphite">{urgentTasks.length} task{urgentTasks.length !== 1 ? 's' : ''} to look at</span>
                 </div>
                 <div className="space-y-2.5">
                   {urgentTasks.map((t) => (
@@ -361,8 +361,8 @@ export default function Dashboard() {
                 <div className="flex items-center gap-2">
                   {projects.length > 1 && (
                     <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="text-xs rounded-xl border border-ink/15 px-3 py-2 bg-white text-graphite transition-colors hover:border-ink/30 cursor-pointer shadow-2xs">
-                      <option value="recent">Sort: Most recent</option>
-                      <option value="nearest">Sort: Nearest deadline</option>
+                      <option value="recent">Order: Newest first</option>
+                      <option value="nearest">Order: Due soonest</option>
                     </select>
                   )}
                   <Link to="/projects/new" className="bg-ink text-paper text-xs font-medium rounded-xl px-3.5 py-2 hover:bg-ink-soft active:scale-95 transition shadow-2xs">
@@ -450,14 +450,14 @@ export default function Dashboard() {
 
           {/* Right Sidebar */}
           <div className="lg:col-span-4 space-y-6">
-            {/* Deadline Horizon */}
+            {/* Coming Up Soon */}
             <section className="bg-white rounded-2xl border border-ink/10 p-5 shadow-xs">
               <h3 className="font-display font-bold text-sm text-ink mb-3 flex items-center justify-between">
-                <span>Deadline Horizon</span>
-                <span className="text-[11px] font-mono text-graphite font-normal">Next 14 days</span>
+                <span>Coming Up Soon</span>
+                <span className="text-[11px] font-mono text-graphite font-normal">Next 2 weeks</span>
               </h3>
               {upcomingTimeline.length === 0 ? (
-                <div className="py-6 text-center text-xs text-graphite bg-paper/60 rounded-xl border border-ink/5">No upcoming deadlines pending. You're fully in the clear!</div>
+                <div className="py-6 text-center text-xs text-graphite bg-paper/60 rounded-xl border border-ink/5">No deadlines in the next 2 weeks. You're all clear!</div>
               ) : (
                 <div className="space-y-2.5">
                   {upcomingTimeline.map((item) => (
@@ -465,7 +465,7 @@ export default function Dashboard() {
                       <div className="flex items-center justify-between gap-2">
                         <span className="font-medium text-ink group-hover:text-buffer transition-colors truncate">{item.name}</span>
                         <span className="text-[10px] font-mono font-semibold text-deadline shrink-0">
-                          {item.daysUntil < 0 ? `${Math.abs(item.daysUntil)}d overdue` : item.daysUntil === 0 ? 'Today' : `${item.daysUntil}d left`}
+                          {item.daysUntil < 0 ? `${Math.abs(item.daysUntil)}d late` : item.daysUntil === 0 ? 'Due today' : `${item.daysUntil}d left`}
                         </span>
                       </div>
                       <div className="flex items-center justify-between text-[11px] text-graphite mt-1">
@@ -481,20 +481,20 @@ export default function Dashboard() {
             {/* Quick Scratchpad */}
             <section id="tour-scratchpad" className="bg-white rounded-2xl border border-ink/10 p-5 shadow-xs">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="font-display font-bold text-sm text-ink">Quick Scratchpad</h3>
+                <h3 className="font-display font-bold text-sm text-ink">Personal Scratchpad</h3>
                 <span className="text-[10px] text-graphite font-mono">Auto-saved</span>
               </div>
               <textarea
                 value={scratchNote} onChange={handleScratchNoteChange}
-                placeholder="Jot down a quick deadline thought, reading assignment, or reminder..."
+                placeholder="Jot down a quick note, reading assignment, or reminder..."
                 rows={4}
                 className="w-full text-xs rounded-xl border border-ink/10 bg-paper/60 p-3 focus:outline-none focus:ring-2 focus:ring-buffer/40 focus:bg-white resize-none text-ink placeholder:text-graphite/50 transition leading-relaxed"
               />
             </section>
 
-            {/* Buffer Tip */}
+            {/* Study Tip */}
             <section className="bg-gradient-to-br from-buffer-soft/70 to-highlight-soft/50 rounded-2xl border border-buffer/20 p-5 shadow-xs">
-              <span className="text-[11px] font-mono font-bold text-buffer uppercase tracking-wider block mb-1.5">Buffer Strategy</span>
+              <span className="text-[11px] font-mono font-bold text-buffer uppercase tracking-wider block mb-1.5">Study Tip</span>
               <p className="text-xs text-ink leading-relaxed font-medium">"{dailyTip}"</p>
             </section>
           </div>

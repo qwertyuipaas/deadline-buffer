@@ -45,7 +45,7 @@ export default function OnboardingChecklist({ projectCount = 0, totalTasks = 0, 
               onClick={onStartTour}
               className="text-xs font-semibold text-buffer hover:text-buffer/80 bg-white border border-buffer/20 px-3 py-1.5 rounded-xl transition shadow-2xs flex items-center gap-1.5"
             >
-              Interactive Tour
+              Show me around
             </button>
           )}
           <button
@@ -53,7 +53,7 @@ export default function OnboardingChecklist({ projectCount = 0, totalTasks = 0, 
             onClick={onOpenGuide}
             className="text-xs font-medium text-graphite hover:text-ink bg-white border border-ink/15 px-3 py-1.5 rounded-xl transition shadow-2xs"
           >
-            Guide
+            How it works
           </button>
           {allDone && (
             <button
@@ -129,10 +129,10 @@ export default function OnboardingChecklist({ projectCount = 0, totalTasks = 0, 
           <div className="min-w-0 flex-1">
             <h3 className="font-semibold text-xs text-ink">3. Add Your First Task</h3>
             {step3Done ? (
-              <p className="text-[11px] text-buffer font-medium mt-0.5">Buffer calculated ✓</p>
+              <p className="text-[11px] text-buffer font-medium mt-0.5">Start dates calculated ✓</p>
             ) : (
               <p className="text-[11px] text-graphite mt-0.5">
-                Open a project & press <kbd className="bg-paper border border-ink/20 px-1 py-0.5 rounded font-mono text-[10px]">N</kbd>
+                Open a project & click <span className="font-semibold text-ink">+ Add task</span>
               </p>
             )}
           </div>

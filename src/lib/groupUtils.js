@@ -25,7 +25,7 @@ export function getMemberStats(member, tasks) {
 }
 
 // Sorts teammates by most remaining free hours first
-export function getSuggestedMemberOrder(members, tasks, newTaskHours = 0) {
+export function getSuggestedMemberOrder(members, tasks, _newTaskHours = 0) {
   return [...members].sort((a, b) => {
     const aLoad = getMemberWorkloadHours(a.id, tasks)
     const bLoad = getMemberWorkloadHours(b.id, tasks)

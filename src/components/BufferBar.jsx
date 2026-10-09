@@ -1,4 +1,4 @@
-import { getDaysBetween, toLocalIsoDate } from '../lib/dateCalc'
+import { getDaysBetween, toLocalIsoDate, formatFriendlyDate } from '../lib/dateCalc'
 
 // Visual timeline bar showing the safe buffer window (teal) vs active work window (coral/amber)
 export default function BufferBar({ todayIso, startByDate, deadline, status = 'not_started', size = 'md' }) {
@@ -55,14 +55,14 @@ export default function BufferBar({ todayIso, startByDate, deadline, status = 'n
       </div>
 
       {size !== 'sm' && (
-        <div className="flex justify-between text-[10px] font-mono text-graphite-soft mt-1.5 tracking-wide">
+        <div className="flex justify-between text-[10px] text-graphite-soft mt-1.5 tracking-wide">
           <span>Today</span>
           {done ? (
-            <span className="text-graphite">Completed ✓</span>
+            <span className="text-graphite">Finished ✓</span>
           ) : (
-            <span>Start {start || '—'}</span>
+            <span>Start {start ? formatFriendlyDate(start) : '—'}</span>
           )}
-          <span>Due {due || '—'}</span>
+          <span>Due {due ? formatFriendlyDate(due) : '—'}</span>
         </div>
       )}
     </div>
