@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 import { useAuth } from '../context/AuthContext'
@@ -91,6 +91,74 @@ export default function Dashboard() {
   const todayFormatted = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
   const dailyTip = BUFFER_TIPS[new Date().getDate() % BUFFER_TIPS.length]
 
+  const loadProjects = useCallback(async () => {
+    setLoading(true); setError('')
+    const { data: projectList, error: projErr } = await supabase
+      .from('projects').select('*').order('created_at', { ascending: false })
+    if (projErr) { setError(projErr.message); setLoading(false); return }
+    setProjects(projectList || [])
+
+    const projectIds = (projectList || []).map((p) => p.id)
+    if (projectIds.length > 0) {
+      const { data: taskRows, error: taskErr } = await supabase
+        .from('tasks')
+        .select('id, project_id, name, status, deadline, start_by_date, estimated_hours, priority')
+        .in('project_id', projectIds)
+
+      if (!taskErr && taskRows) {
+        const stats = {}, deadlines = {}
+        const projectMap = new Map((projectList || []).map((p) => [p.id, p]))
+        let activeCount = 0, completedCount = 0, hoursNeeded = 0
+        const activeTaskList = [], allUpcoming = []
+
+        for (const row of taskRows) {
+          stats[row.project_id] ??= { total: 0, done: 0 }
+          stats[row.project_id].total += 1
+          if (row.status === 'done') {
+            stats[row.project_id].done += 1
+            completedCount += 1
+          } else {
+            activeCount += 1
+            hoursNeeded += Number(row.estimated_hours || 0)
+            const taskObj = {
+              ...row,
+              projectName: projectMap.get(row.project_id)?.name || 'Project',
+              urgency: getUrgencyLevel(row, todayIso),
+              daysUntil: getDaysUntilDeadline(row.deadline, todayIso),
+            }
+            activeTaskList.push(taskObj)
+            allUpcoming.push(taskObj)
+            // Track nearest upcoming deadline, or nearest past deadline if all tasks are overdue
+            const currentDl = deadlines[row.project_id]
+            if (!currentDl) {
+              deadlines[row.project_id] = row.deadline
+            } else if (row.deadline >= todayIso && currentDl < todayIso) {
+              deadlines[row.project_id] = row.deadline
+            } else if (
+              (row.deadline >= todayIso && currentDl >= todayIso && row.deadline < currentDl) ||
+              (row.deadline < todayIso && currentDl < todayIso && row.deadline > currentDl)
+            ) {
+              deadlines[row.project_id] = row.deadline
+            }
+          }
+        }
+
+        const urgencyOrder = { overdue: 0, critical: 1, soon: 2, fine: 3, done: 4 }
+        activeTaskList.sort((a, b) => {
+          const diff = (urgencyOrder[a.urgency] ?? 3) - (urgencyOrder[b.urgency] ?? 3)
+          return diff !== 0 ? diff : (a.start_by_date || a.deadline).localeCompare(b.start_by_date || b.deadline)
+        })
+        allUpcoming.sort((a, b) => (a.deadline || '').localeCompare(b.deadline || ''))
+
+        setTaskStats(stats); setNextDeadlines(deadlines)
+        setUrgentTasks(activeTaskList.slice(0, 4)); setUpcomingTimeline(allUpcoming.slice(0, 5))
+        setTotalActive(activeCount); setTotalCompleted(completedCount)
+        setTotalHoursNeeded(hoursNeeded); setBufferHealth(getBufferHealth(taskRows, todayIso))
+      }
+    }
+    setLoading(false)
+  }, [todayIso])
+
   useEffect(() => {
     loadProjects()
     const t = setTimeout(() => setMounted(true), 50)
@@ -100,7 +168,7 @@ export default function Dashboard() {
       return () => { clearTimeout(t); clearTimeout(tourTimer) }
     }
     return () => clearTimeout(t)
-  }, [])
+  }, [loadProjects])
 
   function handleScratchNoteChange(e) {
     setScratchNote(e.target.value)
@@ -138,65 +206,6 @@ export default function Dashboard() {
     } else {
       toast.error(error.message)
     }
-  }
-
-  async function loadProjects() {
-    setLoading(true); setError('')
-    const { data: projectList, error: projErr } = await supabase
-      .from('projects').select('*').order('created_at', { ascending: false })
-    if (projErr) { setError(projErr.message); setLoading(false); return }
-    setProjects(projectList || [])
-
-    const projectIds = (projectList || []).map((p) => p.id)
-    if (projectIds.length > 0) {
-      const { data: taskRows, error: taskErr } = await supabase
-        .from('tasks')
-        .select('id, project_id, name, status, deadline, start_by_date, estimated_hours, priority')
-        .in('project_id', projectIds)
-
-      if (!taskErr && taskRows) {
-        const stats = {}, deadlines = {}
-        const projectMap = new Map((projectList || []).map((p) => [p.id, p]))
-        let activeCount = 0, completedCount = 0, hoursNeeded = 0
-        const activeTaskList = [], allUpcoming = []
-
-        for (const row of taskRows) {
-          stats[row.project_id] ??= { total: 0, done: 0 }
-          stats[row.project_id].total += 1
-          if (row.status === 'done') {
-            stats[row.project_id].done += 1
-            completedCount += 1
-          } else {
-            activeCount += 1
-            hoursNeeded += Number(row.estimated_hours || 0)
-            const taskObj = {
-              ...row,
-              projectName: projectMap.get(row.project_id)?.name || 'Project',
-              urgency: getUrgencyLevel(row, todayIso),
-              daysUntil: getDaysUntilDeadline(row.deadline),
-            }
-            activeTaskList.push(taskObj)
-            allUpcoming.push(taskObj)
-            if (row.deadline >= todayIso && (!deadlines[row.project_id] || row.deadline < deadlines[row.project_id])) {
-              deadlines[row.project_id] = row.deadline
-            }
-          }
-        }
-
-        const urgencyOrder = { overdue: 0, critical: 1, soon: 2, fine: 3, done: 4 }
-        activeTaskList.sort((a, b) => {
-          const diff = (urgencyOrder[a.urgency] ?? 3) - (urgencyOrder[b.urgency] ?? 3)
-          return diff !== 0 ? diff : (a.start_by_date || a.deadline).localeCompare(b.start_by_date || b.deadline)
-        })
-        allUpcoming.sort((a, b) => (a.deadline || '').localeCompare(b.deadline || ''))
-
-        setTaskStats(stats); setNextDeadlines(deadlines)
-        setUrgentTasks(activeTaskList.slice(0, 4)); setUpcomingTimeline(allUpcoming.slice(0, 5))
-        setTotalActive(activeCount); setTotalCompleted(completedCount)
-        setTotalHoursNeeded(hoursNeeded); setBufferHealth(getBufferHealth(taskRows))
-      }
-    }
-    setLoading(false)
   }
 
   async function confirmDeleteProject() {
@@ -451,7 +460,9 @@ export default function Dashboard() {
                     <Link key={item.id} to={`/projects/${item.project_id}`} className="block p-2.5 rounded-xl bg-paper/60 hover:bg-paper border border-ink/5 transition text-xs group">
                       <div className="flex items-center justify-between gap-2">
                         <span className="font-medium text-ink group-hover:text-buffer transition-colors truncate">{item.name}</span>
-                        <span className="text-[10px] font-mono font-semibold text-deadline shrink-0">{item.daysUntil === 0 ? 'Today' : `${item.daysUntil}d left`}</span>
+                        <span className="text-[10px] font-mono font-semibold text-deadline shrink-0">
+                          {item.daysUntil < 0 ? `${Math.abs(item.daysUntil)}d overdue` : item.daysUntil === 0 ? 'Today' : `${item.daysUntil}d left`}
+                        </span>
                       </div>
                       <div className="flex items-center justify-between text-[11px] text-graphite mt-1">
                         <span className="truncate">{item.projectName}</span>

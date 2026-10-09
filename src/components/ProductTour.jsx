@@ -148,6 +148,17 @@ export default function ProductTour({
     }
   }, [isOpen])
 
+  const handleSkip = useCallback(() => {
+    localStorage.setItem(tourKey, 'true')
+    onClose?.()
+  }, [tourKey, onClose])
+
+  const handleFinish = useCallback(() => {
+    localStorage.setItem(tourKey, 'true')
+    onComplete?.()
+    onClose?.()
+  }, [tourKey, onComplete, onClose])
+
   // Close on escape
   useEffect(() => {
     if (!isOpen) return
@@ -156,7 +167,7 @@ export default function ProductTour({
     }
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [isOpen])
+  }, [isOpen, handleSkip])
 
   if (!isOpen || !step) return null
 
@@ -170,17 +181,6 @@ export default function ProductTour({
 
   function handlePrev() {
     setCurrentStep((prev) => Math.max(0, prev - 1))
-  }
-
-  function handleSkip() {
-    localStorage.setItem(tourKey, 'true')
-    onClose?.()
-  }
-
-  function handleFinish() {
-    localStorage.setItem(tourKey, 'true')
-    onComplete?.()
-    onClose?.()
   }
 
   const PADDING = 8

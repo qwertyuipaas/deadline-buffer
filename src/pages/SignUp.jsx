@@ -58,24 +58,31 @@ export default function SignUp() {
   // Debounced live username availability check
   useEffect(() => {
     const trimmed = fullName.trim()
-    if (!trimmed) {
-      setUsernameStatus({ checking: false, available: null, message: '' })
-      return
-    }
+    let isMounted = true
 
-    const formatCheck = validateUsernameFormat(trimmed)
-    if (!formatCheck.valid) {
-      setUsernameStatus({ checking: false, available: false, message: formatCheck.message })
-      return
-    }
-
-    setUsernameStatus({ checking: true, available: null, message: '' })
     const timer = setTimeout(async () => {
-      const res = await checkUsernameAvailability(trimmed)
-      setUsernameStatus({ checking: false, available: res.available, message: res.message })
-    }, 350)
+      if (!trimmed) {
+        if (isMounted) setUsernameStatus({ checking: false, available: null, message: '' })
+        return
+      }
 
-    return () => clearTimeout(timer)
+      const formatCheck = validateUsernameFormat(trimmed)
+      if (!formatCheck.valid) {
+        if (isMounted) setUsernameStatus({ checking: false, available: false, message: formatCheck.message })
+        return
+      }
+
+      if (isMounted) setUsernameStatus({ checking: true, available: null, message: '' })
+      const res = await checkUsernameAvailability(trimmed)
+      if (isMounted) {
+        setUsernameStatus({ checking: false, available: res.available, message: res.message })
+      }
+    }, 250)
+
+    return () => {
+      isMounted = false
+      clearTimeout(timer)
+    }
   }, [fullName])
 
   async function handleSubmit(e) {

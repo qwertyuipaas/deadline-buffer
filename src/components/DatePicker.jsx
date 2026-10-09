@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { getTodayIso } from '../lib/dateCalc'
+import { getTodayIso, toLocalIsoDate } from '../lib/dateCalc'
 
 // Month names (full and short)
 const MONTHS = [
@@ -15,16 +15,15 @@ const DAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
 
 function parseIso(iso) {
   if (!iso) return null
-  const [y, m, d] = iso.split('-').map(Number)
+  const clean = toLocalIsoDate(iso)
+  if (!clean) return null
+  const [y, m, d] = clean.split('-').map(Number)
+  if (!y || !m || !d) return null
   return new Date(y, m - 1, d)
 }
 
 function toIso(date) {
-  if (!date) return ''
-  const y = date.getFullYear()
-  const m = String(date.getMonth() + 1).padStart(2, '0')
-  const d = String(date.getDate()).padStart(2, '0')
-  return `${y}-${m}-${d}`
+  return toLocalIsoDate(date)
 }
 
 function formatDisplay(iso) {
@@ -59,7 +58,7 @@ export default function DatePicker({
   const popoverRef = useRef(null)
   const [popStyle, setPopStyle] = useState(null)
   const todayIso = getTodayIso()
-  const minDate = min ? parseIso(min) : null
+  const minIso = toLocalIsoDate(min)
 
   function updatePosition() {
     const el = containerRef.current
@@ -80,6 +79,12 @@ export default function DatePicker({
 
   function toggleOpen() {
     if (!open) {
+      const d = value ? parseIso(value) : new Date()
+      if (d) {
+        setMonth(new Date(d.getFullYear(), d.getMonth(), 1))
+        setYearGridStart(Math.floor(d.getFullYear() / 12) * 12)
+      }
+      setViewMode('days')
       updatePosition()
       setOpen(true)
     } else {
@@ -90,7 +95,6 @@ export default function DatePicker({
   // Keep popover anchored on resize and scroll
   useEffect(() => {
     if (!open) {
-      setPopStyle(null)
       return
     }
     updatePosition()
@@ -101,16 +105,6 @@ export default function DatePicker({
       window.removeEventListener('scroll', updatePosition, true)
     }
   }, [open])
-
-  // Reset viewMode and month when opening
-  useEffect(() => {
-    if (open) {
-      const d = value ? parseIso(value) : new Date()
-      setMonth(new Date(d.getFullYear(), d.getMonth(), 1))
-      setYearGridStart(Math.floor(d.getFullYear() / 12) * 12)
-      setViewMode('days')
-    }
-  }, [open, value])
 
   // Close on outside click or Escape (supports portal rendering)
   useEffect(() => {
@@ -135,12 +129,9 @@ export default function DatePicker({
 
   function handleDaySelect(day) {
     if (!day) return
-    if (minDate) {
-      const d = new Date(day.getFullYear(), day.getMonth(), day.getDate())
-      const m = new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate())
-      if (d < m) return
-    }
-    onChange(toIso(day))
+    const iso = toLocalIsoDate(day)
+    if (minIso && iso < minIso) return
+    onChange(iso)
     setOpen(false)
   }
 
@@ -195,9 +186,10 @@ export default function DatePicker({
       cells.push({ day: d, current: true, date: new Date(year, mon, d) })
     }
     // Next month padding to fill 6 rows
-    let next = 1
+    let nextDay = 1
     while (cells.length % 7 !== 0 || cells.length < 35) {
-      cells.push({ day: next++, current: false, date: new Date(year, mon + 1, next - 1) })
+      cells.push({ day: nextDay, current: false, date: new Date(year, mon + 1, nextDay) })
+      nextDay++
     }
     return cells
   }
@@ -313,9 +305,7 @@ export default function DatePicker({
                   const cellIso = toIso(cell.date)
                   const isSelected = value && cellIso === value
                   const isToday = cellIso === todayIso
-                  const isDisabled = minDate
-                    ? cell.date < new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate())
-                    : false
+                  const isDisabled = minIso ? cellIso < minIso : false
 
                   return (
                     <button
@@ -505,10 +495,12 @@ export default function DatePicker({
             <button
               type="button"
               onClick={() => {
-                const today = parseIso(todayIso)
-                if (!minDate || today >= minDate) {
-                  setMonth(new Date(today.getFullYear(), today.getMonth(), 1))
-                  handleDaySelect(today)
+                if (!minIso || todayIso >= minIso) {
+                  const today = parseIso(todayIso)
+                  if (today) {
+                    setMonth(new Date(today.getFullYear(), today.getMonth(), 1))
+                    handleDaySelect(today)
+                  }
                 }
               }}
               className="text-xs text-buffer hover:underline font-medium"

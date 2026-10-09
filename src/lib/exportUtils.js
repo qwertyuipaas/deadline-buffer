@@ -1,3 +1,5 @@
+import { toLocalIsoDate, addDays } from './dateCalc'
+
 // Generates and downloads an iCalendar (.ics) file with start-by dates and deadlines
 export function exportProjectToIcs(project, tasks, members = []) {
   if (!tasks || tasks.length === 0) return
@@ -12,21 +14,6 @@ export function exportProjectToIcs(project, tasks, members = []) {
       .replace(/\n/g, '\\n')
   }
 
-  function formatIcsDate(isoDate) {
-    if (!isoDate) return ''
-    return isoDate.replace(/-/g, '')
-  }
-
-  // Format a Date as a LOCAL YYYYMMDD string. Never use toISOString() here —
-  // it converts to UTC first, which shifts dates backward by one day for
-  // timezones ahead of UTC (e.g. Asia, Europe, Australia).
-  function toLocalIcsDate(date) {
-    const y = date.getFullYear()
-    const m = String(date.getMonth() + 1).padStart(2, '0')
-    const d = String(date.getDate()).padStart(2, '0')
-    return `${y}${m}${d}`
-  }
-
   function formatIcsTimestamp() {
     const now = new Date()
     return now.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z'
@@ -38,14 +25,12 @@ export function exportProjectToIcs(project, tasks, members = []) {
     .filter((t) => t.deadline)
     .map((task) => {
       const assigneeName = task.assigned_member_id ? memberMap.get(task.assigned_member_id) : 'Unassigned'
-      const startIso = task.start_by_date || task.deadline
-      const dueIso = task.deadline
+      const startIso = toLocalIsoDate(task.start_by_date || task.deadline)
+      const dueIso = toLocalIsoDate(task.deadline)
 
-      const icsStart = formatIcsDate(startIso)
+      const icsStart = startIso.replace(/-/g, '')
       // For all-day events in ICS, end date is non-inclusive, so add 1 day
-      const dueObj = new Date(dueIso + 'T00:00:00')
-      dueObj.setDate(dueObj.getDate() + 1)
-      const icsEnd = toLocalIcsDate(dueObj)
+      const icsEnd = addDays(dueIso, 1).replace(/-/g, '')
 
       const priorityLabel = (task.priority || 'medium').toUpperCase()
       const summary = escapeIcsText(`[${priorityLabel}] ${task.name} (${project.name})`)

@@ -1,22 +1,21 @@
+import { getDaysBetween, toLocalIsoDate } from '../lib/dateCalc'
+
 // Visual timeline bar showing the safe buffer window (teal) vs active work window (coral/amber)
-const DAY_MS = 86400000
-
-function daysBetween(a, b) {
-  if (!a || !b) return 0
-  return Math.round((new Date(b + 'T00:00:00') - new Date(a + 'T00:00:00')) / DAY_MS)
-}
-
 export default function BufferBar({ todayIso, startByDate, deadline, status = 'not_started', size = 'md' }) {
   const done = status === 'done'
   const inProgress = status === 'in_progress'
 
-  const bufferDaysRaw = daysBetween(todayIso, startByDate)
-  const workDaysRaw = Math.max(1, daysBetween(startByDate, deadline))
+  const today = toLocalIsoDate(todayIso)
+  const start = toLocalIsoDate(startByDate)
+  const due = toLocalIsoDate(deadline)
+
+  const bufferDaysRaw = getDaysBetween(today, start)
+  const workDaysRaw = Math.max(1, getDaysBetween(start, due))
   const overdue = !done && bufferDaysRaw < 0
 
   const bufferDays = Math.max(0, bufferDaysRaw)
   const totalDays = Math.max(1, bufferDays + workDaysRaw)
-  const bufferPct = (bufferDays / totalDays) * 100
+  const bufferPct = Math.round((bufferDays / totalDays) * 100)
   const workPct = 100 - bufferPct
 
   const trackHeight = size === 'lg' ? 'h-3' : size === 'sm' ? 'h-1.5' : 'h-2'
@@ -25,12 +24,12 @@ export default function BufferBar({ todayIso, startByDate, deadline, status = 'n
 
   // Human-readable summary for screen readers
   const srLabel = done
-    ? `Task completed. Deadline was ${deadline}.`
+    ? `Task completed. Deadline was ${deadline || 'unspecified'}.`
     : overdue
-      ? `Overdue — you should have started by ${startByDate}. Deadline is ${deadline}.`
+      ? `Overdue — you should have started by ${start || 'today'}. Deadline is ${deadline || 'unspecified'}.`
       : bufferDays === 0
-        ? `Start today. Deadline is ${deadline}.`
-        : `${bufferDays} day${bufferDays === 1 ? '' : 's'} left before you need to start (${startByDate}). Deadline is ${deadline}.`
+        ? `Start today. Deadline is ${deadline || 'unspecified'}.`
+        : `${bufferDays} day${bufferDays === 1 ? '' : 's'} left before you need to start (${start}). Deadline is ${deadline}.`
 
   return (
     <div className="w-full">
@@ -59,9 +58,9 @@ export default function BufferBar({ todayIso, startByDate, deadline, status = 'n
           {done ? (
             <span className="text-graphite">Completed ✓</span>
           ) : (
-            <span>Start {startByDate}</span>
+            <span>Start {start || '—'}</span>
           )}
-          <span>Due {deadline}</span>
+          <span>Due {due || '—'}</span>
         </div>
       )}
     </div>

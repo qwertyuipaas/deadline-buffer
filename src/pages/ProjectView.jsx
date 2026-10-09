@@ -68,7 +68,7 @@ const INPUT_CLS = 'w-full rounded-lg border border-ink/15 px-3 py-2 text-sm focu
 function TaskFormFields({ form, members: memberList, isGroup: groupMode, tasks = [] }) {
   const suggested = getSuggestedMemberOrder(memberList, tasks)
   const hoursNum = Number(form.hours)
-  const previewValid = form.deadline && Number.isFinite(hoursNum) && hoursNum > 0 && form.deadline >= form.todayIso
+  const previewValid = form.deadline && Number.isFinite(hoursNum) && hoursNum > 0
   const previewStartBy = previewValid ? calculateStartByDate(form.deadline, hoursNum, form.priority) : null
 
   return (
@@ -440,7 +440,7 @@ export default function ProjectView() {
           ) : (
             <ul className="space-y-3">
               {visibleTasks.map((task, i) => {
-                const urgency = getUrgencyLevel(task)
+                const urgency = getUrgencyLevel(task, todayIso)
                 const member  = members.find((m) => m.id === task.assigned_member_id)
                 const isEditing = taskEdit.editingTaskId === task.id
 
@@ -448,12 +448,12 @@ export default function ProjectView() {
                   <li key={task.id} className="bg-white rounded-xl border border-buffer/40 p-4">
                     <form onSubmit={taskEdit.handleSaveEditTask} className="grid gap-3 sm:grid-cols-2">
                       <div className="sm:col-span-2">
-                        <label className="block text-xs text-graphite mb-1">Task name</label>
+                         <label className="block text-xs text-graphite mb-1">Task name</label>
                         <input required autoFocus value={taskEdit.editFields.name} onChange={(e) => taskEdit.setEditFields({ ...taskEdit.editFields, name: e.target.value })} className={INPUT_CLS} />
                       </div>
                       <div>
                         <label className="block text-xs text-graphite mb-1">Deadline</label>
-                        <DatePicker value={taskEdit.editFields.deadline} onChange={(iso) => taskEdit.setEditFields({ ...taskEdit.editFields, deadline: iso })} min={todayIso} placeholder="Pick a deadline" required />
+                        <DatePicker value={taskEdit.editFields.deadline} onChange={(iso) => taskEdit.setEditFields({ ...taskEdit.editFields, deadline: iso })} min={taskEdit.editFields.deadline && taskEdit.editFields.deadline < todayIso ? taskEdit.editFields.deadline : todayIso} placeholder="Pick a deadline" required />
                       </div>
                       <div>
                         <label className="block text-xs text-graphite mb-1">Estimated hours</label>

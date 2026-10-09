@@ -4,17 +4,49 @@
 
 const ASSUMED_FOCUSED_HOURS_PER_DAY = 2
 
-// Formats a Date as local YYYY-MM-DD (avoids toISOString UTC shift for non-UTC timezones).
-function toLocalIsoDate(date) {
-  return [
-    date.getFullYear(),
-    String(date.getMonth() + 1).padStart(2, '0'),
-    String(date.getDate()).padStart(2, '0'),
-  ].join('-')
-}
-
 const PRIORITY_BUFFER_MULTIPLIER = { low: 1.1, medium: 1.3, high: 1.6 }
 
+/**
+ * Normalizes any date input (YYYY-MM-DD, ISO string with time, or Date object)
+ * into a clean local "YYYY-MM-DD" string.
+ */
+export function toLocalIsoDate(date) {
+  if (!date) return ''
+  if (typeof date === 'string') {
+    const clean = date.trim().split('T')[0].split(' ')[0]
+    if (/^\d{4}-\d{2}-\d{2}$/.test(clean)) return clean
+  }
+  const d = date instanceof Date ? date : new Date(date)
+  if (Number.isNaN(d.getTime())) return ''
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+
+/**
+ * Parses a "YYYY-MM-DD" string cleanly into a Date object at midnight local time
+ * without timezone drift.
+ */
+function parseYMD(isoStr) {
+  if (!isoStr) return null
+  const clean = toLocalIsoDate(isoStr)
+  if (!clean) return null
+  const [y, m, d] = clean.split('-').map(Number)
+  if (!y || !m || !d) return null
+  return new Date(y, m - 1, d)
+}
+
+/**
+ * Returns today's date as a local "YYYY-MM-DD" string.
+ */
+export function getTodayIso() {
+  return toLocalIsoDate(new Date())
+}
+
+/**
+ * Calculates buffer days given estimated hours and task priority.
+ */
 export function calculateBufferDays(estimatedHours, priority) {
   const hours = Number(estimatedHours)
   const safeHours = Number.isFinite(hours) && hours > 0 ? hours : 1
@@ -22,64 +54,141 @@ export function calculateBufferDays(estimatedHours, priority) {
   return Math.max(1, Math.ceil((safeHours / ASSUMED_FOCUSED_HOURS_PER_DAY) * multiplier))
 }
 
+/**
+ * Calculates the start-by date by subtracting buffer days from the deadline date.
+ */
 export function calculateStartByDate(deadline, estimatedHours, priority) {
-  if (!deadline) return ''
-  const deadlineDate = new Date(deadline + 'T00:00:00')
-  if (Number.isNaN(deadlineDate.getTime())) return ''
-  const startDate = new Date(deadlineDate)
-  startDate.setDate(startDate.getDate() - calculateBufferDays(estimatedHours, priority))
+  const deadlineDate = parseYMD(deadline)
+  if (!deadlineDate) return ''
+  const bufferDays = calculateBufferDays(estimatedHours, priority)
+  const startDate = new Date(
+    deadlineDate.getFullYear(),
+    deadlineDate.getMonth(),
+    deadlineDate.getDate() - bufferDays
+  )
   return toLocalIsoDate(startDate)
 }
 
-export function isOverdue({ start_by_date, status }) {
-  if (status === 'done' || !start_by_date) return false
-  return start_by_date < toLocalIsoDate(new Date())
+/**
+ * Adds or subtracts days from a YYYY-MM-DD date string.
+ */
+export function addDays(isoDate, days) {
+  const d = parseYMD(isoDate)
+  if (!d) return ''
+  const result = new Date(d.getFullYear(), d.getMonth(), d.getDate() + Number(days))
+  return toLocalIsoDate(result)
 }
 
-export function getTodayIso() {
-  return toLocalIsoDate(new Date())
+/**
+ * Calculates calendar days between two YYYY-MM-DD dates (b - a).
+ * Uses UTC day timestamps to prevent daylight-saving 23h/25h rounding drift.
+ */
+export function getDaysBetween(dateA, dateB) {
+  const da = parseYMD(dateA)
+  const db = parseYMD(dateB)
+  if (!da || !db) return 0
+  const utc1 = Date.UTC(da.getFullYear(), da.getMonth(), da.getDate())
+  const utc2 = Date.UTC(db.getFullYear(), db.getMonth(), db.getDate())
+  return Math.round((utc2 - utc1) / 86400000)
 }
 
-export function getDaysUntilDeadline(deadline) {
+/**
+ * Returns days remaining until deadline relative to today (positive = future, negative = past).
+ */
+export function getDaysUntilDeadline(deadline, today = getTodayIso()) {
   if (!deadline) return 0
-  const today = new Date(getTodayIso() + 'T00:00:00')
-  const due   = new Date(deadline + 'T00:00:00')
-  return Math.round((due - today) / 86400000)
+  return getDaysBetween(today, deadline)
 }
 
-export function getUrgencyLevel(task) {
-  if (task.status === 'done') return 'done'
-  const today = getTodayIso()
-  if (!task.start_by_date || task.start_by_date < today) return 'overdue'
-  const daysUntilStart = Math.round((new Date(task.start_by_date + 'T00:00:00') - new Date(today + 'T00:00:00')) / 86400000)
-  if (daysUntilStart === 0) return 'critical'
+/**
+ * Determines whether a task is overdue.
+ */
+export function isOverdue(task, today = getTodayIso()) {
+  if (!task || task.status === 'done') return false
+  const todayClean = toLocalIsoDate(today) || getTodayIso()
+  const targetDate = task.start_by_date || task.deadline
+  if (!targetDate) return false
+  return toLocalIsoDate(targetDate) < todayClean
+}
+
+/**
+ * Determines the urgency tier of a task: 'done', 'overdue', 'critical', 'soon', or 'fine'.
+ */
+export function getUrgencyLevel(task, today = getTodayIso()) {
+  if (!task || task.status === 'done') return 'done'
+  const todayClean = toLocalIsoDate(today) || getTodayIso()
+
+  // If hard deadline is in the past, task is overdue
+  if (task.deadline && toLocalIsoDate(task.deadline) < todayClean) {
+    return 'overdue'
+  }
+
+  // If start-by date is in the past, task is overdue to start
+  const startBy = task.start_by_date || task.deadline
+  if (!startBy || toLocalIsoDate(startBy) < todayClean) {
+    return 'overdue'
+  }
+
+  const daysUntilStart = getDaysBetween(todayClean, startBy)
+  if (daysUntilStart <= 0) return 'critical'
   if (daysUntilStart <= 2) return 'soon'
   return 'fine'
 }
 
+/**
+ * Formats a YYYY-MM-DD string into user-friendly text like "Thu, Oct 15".
+ */
 export function formatFriendlyDate(isoDate, options = {}) {
   if (!isoDate) return ''
-  const date = new Date(isoDate + 'T00:00:00')
-  if (Number.isNaN(date.getTime())) return isoDate
+  const d = parseYMD(isoDate)
+  if (!d) return isoDate
   try {
-    return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', ...options })
+    return d.toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      ...options,
+    })
   } catch {
     return isoDate
   }
 }
 
+/**
+ * Computes an overall 0–100% buffer health score across a list of tasks.
+ */
 export function getBufferHealth(tasks = [], today = getTodayIso()) {
-  const active = tasks.filter((t) => t.status !== 'done')
+  if (!Array.isArray(tasks) || tasks.length === 0) return 100
+  const active = tasks.filter((t) => t && t.status !== 'done')
   if (active.length === 0) return 100
 
-  let total = 0, overduePenalty = 0
+  const todayClean = toLocalIsoDate(today) || getTodayIso()
+  let scoreSum = 0
+  let overduePenalty = 0
+
   for (const t of active) {
-    if (!t.start_by_date || !t.deadline) { total++; continue }
-    const daysBeforeStart = Math.round((new Date(t.start_by_date + 'T00:00:00') - new Date(today + 'T00:00:00')) / 86400000)
-    if (daysBeforeStart < 0) { overduePenalty += 35; continue }
-    const totalWindow = Math.max(1, Math.round((new Date(t.deadline + 'T00:00:00') - new Date(today + 'T00:00:00')) / 86400000))
-    total += Math.min(1, Math.max(0, daysBeforeStart / totalWindow)) * 100
+    const deadline = toLocalIsoDate(t.deadline)
+    if (!deadline) {
+      scoreSum += 50
+      continue
+    }
+
+    const startBy =
+      toLocalIsoDate(t.start_by_date) ||
+      calculateStartByDate(deadline, t.estimated_hours, t.priority)
+    const daysUntilStart = getDaysBetween(todayClean, startBy)
+    const totalWindow = Math.max(1, getDaysBetween(todayClean, deadline))
+
+    if (daysUntilStart < 0) {
+      const daysOverdue = Math.abs(daysUntilStart)
+      overduePenalty += Math.min(35, 10 + daysOverdue * 5)
+    } else {
+      const ratio = Math.min(1, Math.max(0, daysUntilStart / totalWindow))
+      scoreSum += ratio * 100
+    }
   }
 
-  return Math.max(0, Math.min(100, Math.round(total / Math.max(active.length, 1) - overduePenalty)))
+  const baseScore = scoreSum / active.length
+  const finalScore = Math.round(baseScore - overduePenalty / active.length)
+  return Math.max(0, Math.min(100, finalScore))
 }

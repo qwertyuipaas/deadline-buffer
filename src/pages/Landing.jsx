@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { getTodayIso, calculateStartByDate } from '../lib/dateCalc'
+import { getTodayIso, calculateStartByDate, addDays } from '../lib/dateCalc'
 import BufferBar from '../components/BufferBar'
 import MemberWorkloadBar from '../components/MemberWorkloadBar'
 import Logo from '../components/Logo'
@@ -30,9 +30,11 @@ function useTypewriter(words, typingSpeed = 90, deletingSpeed = 45, pauseTime = 
     }
 
     if (isDeleting && subIndex === 0) {
-      setIsDeleting(false)
-      setIndex((prev) => (prev + 1) % words.length)
-      return
+      const pause = setTimeout(() => {
+        setIsDeleting(false)
+        setIndex((prev) => (prev + 1) % words.length)
+      }, 250)
+      return () => clearTimeout(pause)
     }
 
     const timeout = setTimeout(
@@ -149,12 +151,7 @@ export default function Landing() {
   }
 
   function getFutureDate(days) {
-    const d = new Date(today + 'T00:00:00')
-    d.setDate(d.getDate() + days)
-    const y = d.getFullYear()
-    const m = String(d.getMonth() + 1).padStart(2, '0')
-    const day = String(d.getDate()).padStart(2, '0')
-    return `${y}-${m}-${day}`
+    return addDays(today, days)
   }
 
   const demoDeadline = getFutureDate(8)
