@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
-import { isOverdue, getTodayIso, getDaysUntilDeadline, getUrgencyLevel, formatFriendlyDate, calculateStartByDate } from '../lib/dateCalc'
+import { isOverdue, getTodayIso, getDaysUntilDeadline, getUrgencyLevel, formatFriendlyDate, calculateStartByDate, calculateBufferDays, getDaysBetween, toLocalIsoDate } from '../lib/dateCalc'
 import { getMemberStats, getSuggestedMemberOrder } from '../lib/groupUtils'
 import { useToast } from '../context/ToastContext'
 import { useProjectData } from '../hooks/useProjectData'
@@ -57,8 +57,11 @@ const URGENCY_LABEL = {
   done:     'Done',
   fine:     (t) => `Start by ${formatFriendlyDate(t.start_by_date)}`,
   soon:     (t) => `Start soon — ${formatFriendlyDate(t.start_by_date)}`,
-  critical: () => 'Start today',
-  overdue:  () => "Start now — you're behind",
+  critical: (t, today = getTodayIso()) => {
+    if (t && toLocalIsoDate(t.deadline) === today) return 'Due today · Start now'
+    return 'Start today · Tight buffer'
+  },
+  overdue:  (t) => (t?.deadline ? `Overdue — was due ${formatFriendlyDate(t.deadline)}` : 'Overdue'),
 }
 const priorityStyles  = { low: 'bg-paper-dim text-graphite', medium: 'bg-highlight-soft text-ink', high: 'bg-deadline-soft text-deadline' }
 const priorityWeight  = { high: 0, medium: 1, low: 2 }
@@ -69,7 +72,7 @@ function TaskFormFields({ form, members: memberList, isGroup: groupMode, tasks =
   const suggested = getSuggestedMemberOrder(memberList, tasks)
   const hoursNum = Number(form.hours)
   const previewValid = form.deadline && Number.isFinite(hoursNum) && hoursNum > 0
-  const previewStartBy = previewValid ? calculateStartByDate(form.deadline, hoursNum, form.priority) : null
+  const previewStartBy = previewValid ? calculateStartByDate(form.deadline, hoursNum, form.priority, form.todayIso) : null
 
   return (
     <div className="grid gap-4 sm:grid-cols-2">
@@ -121,10 +124,41 @@ function TaskFormFields({ form, members: memberList, isGroup: groupMode, tasks =
       )}
       <div className="sm:col-span-2">
         {previewValid ? (
-          <div className="flex items-center justify-between gap-3 rounded-xl bg-buffer-soft border border-buffer/30 px-4 py-3 animate-fade-in">
-            <span className="text-xs text-graphite leading-snug">Based on your inputs, you should start this task by:</span>
-            <strong className="font-display text-sm text-buffer whitespace-nowrap">{formatFriendlyDate(previewStartBy)}</strong>
-          </div>
+          (() => {
+            const isDueToday = form.deadline === form.todayIso
+            const bufferDays = calculateBufferDays(hoursNum, form.priority)
+            const daysUntil = getDaysBetween(form.todayIso, form.deadline)
+            const isTight = !isDueToday && bufferDays > daysUntil
+
+            if (isDueToday) {
+              return (
+                <div className="flex items-center justify-between gap-3 rounded-xl bg-deadline-soft border border-deadline/30 px-4 py-3 animate-fade-in">
+                  <div className="text-xs text-deadline leading-snug">
+                    <strong className="font-semibold block sm:inline">⚠️ Due today:</strong> Start immediately to complete your {hoursNum}h on time.
+                  </div>
+                  <strong className="font-display text-sm text-deadline whitespace-nowrap">Today ({formatFriendlyDate(form.todayIso)})</strong>
+                </div>
+              )
+            }
+
+            if (isTight) {
+              return (
+                <div className="flex items-center justify-between gap-3 rounded-xl bg-highlight-soft border border-highlight/40 px-4 py-3 animate-fade-in">
+                  <div className="text-xs text-ink leading-snug">
+                    <strong className="font-semibold block sm:inline">⚡ Tight buffer:</strong> Ideal buffer is {bufferDays}d, but deadline is in {daysUntil}d. Start today!
+                  </div>
+                  <strong className="font-display text-sm text-ink whitespace-nowrap">Today ({formatFriendlyDate(previewStartBy)})</strong>
+                </div>
+              )
+            }
+
+            return (
+              <div className="flex items-center justify-between gap-3 rounded-xl bg-buffer-soft border border-buffer/30 px-4 py-3 animate-fade-in">
+                <span className="text-xs text-graphite leading-snug">Based on your inputs, you should start this task by:</span>
+                <strong className="font-display text-sm text-buffer whitespace-nowrap">{formatFriendlyDate(previewStartBy)}</strong>
+              </div>
+            )
+          })()
         ) : (
           <p className="text-[11px] text-graphite/70 leading-relaxed px-1">Pick a deadline and estimated hours — we'll automatically calculate your calm <strong>Start-By date</strong> with a safety buffer.</p>
         )}
@@ -242,9 +276,10 @@ export default function ProjectView() {
   const isGroup     = project.type === 'group'
   const totalTasks  = tasks.length
   const doneTasks   = tasks.filter((t) => t.status === 'done').length
-  const overdueCount = tasks.filter((t) => isOverdue(t)).length
-  const startTodayCount = tasks.filter((t) => t.status !== 'done' && t.start_by_date === todayIso).length
-  const dueSoonCount = tasks.filter((t) => t.status !== 'done' && getDaysUntilDeadline(t.deadline) >= 0 && getDaysUntilDeadline(t.deadline) <= 7).length
+  const overdueCount = tasks.filter((t) => isOverdue(t, todayIso)).length
+  const dueTodayCount = tasks.filter((t) => t.status !== 'done' && toLocalIsoDate(t.deadline) === todayIso).length
+  const startTodayCount = tasks.filter((t) => t.status !== 'done' && toLocalIsoDate(t.deadline) !== todayIso && toLocalIsoDate(t.start_by_date) === todayIso).length
+  const dueSoonCount = tasks.filter((t) => t.status !== 'done' && getDaysUntilDeadline(t.deadline, todayIso) > 0 && getDaysUntilDeadline(t.deadline, todayIso) <= 7).length
   const percentDone = totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : 0
 
   let visibleTasks = tasks.filter((t) => {
@@ -321,10 +356,11 @@ export default function ProjectView() {
               <div className="h-full bg-buffer animate-bar-grow rounded-full" style={{ width: `${percentDone}%` }} />
             </div>
             <div className="flex gap-3 mt-4 text-xs flex-wrap items-center">
-              {overdueCount > 0 && <span className="text-deadline font-medium bg-deadline-soft px-2 py-0.5 rounded-full">{overdueCount} overdue start</span>}
-              {startTodayCount > 0 && <span className="text-deadline font-medium bg-deadline-soft/80 px-2 py-0.5 rounded-full">🔥 {startTodayCount} start today</span>}
+              {overdueCount > 0 && <span className="text-deadline font-medium bg-deadline-soft px-2 py-0.5 rounded-full">{overdueCount} overdue</span>}
+              {dueTodayCount > 0 && <span className="text-deadline font-medium bg-deadline-soft/80 px-2 py-0.5 rounded-full">⚠️ {dueTodayCount} due today</span>}
+              {startTodayCount > 0 && <span className="text-ink font-medium bg-highlight-soft px-2 py-0.5 rounded-full">🔥 {startTodayCount} start today</span>}
               <span className={dueSoonCount > 0 ? 'text-ink font-medium' : 'text-graphite'}>{dueSoonCount} due within 7 days</span>
-              {overdueCount === 0 && startTodayCount === 0 && dueSoonCount === 0 && <span className="text-buffer font-medium">✓ All on track</span>}
+              {overdueCount === 0 && dueTodayCount === 0 && startTodayCount === 0 && dueSoonCount === 0 && <span className="text-buffer font-medium">✓ All on track</span>}
             </div>
           </section>
         )}
@@ -499,7 +535,7 @@ export default function ProjectView() {
                             <BufferBar todayIso={todayIso} startByDate={task.start_by_date} deadline={task.deadline} status={task.status} size="sm" />
                           </div>
                           <span className={`text-xs font-medium mt-2 inline-block px-2 py-1 rounded-full ${URGENCY_BADGE[urgency]}`}>
-                            {typeof URGENCY_LABEL[urgency] === 'function' ? URGENCY_LABEL[urgency](task) : URGENCY_LABEL[urgency]}
+                            {typeof URGENCY_LABEL[urgency] === 'function' ? URGENCY_LABEL[urgency](task, todayIso) : URGENCY_LABEL[urgency]}
                           </span>
                         </div>
                         <div className="flex flex-col items-end gap-2 shrink-0">

@@ -20,7 +20,7 @@ const URGENCY_STYLES = {
   done: 'bg-paper-dim text-graphite',
 }
 const URGENCY_LABELS = {
-  overdue: 'Overdue · Start now',
+  overdue: 'Overdue · Deadline passed',
   critical: 'Start today',
   soon: 'Start soon',
   fine: 'Safe buffer',
@@ -335,11 +335,15 @@ export default function Dashboard() {
                         <p className="font-medium text-sm text-ink group-hover:text-buffer transition-colors truncate">{t.name}</p>
                         <p className="text-xs text-graphite mt-0.5 truncate">
                           <strong>{t.projectName}</strong> · {t.estimated_hours ? `${t.estimated_hours}h work · ` : ''}
-                          {t.daysUntil < 0 ? `Overdue by ${Math.abs(t.daysUntil)} day${Math.abs(t.daysUntil) !== 1 ? 's' : ''}` : `Due in ${t.daysUntil} day${t.daysUntil !== 1 ? 's' : ''}`}
+                          {t.daysUntil < 0
+                            ? `Overdue by ${Math.abs(t.daysUntil)} day${Math.abs(t.daysUntil) !== 1 ? 's' : ''}`
+                            : t.daysUntil === 0
+                              ? 'Due today'
+                              : `Due in ${t.daysUntil} day${t.daysUntil !== 1 ? 's' : ''}`}
                         </p>
                       </div>
                       <span className={`text-xs px-3 py-1 rounded-full shrink-0 ${URGENCY_STYLES[t.urgency] || 'bg-paper-dim text-graphite'}`}>
-                        {URGENCY_LABELS[t.urgency] || t.urgency}
+                        {t.urgency === 'critical' && t.daysUntil === 0 ? 'Due today · Start now' : (URGENCY_LABELS[t.urgency] || t.urgency)}
                       </span>
                     </Link>
                   ))}

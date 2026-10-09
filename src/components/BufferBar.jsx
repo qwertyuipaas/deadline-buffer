@@ -11,7 +11,7 @@ export default function BufferBar({ todayIso, startByDate, deadline, status = 'n
 
   const bufferDaysRaw = getDaysBetween(today, start)
   const workDaysRaw = Math.max(1, getDaysBetween(start, due))
-  const overdue = !done && bufferDaysRaw < 0
+  const isDeadlinePassed = !done && due && due < today
 
   const bufferDays = Math.max(0, bufferDaysRaw)
   const totalDays = Math.max(1, bufferDays + workDaysRaw)
@@ -19,17 +19,19 @@ export default function BufferBar({ todayIso, startByDate, deadline, status = 'n
   const workPct = 100 - bufferPct
 
   const trackHeight = size === 'lg' ? 'h-3' : size === 'sm' ? 'h-1.5' : 'h-2'
-  const workColor = done || inProgress ? 'bg-graphite-soft' : overdue ? 'bg-deadline' : 'bg-highlight'
+  const workColor = done || inProgress ? 'bg-graphite-soft' : isDeadlinePassed ? 'bg-deadline' : 'bg-highlight'
   const bufferColor = done ? 'bg-graphite-soft' : 'bg-buffer'
 
   // Human-readable summary for screen readers
   const srLabel = done
     ? `Task completed. Deadline was ${deadline || 'unspecified'}.`
-    : overdue
-      ? `Overdue — you should have started by ${start || 'today'}. Deadline is ${deadline || 'unspecified'}.`
-      : bufferDays === 0
-        ? `Start today. Deadline is ${deadline || 'unspecified'}.`
-        : `${bufferDays} day${bufferDays === 1 ? '' : 's'} left before you need to start (${start}). Deadline is ${deadline}.`
+    : isDeadlinePassed
+      ? `Overdue — deadline was ${deadline || 'unspecified'}.`
+      : due === today
+        ? `Due today. Complete by today (${deadline || 'unspecified'}).`
+        : bufferDays === 0
+          ? `Start today. Deadline is ${deadline || 'unspecified'}.`
+          : `${bufferDays} day${bufferDays === 1 ? '' : 's'} left before you need to start (${start}). Deadline is ${deadline}.`
 
   return (
     <div className="w-full">

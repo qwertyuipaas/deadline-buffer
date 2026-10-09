@@ -41,7 +41,7 @@ export function useTaskForm(projectId, onSuccess) {
     if (hoursNum > 168) { setTaskError('Estimated hours seems too large for a single task (max 168h). Double-check your input?'); return }
 
     setTaskSubmitting(true)
-    const startByDate = calculateStartByDate(deadline, hoursNum, priority)
+    const startByDate = calculateStartByDate(deadline, hoursNum, priority, todayIso)
 
     const { error } = await supabase.from('tasks').insert({
       project_id: projectId,

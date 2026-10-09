@@ -57,7 +57,7 @@ export function calculateBufferDays(estimatedHours, priority) {
 /**
  * Calculates the start-by date by subtracting buffer days from the deadline date.
  */
-export function calculateStartByDate(deadline, estimatedHours, priority) {
+export function calculateStartByDate(deadline, estimatedHours, priority, today = getTodayIso()) {
   const deadlineDate = parseYMD(deadline)
   if (!deadlineDate) return ''
   const bufferDays = calculateBufferDays(estimatedHours, priority)
@@ -66,7 +66,17 @@ export function calculateStartByDate(deadline, estimatedHours, priority) {
     deadlineDate.getMonth(),
     deadlineDate.getDate() - bufferDays
   )
-  return toLocalIsoDate(startDate)
+  const rawIso = toLocalIsoDate(startDate)
+  const todayClean = toLocalIsoDate(today) || getTodayIso()
+  const deadlineClean = toLocalIsoDate(deadline)
+
+  // If the deadline is today or in the future, the start date cannot be in the past.
+  // Clamping to today ensures actionable guidance ("Start today") instead of impossible past dates.
+  if (deadlineClean >= todayClean && rawIso < todayClean) {
+    return todayClean
+  }
+
+  return rawIso
 }
 
 /**
@@ -102,13 +112,15 @@ export function getDaysUntilDeadline(deadline, today = getTodayIso()) {
 
 /**
  * Determines whether a task is overdue.
+ * A task is strictly overdue only if its hard deadline has already passed (deadline < today).
+ * Tasks due today or in the future are never overdue.
  */
 export function isOverdue(task, today = getTodayIso()) {
   if (!task || task.status === 'done') return false
   const todayClean = toLocalIsoDate(today) || getTodayIso()
-  const targetDate = task.start_by_date || task.deadline
-  if (!targetDate) return false
-  return toLocalIsoDate(targetDate) < todayClean
+  const deadline = toLocalIsoDate(task.deadline)
+  if (!deadline) return false
+  return deadline < todayClean
 }
 
 /**
@@ -117,21 +129,30 @@ export function isOverdue(task, today = getTodayIso()) {
 export function getUrgencyLevel(task, today = getTodayIso()) {
   if (!task || task.status === 'done') return 'done'
   const todayClean = toLocalIsoDate(today) || getTodayIso()
+  const deadline = toLocalIsoDate(task.deadline)
 
-  // If hard deadline is in the past, task is overdue
-  if (task.deadline && toLocalIsoDate(task.deadline) < todayClean) {
+  // 1. If hard deadline has passed, the task is overdue
+  if (deadline && deadline < todayClean) {
     return 'overdue'
   }
 
-  // If start-by date is in the past, task is overdue to start
-  const startBy = task.start_by_date || task.deadline
-  if (!startBy || toLocalIsoDate(startBy) < todayClean) {
-    return 'overdue'
+  // 2. If deadline is today, task is critical ('Due today · Start now')
+  if (deadline && deadline === todayClean) {
+    return 'critical'
   }
+
+  // 3. Check start-by date relative to today
+  const startBy = toLocalIsoDate(task.start_by_date) || deadline
+  if (!startBy) return 'fine'
 
   const daysUntilStart = getDaysBetween(todayClean, startBy)
-  if (daysUntilStart <= 0) return 'critical'
-  if (daysUntilStart <= 2) return 'soon'
+  // If start date has arrived or passed (tight buffer / start immediately)
+  if (daysUntilStart <= 0) {
+    return 'critical'
+  }
+  if (daysUntilStart <= 2) {
+    return 'soon'
+  }
   return 'fine'
 }
 
@@ -173,16 +194,17 @@ export function getBufferHealth(tasks = [], today = getTodayIso()) {
       continue
     }
 
-    const startBy =
-      toLocalIsoDate(t.start_by_date) ||
-      calculateStartByDate(deadline, t.estimated_hours, t.priority)
-    const daysUntilStart = getDaysBetween(todayClean, startBy)
-    const totalWindow = Math.max(1, getDaysBetween(todayClean, deadline))
-
-    if (daysUntilStart < 0) {
-      const daysOverdue = Math.abs(daysUntilStart)
+    const isDeadlinePast = deadline < todayClean
+    if (isDeadlinePast) {
+      const daysOverdue = Math.abs(getDaysBetween(todayClean, deadline))
       overduePenalty += Math.min(35, 10 + daysOverdue * 5)
     } else {
+      const startBy =
+        toLocalIsoDate(t.start_by_date) ||
+        calculateStartByDate(deadline, t.estimated_hours, t.priority, todayClean)
+      const effectiveStart = startBy < todayClean ? todayClean : startBy
+      const totalWindow = Math.max(1, getDaysBetween(todayClean, deadline))
+      const daysUntilStart = Math.max(0, getDaysBetween(todayClean, effectiveStart))
       const ratio = Math.min(1, Math.max(0, daysUntilStart / totalWindow))
       scoreSum += ratio * 100
     }

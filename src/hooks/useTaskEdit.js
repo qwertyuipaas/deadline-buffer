@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
-import { calculateStartByDate } from '../lib/dateCalc'
+import { calculateStartByDate, getTodayIso } from '../lib/dateCalc'
 import { useToast } from '../context/ToastContext'
 
 // Handles inline task editing state and update submission
@@ -42,7 +42,7 @@ export function useTaskEdit(onSuccess) {
     if (!editFields.deadline) { setEditError('Pick a deadline.'); return }
 
     setEditSubmitting(true)
-    const startByDate = calculateStartByDate(editFields.deadline, hoursNum, editFields.priority)
+    const startByDate = calculateStartByDate(editFields.deadline, hoursNum, editFields.priority, getTodayIso())
 
     const { error } = await supabase
       .from('tasks')
